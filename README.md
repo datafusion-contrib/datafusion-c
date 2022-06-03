@@ -33,7 +33,7 @@ cargo build
 
 C example:
 
-```
+```bash
 cc \
   -o target/debug/sql \
   -I datafusion/c/include \
