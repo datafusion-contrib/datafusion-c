@@ -1,0 +1,141 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+name: CI
+
+on:
+  - push
+  - pull_request
+
+concurrency:
+  group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  rat:
+    name: Release Audit Tool (RAT)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: datafusion-c
+      - name: Checkout Arrow
+        uses: actions/checkout@v3
+        with:
+          path: arrow
+          repository: apache/arrow
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.x"
+      - name: Setup Archery
+        run: |
+          pip install -e arrow/dev/archery[lint]
+      - name: Run RAT
+        run: |
+          cd datafusion-c && archery lint --rat
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        id: rust-toolchain
+        with:
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+      - name: Cache Cargo
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo
+          key: cargo-lint-${{ steps.rust-toolchain.outputs.rustc_hash }}-${{ hashFiles('Cargo.lock') }}
+      - name: Check format
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
+      - name: Run Clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --all-targets --all-features -- -D clippy::all -D warnings
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+      - name: Prettier
+        run: |
+          npx prettier --check "**.md"
+
+  test:
+    name: Test
+    strategy:
+      fail-fast: false
+      matrix:
+        runs-on:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        id: rust-toolchain
+        with:
+          toolchain: stable
+          override: true
+      - name: Cache Cargo
+        uses: actions/cache@v2
+        with:
+          path: ~/.cargo
+          key: cargo-test-${{ matrix.runs-on }}-${{ steps.rust-toolchain.outputs.rustc_hash }}-${{ hashFiles('Cargo.lock') }}
+      - name: Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+      - name: Run C example
+        if: |
+          matrix.runs-on == 'ubuntu-latest'
+        run: |
+          cc \
+            -o target/debug/sql \
+            examples/sql.c \
+            -Iinclude \
+            -Ltarget/debug \
+            -Wl,--rpath=target/debug \
+            -ldatafusion
+          target/debug/sql
+      - uses: actions/setup-python@v3
+        if: |
+          matrix.runs-on == 'ubuntu-latest'
+        with:
+          python-version: "3.x"
+      - name: Run Python example
+        if: |
+          matrix.runs-on == 'ubuntu-latest'
+        run: |
+          LD_LIBRARY_PATH=$PWD/target/debug examples/sql.py
+      - uses: ruby/setup-ruby@v1
+        if: |
+          matrix.runs-on == 'ubuntu-latest'
+        with:
+          ruby-version: "3.1"
+      - name: Run Ruby example
+        if: |
+          matrix.runs-on == 'ubuntu-latest'
+        run: |
+          LD_LIBRARY_PATH=$PWD/target/debug examples/sql.rb
