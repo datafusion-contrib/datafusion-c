@@ -23,6 +23,7 @@ use std::sync::Arc;
 
 use datafusion::dataframe::DataFrame;
 use datafusion::execution::context::SessionContext;
+use datafusion::execution::options::CsvReadOptions;
 
 #[repr(C)]
 pub struct DFError {
@@ -154,6 +155,30 @@ pub extern "C" fn df_session_context_new() -> *mut SessionContext {
 #[no_mangle]
 pub unsafe extern "C" fn df_session_context_free(context: *mut SessionContext) {
     Box::from_raw(context);
+}
+
+/// Register a CSV file with the session context and return the data
+/// as a data frame.
+#[no_mangle]
+#[allow(clippy::not_unsafe_ptr_arg_deref)]
+pub extern "C" fn df_session_context_read_csv(
+    context: *mut SessionContext,
+    url: *const libc::c_char,
+    error: *mut *mut DFError,
+) -> *mut DFDataFrame {
+    let cstr_url = unsafe { CStr::from_ptr(url) };
+    let maybe_rs_url = cstr_url.to_str().into_df_error(error, None);
+    let rs_url = match maybe_rs_url {
+        Some(rs_url) => rs_url,
+        None => return std::ptr::null_mut(),
+    };
+    let result =
+        block_on(unsafe { (*context).read_csv(rs_url, CsvReadOptions::default()) });
+    let maybe_data_frame = result.into_df_error(error, None);
+    match maybe_data_frame {
+        Some(data_frame) => Box::into_raw(Box::new(DFDataFrame::new(data_frame))),
+        None => std::ptr::null_mut(),
+    }
 }
 
 #[no_mangle]
