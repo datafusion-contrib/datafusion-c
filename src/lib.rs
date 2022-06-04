@@ -46,7 +46,7 @@ pub extern "C" fn df_error_new(code: u32, message: *const libc::c_char) -> *mut 
 /// # Safety
 ///
 /// This function should not be called with `error` that is not
-/// created by `df_errro_new()`.
+/// created by `df_error_new()`.
 ///
 /// This function should not be called for the same `error` multiple
 /// times.
@@ -59,7 +59,7 @@ pub unsafe extern "C" fn df_error_free(error: *mut DFError) {
 /// # Safety
 ///
 /// This function should not be called with `error` that is not
-/// created by `df_errro_new()`.
+/// created by `df_error_new()`.
 ///
 /// This function should not be called with `error` that is freed by
 /// `df_error_free()`.
