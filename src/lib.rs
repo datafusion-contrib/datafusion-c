@@ -164,6 +164,7 @@ pub unsafe extern "C" fn df_session_context_free(context: *mut SessionContext) {
 pub extern "C" fn df_session_context_read_csv(
     context: *mut SessionContext,
     url: *const libc::c_char,
+    options: *const DFCSVReadOptions,
     error: *mut *mut DFError,
 ) -> *mut DFDataFrame {
     let cstr_url = unsafe { CStr::from_ptr(url) };
