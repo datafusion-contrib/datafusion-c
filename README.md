@@ -21,32 +21,27 @@
 
 C language bindings for DataFusion.
 
-## Examples
+## How to build
 
-### How to run
-
-Build `libdatafusion.so`:
+### Without GLib API
 
 ```bash
 cargo build
 ```
 
-C example:
+### With GLib API
 
 ```bash
-cc \
-  -o target/debug/sql \
-  -I datafusion/c/include \
-  datafusion/c/examples/sql.c \
-  -L target/debug \
-  -Wl,--rpath=target/debug \
-  -ldatafusion
-target/debug/sql
+meson setup build .
+meson install -C build
 ```
 
-Output:
+#### Examples
 
-```text
+See `examples/sql.c` for C.
+
+```console
+$ build/examples/sql-c
 +----------+
 | Int64(1) |
 +----------+
@@ -54,15 +49,10 @@ Output:
 +----------+
 ```
 
-Python example:
+See `examples/sql.py` for Python.
 
-```bash
-LD_LIBRARY_PATH=$PWD/target/debug datafusion/c/examples/sql.py
-```
-
-Output:
-
-```text
+```console
+$ LD_LIBRARY_PATH=$PWD/build examples/sql.py
 +----------+
 | Int64(1) |
 +----------+
@@ -70,15 +60,24 @@ Output:
 +----------+
 ```
 
-Ruby example:
+See `examples/sql.rb` for Ruby.
 
-```bash
-LD_LIBRARY_PATH=$PWD/target/debug datafusion/c/examples/sql.rb
+```console
+$ LD_LIBRARY_PATH=$PWD/build examples/sql.rb
++----------+
+| Int64(1) |
++----------+
+| 1        |
++----------+
 ```
 
-Output:
+See `examples/sql.vala` for Vala.
 
-```text
+You need to add `-Dvala=true` option to `meson setup` to enable Vala
+support.
+
+```console
+$ build/examples/sql-vala
 +----------+
 | Int64(1) |
 +----------+

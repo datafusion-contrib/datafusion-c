@@ -19,13 +19,31 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #ifdef  __cplusplus
 extern "C" {
 #endif
 
+typedef enum {
+  DF_ERROR_ARROW,
+  DF_ERROR_PARQUET,
+  DF_ERROR_AVRO,
+  DF_ERROR_IO,
+  DF_ERROR_SQL,
+  DF_ERROR_NOT_IMPLEMENTED,
+  DF_ERROR_INTERNAL,
+  DF_ERROR_PLAN,
+  DF_ERROR_SCHEMA,
+  DF_ERROR_EXECUTION,
+  DF_ERROR_RESOURCES_EXHAUSTED,
+  DF_ERROR_EXTERNAL,
+  DF_ERROR_JIT,
+} DFErrorCode;
 
 typedef struct DFError_ DFError;
 extern void df_error_free(DFError *error);
+extern DFErrorCode df_error_get_code(DFError *error);
 extern const char *df_error_get_message(DFError *error);
 
 

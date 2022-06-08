@@ -93,49 +93,93 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        if: |
+          matrix.runs-on != 'windows-latest'
+        with:
+          python-version: '3.x'
+      - uses: ruby/setup-ruby@v1
+        if: |
+          matrix.runs-on != 'windows-latest'
+        with:
+          ruby-version: "3.1"
+          bundler-cache: true
       - uses: actions-rs/toolchain@v1
         id: rust-toolchain
         with:
-          toolchain: stable
+          # For cargo's --out-dir option
+          # toolchain: stable
+          toolchain: nightly
           override: true
       - name: Cache Cargo
         uses: actions/cache@v2
         with:
           path: ~/.cargo
           key: cargo-test-${{ matrix.runs-on }}-${{ steps.rust-toolchain.outputs.rustc_hash }}-${{ hashFiles('Cargo.lock') }}
-      - name: Build
+      - name: Prepare on Ubuntu
+        if: |
+          matrix.runs-on == 'ubuntu-latest'
+        run: |
+          pip install meson
+          sudo apt update
+          sudo apt install -y -V \
+            gtk-doc-tools \
+            libgirepository1.0-dev \
+            ninja-build \
+            valac
+          echo "LD_LIBRARY_PATH=${PWD}/build:${LD_LIBRARY_PATH}" >> ${GITHUB_ENV}
+      - name: Prepare on macOS
+        if: |
+          matrix.runs-on == 'macos-latest'
+        run: |
+          brew update --preinstall
+          brew bundle --file=Brewfile
+      # - name: Prepare on Windows
+      #   if: |
+      #     matrix.runs-on == 'windows-latest'
+      #   run: |
+      #     pip install meson
+      - name: Setup on non-Windows
+        if: |
+          matrix.runs-on != 'windows-latest'
+        run: |
+          meson setup -Ddoc=true -Dvala=true -Dwerror=true build .
+      - name: Build on non-Windows
+        if: |
+          matrix.runs-on != 'windows-latest'
+        run: |
+          ninja -C build
+      - name: Build on Windows
+        if: |
+          matrix.runs-on == 'windows-latest'
         uses: actions-rs/cargo@v1
         with:
           command: build
+      - name: Test
+        if: |
+          matrix.runs-on != 'windows-latest'
+        run: |
+          cd build
+          bundle exec ../test/run.sh
       - name: Run C example
         if: |
-          matrix.runs-on == 'ubuntu-latest'
+          matrix.runs-on != 'windows-latest'
         run: |
-          cc \
-            -o target/debug/sql \
-            examples/sql.c \
-            -Iinclude \
-            -Ltarget/debug \
-            -Wl,--rpath=target/debug \
-            -ldatafusion
-          target/debug/sql
-      - uses: actions/setup-python@v3
+          build/examples/sql-c
+      - name: Run Vala example
         if: |
-          matrix.runs-on == 'ubuntu-latest'
-        with:
-          python-version: "3.x"
+          matrix.runs-on != 'windows-latest'
+        run: |
+          build/examples/sql-vala
       - name: Run Python example
         if: |
-          matrix.runs-on == 'ubuntu-latest'
+          matrix.runs-on != 'windows-latest'
         run: |
-          LD_LIBRARY_PATH=$PWD/target/debug examples/sql.py
-      - uses: ruby/setup-ruby@v1
-        if: |
-          matrix.runs-on == 'ubuntu-latest'
-        with:
-          ruby-version: "3.1"
+          cd build
+          ../examples/sql.py
       - name: Run Ruby example
         if: |
-          matrix.runs-on == 'ubuntu-latest'
+          matrix.runs-on != 'windows-latest'
         run: |
-          LD_LIBRARY_PATH=$PWD/target/debug examples/sql.rb
+          cd build
+          ../examples/sql.rb
