@@ -21,24 +21,25 @@ use std::ffi::CString;
 use std::future::Future;
 use std::sync::Arc;
 
+use datafusion::common::DataFusionError;
 use datafusion::dataframe::DataFrame;
 use datafusion::execution::context::SessionContext;
 
 #[repr(C)]
 pub struct DFError {
-    code: u32,
+    code: i32,
     message: *mut libc::c_char,
 }
 
 impl DFError {
-    pub fn new(code: u32, message: *mut libc::c_char) -> Self {
+    pub fn new(code: i32, message: *mut libc::c_char) -> Self {
         Self { code, message }
     }
 }
 
 #[no_mangle]
 #[allow(clippy::not_unsafe_ptr_arg_deref)]
-pub extern "C" fn df_error_new(code: u32, message: *const libc::c_char) -> *mut DFError {
+pub extern "C" fn df_error_new(code: i32, message: *const libc::c_char) -> *mut DFError {
     let error = DFError::new(code, unsafe { libc::strdup(message) });
     Box::into_raw(Box::new(error))
 }
@@ -70,6 +71,18 @@ pub unsafe extern "C" fn df_error_get_message(
     (*error).message
 }
 
+/// # Safety
+///
+/// This function should not be called with `error` that is not
+/// created by `df_error_new()`.
+///
+/// This function should not be called with `error` that is freed by
+/// `df_error_free()`.
+#[no_mangle]
+pub unsafe extern "C" fn df_error_get_code(error: *mut DFError) -> i32 {
+    (*error).code
+}
+
 trait IntoDFError {
     type Value;
     fn into_df_error(
@@ -79,7 +92,39 @@ trait IntoDFError {
     ) -> Option<Self::Value>;
 }
 
-impl<V, E: std::fmt::Display> IntoDFError for Result<V, E> {
+#[allow(clippy::upper_case_acronyms)]
+enum DFErrorCode {
+    Arrow,
+    Parquet,
+    #[allow(dead_code)]
+    Avro,
+    IO,
+    SQL,
+    NotImplemented,
+    Internal,
+    Plan,
+    Schema,
+    Execution,
+    ResourcesExhausted,
+    External,
+    #[allow(dead_code)]
+    JIT,
+}
+
+fn df_error_set(error: *mut *mut DFError, code: i32, message: &str) {
+    if error.is_null() {
+        return;
+    }
+    let c_string_message = match CString::new(message) {
+        Ok(c_string_message) => c_string_message,
+        Err(_) => return,
+    };
+    unsafe {
+        *error = df_error_new(code, c_string_message.as_ptr());
+    };
+}
+
+impl<V> IntoDFError for Result<V, DataFusionError> {
     type Value = V;
     fn into_df_error(
         self,
@@ -89,15 +134,43 @@ impl<V, E: std::fmt::Display> IntoDFError for Result<V, E> {
         match self {
             Ok(value) => Some(value),
             Err(e) => {
-                if !error.is_null() {
-                    let c_string_message = match CString::new(format!("{}", e)) {
-                        Ok(c_string_message) => c_string_message,
-                        Err(_) => return error_value,
-                    };
-                    unsafe {
-                        *error = df_error_new(1, c_string_message.as_ptr());
-                    };
-                }
+                let code = match e {
+                    DataFusionError::ArrowError(_) => DFErrorCode::Arrow,
+                    DataFusionError::ParquetError(_) => DFErrorCode::Parquet,
+                    #[cfg(feature = "avro")]
+                    DataFusionError::AvroError(_) => DFErrorCode::Avro,
+                    DataFusionError::IoError(_) => DFErrorCode::IO,
+                    DataFusionError::SQL(_) => DFErrorCode::SQL,
+                    DataFusionError::NotImplemented(_) => DFErrorCode::NotImplemented,
+                    DataFusionError::Internal(_) => DFErrorCode::Internal,
+                    DataFusionError::Plan(_) => DFErrorCode::Plan,
+                    DataFusionError::SchemaError(_) => DFErrorCode::Schema,
+                    DataFusionError::Execution(_) => DFErrorCode::Execution,
+                    DataFusionError::ResourcesExhausted(_) => {
+                        DFErrorCode::ResourcesExhausted
+                    }
+                    DataFusionError::External(_) => DFErrorCode::External,
+                    #[cfg(feature = "jit")]
+                    DataFusionError::JITError(_) => DFErrorCode::JIT,
+                };
+                df_error_set(error, code as i32, &e.to_string());
+                error_value
+            }
+        }
+    }
+}
+
+impl<V> IntoDFError for Result<V, std::str::Utf8Error> {
+    type Value = V;
+    fn into_df_error(
+        self,
+        error: *mut *mut DFError,
+        error_value: Option<Self::Value>,
+    ) -> Option<Self::Value> {
+        match self {
+            Ok(value) => Some(value),
+            Err(e) => {
+                df_error_set(error, DFErrorCode::External as i32, &e.to_string());
                 error_value
             }
         }

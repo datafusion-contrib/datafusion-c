@@ -18,8 +18,18 @@
 # under the License.
 
 import ctypes
+import ctypes.util
 
-datafusion = ctypes.CDLL('libdatafusion.so')
+datafusion_so_path = ctypes.util.find_library('datafusion')
+if datafusion_so_path is None:
+    import sys
+    if sys.platform == 'darwin':
+        datafusion_so_path = 'libdatafusion.dylib'
+    elif sys.platform == 'win32':
+        datafusion_so_path = 'datafusion.dll'
+    else:
+        datafusion_so_path = 'libdatafusion.so'
+datafusion = ctypes.CDLL(datafusion_so_path)
 
 datafusion.df_error_free.argtypes = [ctypes.c_void_p]
 datafusion.df_error_free.restype = None

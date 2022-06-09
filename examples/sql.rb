@@ -17,12 +17,19 @@
 # specific language governing permissions and limitations
 # under the License.
 
+require "rbconfig"
 require "fiddle/import"
 
 module DataFusion
   extend Fiddle::Importer
 
-  dlload "libdatafusion.so"
+  ext = RbConfig::CONFIG["SOEXT"]
+  if /mingw|mswin/.match?(RUBY_PLATFORM)
+    prefix = ""
+  else
+    prefix = "lib"
+  end
+  dlload "#{prefix}datafusion.#{ext}"
 
   typealias "DFError *", "void *"
   extern "void df_error_free(DFError *error)"
