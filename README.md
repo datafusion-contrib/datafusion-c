@@ -23,6 +23,12 @@ C language bindings for DataFusion.
 
 ## How to build
 
+Install dependencies:
+
+```bash
+cargo install cargo-c
+```
+
 ### Without GLib API
 
 ```bash

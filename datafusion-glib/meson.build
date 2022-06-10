@@ -50,7 +50,7 @@ enums = gnome.mkenums('enums',
                       symbol_prefix: 'gdf',
                       c_template: 'enums.c.template',
                       h_template: 'enums.h.template',
-                      install_dir: join_paths(include_dir, 'datafusion-glib'),
+                      install_dir: include_dir / 'datafusion-glib',
                       install_header: true)
 enums_source = enums[0]
 enums_header = enums[1]
@@ -80,7 +80,7 @@ pkgconfig.generate(libdatafusion_glib,
                    filebase: 'datafusion-glib',
                    name: 'DataFusion GLib',
                    requires: ['gobject-2.0', 'datafusion'],
-                   version: meson.project_version())
+                   version: version)
 
 if have_gi
   datafusion_glib_gir = \
