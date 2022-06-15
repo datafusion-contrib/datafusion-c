@@ -23,36 +23,36 @@ entities_conf.set('PACKAGE_BUGREPORT',
                   'https://github.com/datafusion-contrib/datafusion-c/issues')
 entities_conf.set('PACKAGE_NAME', package_name)
 entities_conf.set('PACKAGE_STRING',
-                  ' '.join([package_name, meson.project_version()]))
+                  ' '.join([package_name, version]))
 entities_conf.set('PACKAGE_URL',
                   'https://github.com/datafusion-contrib/datafusion-c')
-entities_conf.set('PACKAGE_VERSION', meson.project_version())
+entities_conf.set('PACKAGE_VERSION', version)
 configure_file(input: 'entities.xml.in',
                output: 'entities.xml',
                configuration: entities_conf)
 
 glib_prefix = dependency('glib-2.0').get_pkgconfig_variable('prefix')
-glib_doc_path = join_paths(glib_prefix, 'share', 'gtk-doc', 'html')
-doc_path = join_paths(data_dir, 'gtk-doc', 'html', package_id)
+glib_doc_path = glib_prefix / 'share' / 'gtk-doc' / 'html'
+doc_path = data_dir / 'gtk-doc' / 'html' / package_id
 
 dependencies = [
   datafusion_glib,
 ]
 html_images = []
 ignore_headers = [
-  join_paths(meson.source_root(), 'datafusion-glib', 'data-frame-raw.h'),
-  join_paths(meson.source_root(), 'datafusion-glib', 'session-context-raw.h'),
+  meson.source_root() / 'datafusion-glib' / 'data-frame-raw.h',
+  meson.source_root() / 'datafusion-glib' / 'session-context-raw.h',
 ]
 source_directories = [
-  join_paths(meson.source_root(), package_id),
-  join_paths(meson.build_root(), package_id),
+  meson.source_root() / package_id,
+  meson.build_root() / package_id,
 ]
 gnome.gtkdoc(package_id,
              dependencies: dependencies,
              fixxref_args: [
                '--html-dir=' + doc_path,
-               '--extra-dir=' + join_paths(glib_doc_path, 'glib'),
-               '--extra-dir=' + join_paths(glib_doc_path, 'gobject'),
+               '--extra-dir=' + (glib_doc_path / 'glib'),
+               '--extra-dir=' + (glib_doc_path / 'gobject'),
              ],
              gobject_typesfile: package_id + '.types',
              html_assets: html_images,

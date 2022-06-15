@@ -15,29 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
-executable('sql-c', 'sql.c',
-           dependencies: [datafusion])
+language = "C"
 
-if generate_vapi
-  vala_example_executable_kwargs = {
-    'c_args': [
-      '-I' + meson.build_root(),
-      '-I' + meson.source_root(),
-    ],
-    'dependencies': [
-      datafusion_glib_vapi,
-      dependency('gio-2.0'),
-    ],
-    'vala_args': [
-      '--pkg', 'posix',
-    ],
-  }
-  executable('sql-vala', 'sql.vala',
-             kwargs: vala_example_executable_kwargs)
-endif
-
-install_data('sql.c',
-             'sql.py',
-             'sql.rb',
-             'sql.vala',
-             install_dir: data_dir / meson.project_name() / 'example')
+pragma_once = true

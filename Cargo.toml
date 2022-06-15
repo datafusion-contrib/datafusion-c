@@ -18,7 +18,7 @@
 [package]
 name = "datafusion-c"
 description = "DataFusion C API"
-version = "1.0.0"
+version = "8.0.0"
 homepage = "https://github.com/datafusion-contrib/datafusion-c"
 repository = "https://github.com/datafusion-contrib/datafusion-c"
 readme = "README.md"
@@ -36,10 +36,13 @@ crate-type = ["cdylib"]
 name = "datafusion"
 
 [features]
-default = []
+default = ["capi"]
+capi = []
 
 [dependencies]
 datafusion = "8"
 libc = "0.2"
 tokio = "1"
-# { version = "1.0" , features = ["macros", "rt", "rt-multi-thread", "sync", "fs", "parking_lot"] }
+
+[package.metadata.capi.header]
+subdirectory = false

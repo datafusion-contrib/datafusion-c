@@ -56,9 +56,9 @@ jobs:
       - uses: actions-rs/toolchain@v1
         id: rust-toolchain
         with:
-          toolchain: stable
-          override: true
           components: rustfmt, clippy
+          override: true
+          toolchain: stable
       - name: Cache Cargo
         uses: actions/cache@v3
         with:
@@ -107,15 +107,18 @@ jobs:
       - uses: actions-rs/toolchain@v1
         id: rust-toolchain
         with:
-          # For cargo's --out-dir option
-          # toolchain: stable
-          toolchain: nightly
           override: true
+          toolchain: stable
       - name: Cache Cargo
         uses: actions/cache@v2
         with:
           path: ~/.cargo
           key: cargo-test-${{ matrix.runs-on }}-${{ steps.rust-toolchain.outputs.rustc_hash }}-${{ hashFiles('Cargo.lock') }}
+      - name: Install cargo-c
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: cargo-c
       - name: Prepare on Ubuntu
         if: |
           matrix.runs-on == 'ubuntu-latest'
@@ -140,46 +143,78 @@ jobs:
       #   run: |
       #     pip install meson
       - name: Setup on non-Windows
+        # Enable this once https://github.com/mesonbuild/meson/pull/10476
+        # is fixed.
+        # if: |
+        #   matrix.runs-on != 'windows-latest'
         if: |
-          matrix.runs-on != 'windows-latest'
+          matrix.runs-on == 'ubuntu-latest'
         run: |
           meson setup -Ddoc=true -Dvala=true -Dwerror=true build .
       - name: Build on non-Windows
+        # Enable this once https://github.com/mesonbuild/meson/pull/10476
+        # is fixed.
+        # if: |
+        #   matrix.runs-on != 'windows-latest'
         if: |
-          matrix.runs-on != 'windows-latest'
+          matrix.runs-on == 'ubuntu-latest'
         run: |
           ninja -C build
       - name: Build on Windows
+        # Enable this once https://github.com/mesonbuild/meson/pull/10476
+        # is fixed.
+        # if: |
+        #   matrix.runs-on == 'windows-latest'
         if: |
-          matrix.runs-on == 'windows-latest'
+          matrix.runs-on == 'windows-latest' || matrix.runs-on == 'macos-latest'
         uses: actions-rs/cargo@v1
         with:
-          command: build
+          command: cbuild
       - name: Test
+        # Enable this once https://github.com/mesonbuild/meson/pull/10476
+        # is fixed.
+        # if: |
+        #   matrix.runs-on != 'windows-latest'
         if: |
-          matrix.runs-on != 'windows-latest'
+          matrix.runs-on == 'ubuntu-latest'
         run: |
           cd build
           bundle exec ../test/run.sh
       - name: Run C example
+        # Enable this once https://github.com/mesonbuild/meson/pull/10476
+        # is fixed.
+        # if: |
+        #   matrix.runs-on != 'windows-latest'
         if: |
-          matrix.runs-on != 'windows-latest'
+          matrix.runs-on == 'ubuntu-latest'
         run: |
           build/examples/sql-c
       - name: Run Vala example
+        # Enable this once https://github.com/mesonbuild/meson/pull/10476
+        # is fixed.
+        # if: |
+        #   matrix.runs-on != 'windows-latest'
         if: |
-          matrix.runs-on != 'windows-latest'
+          matrix.runs-on == 'ubuntu-latest'
         run: |
           build/examples/sql-vala
       - name: Run Python example
+        # Enable this once https://github.com/mesonbuild/meson/pull/10476
+        # is fixed.
+        # if: |
+        #   matrix.runs-on != 'windows-latest'
         if: |
-          matrix.runs-on != 'windows-latest'
+          matrix.runs-on == 'ubuntu-latest'
         run: |
           cd build
           ../examples/sql.py
       - name: Run Ruby example
+        # Enable this once https://github.com/mesonbuild/meson/pull/10476
+        # is fixed.
+        # if: |
+        #   matrix.runs-on != 'windows-latest'
         if: |
-          matrix.runs-on != 'windows-latest'
+          matrix.runs-on == 'ubuntu-latest'
         run: |
           cd build
           ../examples/sql.rb
