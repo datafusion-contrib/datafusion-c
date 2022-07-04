@@ -21,7 +21,34 @@ class SessionContextTest < Test::Unit::TestCase
   end
 
   def test_sql
-    notify("TODO: Assert content not class")
-    assert_instance_of(DataFusion::DataFrame, @context.sql("SELECT 1"))
+    notify("TODO: Use Arrow::Table once ARROW-16931 is released.")
+    assert_equal(<<-TABLE, @context.sql("SELECT 1").to_table.to_s)
+	Int64(1)
+0	       1
+                 TABLE
+  end
+
+  def test_register_record_batch
+    record_batch = Arrow::RecordBatch.new(boolean: [true, false, nil],
+                                          integer: [1, nil, 3])
+    @context.register_record_batch("data", record_batch)
+    data_frame = @context.sql("SELECT * FROM data")
+    assert_equal(record_batch.to_table, data_frame.to_table)
+  end
+
+  def test_register_table
+    boolean_chunks = [
+      Arrow::Array.new([true]),
+      Arrow::Array.new([false, nil]),
+    ]
+    integer_chunks = [
+      Arrow::Array.new([1, nil]),
+      Arrow::Array.new([3]),
+    ]
+    table = Arrow::Table.new(boolean: Arrow::ChunkedArray.new(boolean_chunks),
+                             integer: Arrow::ChunkedArray.new(integer_chunks))
+    @context.register_table("data", table)
+    data_frame = @context.sql("SELECT * FROM data")
+    assert_equal(table, data_frame.to_table)
   end
 end

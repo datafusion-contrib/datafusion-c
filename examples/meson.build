@@ -26,10 +26,12 @@ if generate_vapi
     ],
     'dependencies': [
       datafusion_glib_vapi,
-      dependency('gio-2.0'),
+      arrow_glib,
+      gobject,
     ],
     'vala_args': [
       '--pkg', 'posix',
+      '--vapidir', arrow_glib.get_variable('vapidir'),
     ],
   }
   executable('sql-vala', 'sql.vala',

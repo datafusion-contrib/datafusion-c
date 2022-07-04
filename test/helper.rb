@@ -17,6 +17,7 @@
 
 require "test-unit"
 
+require "arrow"
 require "gi"
 
 DataFusion = GI.load("DataFusion")

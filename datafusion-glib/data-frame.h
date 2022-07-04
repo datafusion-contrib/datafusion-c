@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <arrow-glib/arrow-glib.h>
 #include <datafusion-glib/error.h>
 
 G_BEGIN_DECLS
@@ -37,5 +38,9 @@ struct _GDFDataFrameClass
 GDF_AVAILABLE_IN_8_0
 gboolean
 gdf_data_frame_show(GDFDataFrame *data_frame, GError **error);
+GDF_AVAILABLE_IN_8_0
+GArrowTable *
+gdf_data_frame_to_table(GDFDataFrame *data_frame, GError **error);
+
 
 G_END_DECLS

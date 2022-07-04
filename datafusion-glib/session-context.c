@@ -31,6 +31,7 @@ G_BEGIN_DECLS
 
 typedef struct GDFSessionContextPrivate_ {
   DFSessionContext *context;
+  GHashTable *registered_record_batches;
 } GDFSessionContextPrivate;
 
 enum {
@@ -48,6 +49,18 @@ gdf_session_context_finalize(GObject *object)
     gdf_session_context_get_instance_private(GDF_SESSION_CONTEXT(object));
   df_session_context_free(priv->context);
   G_OBJECT_CLASS(gdf_session_context_parent_class)->finalize(object);
+}
+
+static void
+gdf_session_context_dispose(GObject *object)
+{
+  GDFSessionContextPrivate *priv =
+    gdf_session_context_get_instance_private(GDF_SESSION_CONTEXT(object));
+  if (priv->registered_record_batches) {
+    g_hash_table_unref(priv->registered_record_batches);
+    priv->registered_record_batches = NULL;
+  }
+  G_OBJECT_CLASS(gdf_session_context_parent_class)->dispose(object);
 }
 
 static void
@@ -70,8 +83,22 @@ gdf_session_context_set_property(GObject *object,
 }
 
 static void
+gdf_session_context_registered_record_batches_value_destroy(gpointer data)
+{
+  GList *record_batches = data;
+  g_list_free_full(record_batches, g_object_unref);
+}
+
+static void
 gdf_session_context_init(GDFSessionContext *object)
 {
+  GDFSessionContextPrivate *priv =
+    gdf_session_context_get_instance_private(object);
+  priv->registered_record_batches =
+    g_hash_table_new_full(g_str_hash,
+                          g_str_equal,
+                          g_free,
+                          gdf_session_context_registered_record_batches_value_destroy);
 }
 
 static void
@@ -79,6 +106,7 @@ gdf_session_context_class_init(GDFSessionContextClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
   gobject_class->finalize = gdf_session_context_finalize;
+  gobject_class->dispose = gdf_session_context_dispose;
   gobject_class->set_property = gdf_session_context_set_property;
 
   GParamSpec *spec;
@@ -134,6 +162,180 @@ gdf_session_context_sql(GDFSessionContext *context,
   } else {
     return gdf_data_frame_new_raw(data_frame);
   }
+}
+
+static void
+df_arrow_schema_release(DFArrowSchema *schema)
+{
+  if (schema && schema->release) {
+    schema->release(schema);
+  }
+}
+
+static void
+df_arrow_array_release(DFArrowArray *array)
+{
+  if (array && array->release) {
+    array->release(array);
+  }
+}
+
+static void
+df_arrow_array_release_destroy(gpointer array)
+{
+  df_arrow_array_release(array);
+}
+
+/**
+ * gdf_session_context_register_record_batch:
+ * @context: A #GDFSessionContext.
+ * @name: A name for the record batch in the context.
+ * @record_batch: A record batch to be registered.
+ * @error: (nullable): Return location for a #GError or %NULL.
+ *
+ * Returns: %TRUE on success, %FALSE otherwise.
+ *
+ * Since: 8.0.0
+ */
+gboolean
+gdf_session_context_register_record_batch(GDFSessionContext *context,
+                                          const gchar *name,
+                                          GArrowRecordBatch *record_batch,
+                                          GError **error)
+{
+  GDFSessionContextPrivate *priv =
+    gdf_session_context_get_instance_private(context);
+  gpointer c_abi_array = NULL;
+  gpointer c_abi_schema = NULL;
+  if (!garrow_record_batch_export(record_batch,
+                                  &c_abi_array,
+                                  &c_abi_schema,
+                                  error)) {
+    return false;
+  }
+  DFError *df_error = NULL;
+  bool success =
+    df_session_context_register_record_batches(priv->context,
+                                               name,
+                                               c_abi_schema,
+                                               (DFArrowArray **)&c_abi_array,
+                                               1,
+                                               &df_error);
+  if (df_error) {
+    g_set_error(error,
+                GDF_ERROR,
+                df_error_get_code(df_error),
+                "[session-context][register-record-batch] %s",
+                df_error_get_message(df_error));
+    df_error_free(df_error);
+    df_arrow_schema_release(c_abi_schema);
+    df_arrow_array_release(c_abi_array);
+  } else {
+    /* TODO: Remove this on unregister */
+    g_hash_table_insert(priv->registered_record_batches,
+                        g_strdup(name),
+                        g_list_prepend(NULL, g_object_ref(record_batch)));
+  }
+  return success;
+}
+
+/**
+ * gdf_session_context_register_table:
+ * @context: A #GDFSessionContext.
+ * @name: A name for the record batch in the context.
+ * @table: A table to be registered.
+ * @error: (nullable): Return location for a #GError or %NULL.
+ *
+ * Returns: %TRUE on success, %FALSE otherwise.
+ *
+ * Since: 8.0.0
+ */
+gboolean
+gdf_session_context_register_table(GDFSessionContext *context,
+                                   const gchar *name,
+                                   GArrowTable *table,
+                                   GError **error)
+{
+  const gchar *tag = "[session-context][register-table]";
+  GDFSessionContextPrivate *priv =
+      gdf_session_context_get_instance_private(context);
+
+  bool success = false;
+  GArrowTableBatchReader *reader = garrow_table_batch_reader_new(table);
+  if (!reader) {
+    g_set_error(error,
+                GDF_ERROR,
+                GDF_ERROR_ARROW,
+                "%s failed to create table to record batches converter",
+                tag);
+    return false;
+  }
+  GPtrArray *c_abi_arrays = g_ptr_array_new();
+  g_ptr_array_set_free_func(c_abi_arrays, df_arrow_array_release_destroy);
+  GList *record_batches = NULL;
+  while (true) {
+    GError *read_error = NULL;
+    GArrowRecordBatch *record_batch =
+      garrow_record_batch_reader_read_next(GARROW_RECORD_BATCH_READER(reader),
+                                           &read_error);
+    if (record_batch) {
+      record_batches = g_list_prepend(record_batches, record_batch);
+    }
+    if (read_error) {
+      g_propagate_error(error, read_error);
+      goto exit;
+    }
+    if (!record_batch) {
+      break;
+    }
+    gpointer c_abi_array = NULL;
+    if (!garrow_record_batch_export(record_batch, &c_abi_array, NULL, error)) {
+      goto exit;
+    }
+    g_ptr_array_add(c_abi_arrays, c_abi_array);
+  }
+  g_object_unref(reader);
+  reader = NULL;
+
+  GArrowSchema *schema = garrow_table_get_schema(table);
+  gpointer c_abi_schema = garrow_schema_export(schema, error);
+  if (!c_abi_schema) {
+    goto exit;
+  }
+
+  DFError *df_error = NULL;
+  success = df_session_context_register_record_batches(
+    priv->context,
+    name,
+    c_abi_schema,
+    (DFArrowArray **)(c_abi_arrays->pdata),
+    c_abi_arrays->len,
+    &df_error);
+  if (df_error) {
+    g_set_error(error,
+                GDF_ERROR,
+                df_error_get_code(df_error),
+                "%s %s",
+                tag,
+                df_error_get_message(df_error));
+    df_error_free(df_error);
+    df_arrow_schema_release(c_abi_schema);
+  } else {
+    g_ptr_array_set_free_func(c_abi_arrays, NULL);
+    /* TODO: Remove this on unregister */
+    g_hash_table_insert(priv->registered_record_batches,
+                        g_strdup(name),
+                        record_batches);
+    record_batches = NULL;
+  }
+
+exit:
+  g_ptr_array_free(c_abi_arrays, TRUE);
+  g_list_free_full(record_batches, g_object_unref);
+  if (reader) {
+    g_object_unref(reader);
+  }
+  return success;
 }
 
 GDFSessionContext *

@@ -42,26 +42,12 @@ full_include_dir = prefix / include_dir
 full_lib_dir = prefix / lib_dir
 full_pkg_config_dir = prefix / pkg_config_dir
 
-rustc_cfg_result = run_command(find_program('rustc'), '--print=cfg',
-                               capture: true,
-                               check: true)
-rustc_configs = {}
-foreach rustc_config : rustc_cfg_result.stdout().split()
-  if not rustc_config.startswith('target_')
-    continue
-  endif
-  split_rustc_config = rustc_config.split('=')
-  name = split_rustc_config[0]
-  value = split_rustc_config[1]
-  rustc_configs += {name : value.substring(1, -1)}
-endforeach
+fs = import('fs')
+rustc_target_libdir = run_command(find_program('rustc'), '--print=target-libdir',
+                                  capture: true,
+                                  check: true)
+libdatafusion_output_base_dir = fs.name(fs.parent(rustc_target_libdir.stdout()))
 build_type = get_option('buildtype')
-libdatafusion_output_base_dir = '@0@-@1@-@2@-@3@'.format(
-  rustc_configs['target_arch'],
-  rustc_configs['target_vendor'],
-  rustc_configs['target_os'],
-  rustc_configs['target_env'],
-)
 libdatafusion_output_dir = libdatafusion_output_base_dir / build_type
 if build_machine.system() == 'darwin'
   libdatafusion_so_path = 'libdatafusion.dylib'
@@ -86,20 +72,45 @@ libdatafusion_install_dir = [
   false,
 ]
 if libdatafusion_so_path.endswith('.so')
+  libdatafusion_so_version_path = \
+    '@0@.@1@'.format(libdatafusion_so_path, version)
+  libdatafusion_so_version_major_path = \
+    '@0@.@1@'.format(libdatafusion_so_path, version_major)
   libdatafusion_output += [
-    '@0@.@1@'.format(libdatafusion_so_path, version),
-    '@0@.@1@'.format(libdatafusion_so_path, version_major),
+    libdatafusion_so_version_path,
+    libdatafusion_so_version_major_path,
   ]
   libdatafusion_install_dir += [
     lib_dir,
     false,
   ]
-  install_symlink('@0@.@1@'.format(libdatafusion_so_path, version_major),
+  install_symlink(libdatafusion_so_version_major_path,
                   install_dir: lib_dir,
-                  pointing_to: '@0@.@1@'.format(libdatafusion_so_path, version))
+                  pointing_to: libdatafusion_so_version_path)
   install_symlink(libdatafusion_so_path,
                   install_dir: lib_dir,
-                  pointing_to: '@0@.@1@'.format(libdatafusion_so_path, version_major))
+                  pointing_to: libdatafusion_so_version_major_path)
+  cbuild_libdir = '${exec_prefix}' / lib_dir
+elif libdatafusion_so_path.endswith('.dylib')
+  libdatafusion_so_base_path = fs.replace_suffix(libdatafusion_so_path, '')
+  libdatafusion_so_version_major_path = \
+    '@0@.@1@.dylib'.format(libdatafusion_so_base_path, version_major)
+  libdatafusion_output = [
+    libdatafusion_so_version_major_path,
+    libdatafusion_output[1],
+    libdatafusion_output[2],
+    libdatafusion_output[3],
+    libdatafusion_so_path,
+  ]
+  libdatafusion_install_dir += [
+    false,
+  ]
+  install_symlink(libdatafusion_so_path,
+                  install_dir: lib_dir,
+                  pointing_to: libdatafusion_so_version_major_path)
+  cbuild_libdir = prefix / lib_dir
+else
+  cbuild_libdir = prefix / lib_dir
 endif
 libdatafusion_command = [
   find_program('python3'),
@@ -113,7 +124,7 @@ libdatafusion_command = [
   'cbuild',
   '--color', 'always',
   '--includedir', '${prefix}/@0@'.format(include_dir),
-  '--libdir', '${exec_prefix}/@0@'.format(lib_dir),
+  '--libdir', cbuild_libdir,
   '--manifest-path', '@INPUT0@',
   '--prefix', prefix,
   '--target-dir','@OUTDIR@',
@@ -132,8 +143,6 @@ libdatafusion = custom_target('libdatafusion',
                               install: true,
                               install_dir: libdatafusion_install_dir,
                               output: libdatafusion_output)
-# This doesn't work on macOS because of a Meson bug.
-# See also: https://github.com/mesonbuild/meson/pull/10476
 libdatafusion_so = libdatafusion[0]
 datafusion_h = libdatafusion[1]
 datafusion_pc = libdatafusion[2]
@@ -141,7 +150,8 @@ datafusion = declare_dependency(link_with: [libdatafusion_so],
                                 sources: [datafusion_h])
 
 have_gi = dependency('gobject-introspection-1.0', required: false).found()
-generate_vapi = have_gi and get_option('vala')
+arrow_glib = dependency('arrow-glib')
+generate_vapi = have_gi and get_option('vapi')
 if generate_vapi
   add_languages('vala')
 endif

@@ -20,7 +20,7 @@ option('doc',
        value: false,
        description: 'Build document')
 
-option('vala',
+option('vapi',
        type: 'boolean',
        value: false,
        description: 'Build Vala API')

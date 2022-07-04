@@ -17,6 +17,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
+brew "apache-arrow-glib"
 brew "gobject-introspection"
 brew "gtk-doc"
 brew "meson"

@@ -59,9 +59,11 @@ enums_header = enums[1]
 install_headers(headers + raw_headers, subdir: 'datafusion-glib')
 
 
+gobject = dependency('gobject-2.0')
 dependencies = [
   datafusion,
-  dependency('gobject-2.0'),
+  arrow_glib,
+  gobject,
 ]
 libdatafusion_glib = library('datafusion-glib',
                              dependencies: dependencies,
@@ -79,12 +81,13 @@ pkgconfig.generate(libdatafusion_glib,
                    description: 'GLib API for DataFusion',
                    filebase: 'datafusion-glib',
                    name: 'DataFusion GLib',
-                   requires: ['gobject-2.0', 'datafusion'],
+                   requires: ['datafusion', 'arrow-glib', 'gobject-2.0'],
                    version: version)
 
 if have_gi
   datafusion_glib_gir = \
     gnome.generate_gir(libdatafusion_glib,
+                       dependencies: dependencies,
                        export_packages: 'datafusion-glib',
                        extra_args: [
                          '--warn-all',
@@ -92,6 +95,7 @@ if have_gi
                        header: 'datafusion-glib/datafusion-glib.h',
                        identifier_prefix: 'GDF',
                        includes: [
+                         'Arrow-1.0',
                          'GObject-2.0',
                        ],
                        install: true,
@@ -103,8 +107,14 @@ if have_gi
   if generate_vapi
     datafusion_glib_vapi = \
       gnome.generate_vapi('datafusion-glib',
+                          gir_dirs: [
+                            arrow_glib.get_variable('girdir'),
+                          ],
                           install: true,
-                          packages: ['gobject-2.0'],
-                          sources: [datafusion_glib_gir[0]])
+                          packages: ['arrow-glib', 'gobject-2.0'],
+                          sources: [datafusion_glib_gir[0]],
+                          vapi_dirs: [
+                            arrow_glib.get_variable('vapidir'),
+                          ])
   endif
 endif

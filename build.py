@@ -19,6 +19,7 @@
 
 import argparse
 import os
+import pathlib
 import platform
 import shutil
 import subprocess
@@ -63,6 +64,20 @@ if platform.system() == 'Linux':
           f'{shared_object_base}.{version_major}')
     ln_fs(f'{shared_object_base}.{version_major}',
           f'{shared_object_base}')
+elif platform.system() == 'Darwin':
+    version_major = args.version.split('.')[0]
+    suffix = pathlib.PurePath(shared_object_base).suffix
+    shared_object_base = pathlib.PurePath(shared_object_base).with_suffix('')
+    shutil.copy2(args.shared_object,
+                 f'{shared_object_base}.{version_major}{suffix}')
+    def ln_fs(src, dest):
+        try:
+            os.remove(dest)
+        except FileNotFoundError:
+            pass
+        os.symlink(src, dest)
+    ln_fs(f'{shared_object_base}.{version_major}{suffix}',
+          f'{shared_object_base}{suffix}')
 else:
     shutil.copy2(args.shared_object, '.')
 
