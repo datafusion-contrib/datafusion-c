@@ -21,8 +21,11 @@ class DataFrameTest < Test::Unit::TestCase
     @data_frame = context.sql("SELECT 1")
   end
 
-  def test_show
-    notify("TODO: Remove this and test other methods")
-    @data_frame.show
+  def test_to_table
+    notify("TODO: Use Arrow::Table once ARROW-16931 is released.")
+    assert_equal(<<-TABLE, @data_frame.to_table.to_s)
+	Int64(1)
+0	       1
+                 TABLE
   end
 end

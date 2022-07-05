@@ -19,5 +19,5 @@
 
 source "https://rubygems.org/"
 
-gem "gobject-introspection"
+gem "red-arrow"
 gem "test-unit"

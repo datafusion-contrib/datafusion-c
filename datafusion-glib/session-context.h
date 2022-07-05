@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <arrow-glib/arrow-glib.h>
 #include <datafusion-glib/data-frame.h>
 
 G_BEGIN_DECLS
@@ -38,8 +39,21 @@ GDF_AVAILABLE_IN_8_0
 GDFSessionContext *
 gdf_session_context_new(void);
 GDF_AVAILABLE_IN_8_0
-GDFDataFrame *gdf_session_context_sql(GDFSessionContext *context,
-                                      const gchar *sql,
-                                      GError **error);
+GDFDataFrame *
+gdf_session_context_sql(GDFSessionContext *context,
+                        const gchar *sql,
+                        GError **error);
+GDF_AVAILABLE_IN_8_0
+gboolean
+gdf_session_context_register_record_batch(GDFSessionContext *context,
+                                          const gchar *name,
+                                          GArrowRecordBatch *record_batch,
+                                          GError **error);
+GDF_AVAILABLE_IN_8_0
+gboolean
+gdf_session_context_register_table(GDFSessionContext *context,
+                                   const gchar *name,
+                                   GArrowTable *table,
+                                   GError **error);
 
 G_END_DECLS

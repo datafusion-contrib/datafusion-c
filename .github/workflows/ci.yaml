@@ -93,11 +93,45 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v4
         if: |
           matrix.runs-on != 'windows-latest'
         with:
           python-version: '3.x'
+      - name: Prepare on Ubuntu
+        if: |
+          matrix.runs-on == 'ubuntu-latest'
+        run: |
+          sudo apt update
+          sudo apt install -y -V \
+            ca-certificates \
+            lsb-release \
+            wget
+          wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
+          sudo apt install -y -V \
+            ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
+          sudo apt update
+          sudo apt install -y -V \
+            gtk-doc-tools \
+            libarrow-glib-dev \
+            libgirepository1.0-dev \
+            ninja-build \
+            valac
+          pip install meson
+          echo "LD_LIBRARY_PATH=${PWD}/build:${HOME}/local/lib:${LD_LIBRARY_PATH}" >> ${GITHUB_ENV}
+      - name: Prepare on macOS
+        if: |
+          matrix.runs-on == 'macos-latest'
+        run: |
+          brew update --preinstall
+          brew bundle --file=Brewfile
+          echo "DYLD_LIBRARY_PATH=${PWD}/build:${HOME}/local/lib:${DYLD_LIBRARY_PATH}" >> ${GITHUB_ENV}
+          echo "XML_CATALOG_FILES=$(brew --prefix)/etc/xml/catalog" >> ${GITHUB_ENV}
+      # - name: Prepare on Windows
+      #   if: |
+      #     matrix.runs-on == 'windows-latest'
+      #   run: |
+      #     pip install meson
       - uses: ruby/setup-ruby@v1
         if: |
           matrix.runs-on != 'windows-latest'
@@ -113,108 +147,67 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cargo
-          key: cargo-test-${{ matrix.runs-on }}-${{ steps.rust-toolchain.outputs.rustc_hash }}-${{ hashFiles('Cargo.lock') }}
+          key: cargo-test-${{ matrix.runs-on }}-${{ steps.rust-toolchain.outputs.rustc_hash }}-${{ hashFiles('**/Cargo.toml') }}
       - name: Install cargo-c
         uses: actions-rs/cargo@v1
         with:
           command: install
           args: cargo-c
-      - name: Prepare on Ubuntu
-        if: |
-          matrix.runs-on == 'ubuntu-latest'
-        run: |
-          pip install meson
-          sudo apt update
-          sudo apt install -y -V \
-            gtk-doc-tools \
-            libgirepository1.0-dev \
-            ninja-build \
-            valac
-          echo "LD_LIBRARY_PATH=${PWD}/build:${LD_LIBRARY_PATH}" >> ${GITHUB_ENV}
-      - name: Prepare on macOS
-        if: |
-          matrix.runs-on == 'macos-latest'
-        run: |
-          brew update --preinstall
-          brew bundle --file=Brewfile
-      # - name: Prepare on Windows
-      #   if: |
-      #     matrix.runs-on == 'windows-latest'
-      #   run: |
-      #     pip install meson
       - name: Setup on non-Windows
-        # Enable this once https://github.com/mesonbuild/meson/pull/10476
-        # is fixed.
-        # if: |
-        #   matrix.runs-on != 'windows-latest'
         if: |
-          matrix.runs-on == 'ubuntu-latest'
+          matrix.runs-on != 'windows-latest'
+        # Enable -Dvapi=true and -Dwerror=true after Apache Arrow GLib
+        # 9.0.0 is released.
         run: |
-          meson setup -Ddoc=true -Dvala=true -Dwerror=true build .
+          meson setup \
+            --prefix=${HOME}/local \
+            -Ddoc=true \
+            -Dvapi=false \
+            -Dwerror=false \
+            build \
+            .
       - name: Build on non-Windows
-        # Enable this once https://github.com/mesonbuild/meson/pull/10476
-        # is fixed.
-        # if: |
-        #   matrix.runs-on != 'windows-latest'
         if: |
-          matrix.runs-on == 'ubuntu-latest'
+          matrix.runs-on != 'windows-latest'
         run: |
           ninja -C build
       - name: Build on Windows
-        # Enable this once https://github.com/mesonbuild/meson/pull/10476
-        # is fixed.
-        # if: |
-        #   matrix.runs-on == 'windows-latest'
         if: |
-          matrix.runs-on == 'windows-latest' || matrix.runs-on == 'macos-latest'
+          matrix.runs-on == 'windows-latest'
         uses: actions-rs/cargo@v1
         with:
           command: cbuild
       - name: Test
-        # Enable this once https://github.com/mesonbuild/meson/pull/10476
-        # is fixed.
-        # if: |
-        #   matrix.runs-on != 'windows-latest'
         if: |
-          matrix.runs-on == 'ubuntu-latest'
+          matrix.runs-on != 'windows-latest'
         run: |
           cd build
           bundle exec ../test/run.sh
-      - name: Run C example
-        # Enable this once https://github.com/mesonbuild/meson/pull/10476
-        # is fixed.
-        # if: |
-        #   matrix.runs-on != 'windows-latest'
+      - name: Install
         if: |
-          matrix.runs-on == 'ubuntu-latest'
+          matrix.runs-on != 'windows-latest'
+        run: |
+          ninja -C build install
+      - name: Run C example
+        if: |
+          matrix.runs-on != 'windows-latest'
         run: |
           build/examples/sql-c
-      - name: Run Vala example
-        # Enable this once https://github.com/mesonbuild/meson/pull/10476
-        # is fixed.
-        # if: |
-        #   matrix.runs-on != 'windows-latest'
-        if: |
-          matrix.runs-on == 'ubuntu-latest'
-        run: |
-          build/examples/sql-vala
+      # Enable this after Apache Arrow GLib 9.0.0 is released.
+      # - name: Run Vala example
+      #   if: |
+      #     matrix.runs-on != 'windows-latest'
+      #   run: |
+      #     build/examples/sql-vala
       - name: Run Python example
-        # Enable this once https://github.com/mesonbuild/meson/pull/10476
-        # is fixed.
-        # if: |
-        #   matrix.runs-on != 'windows-latest'
         if: |
-          matrix.runs-on == 'ubuntu-latest'
+          matrix.runs-on != 'windows-latest'
         run: |
           cd build
           ../examples/sql.py
       - name: Run Ruby example
-        # Enable this once https://github.com/mesonbuild/meson/pull/10476
-        # is fixed.
-        # if: |
-        #   matrix.runs-on != 'windows-latest'
         if: |
-          matrix.runs-on == 'ubuntu-latest'
+          matrix.runs-on != 'windows-latest'
         run: |
           cd build
           ../examples/sql.rb
