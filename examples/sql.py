@@ -53,6 +53,7 @@ context = datafusion.df_session_context_new()
 try:
     error = (ctypes.c_void_p * 1)()
     try:
+        
         data_frame = datafusion.df_session_context_sql(
             context, b'SELECT 1;', ctypes.pointer(error))
         if error[0] is not None:
