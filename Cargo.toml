@@ -18,7 +18,7 @@
 [package]
 name = "datafusion-c"
 description = "DataFusion C API"
-version = "8.0.0"
+version = "10.0.0"
 homepage = "https://github.com/datafusion-contrib/datafusion-c"
 repository = "https://github.com/datafusion-contrib/datafusion-c"
 readme = "README.md"
@@ -40,7 +40,7 @@ default = ["capi"]
 capi = []
 
 [dependencies]
-datafusion = "8"
+datafusion = "10"
 libc = "0.2"
 tokio = "1"
 

@@ -25,7 +25,7 @@
 
 G_BEGIN_DECLS
 
-GDF_AVAILABLE_IN_8_0
+GDF_AVAILABLE_IN_10_0
 GDFSessionContext *
 gdf_session_context_new_raw(DFSessionContext *raw_context);
 

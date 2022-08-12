@@ -18,6 +18,7 @@
 # under the License.
 
 brew "apache-arrow-glib"
+brew "glib-utils"
 brew "gobject-introspection"
 brew "gtk-doc"
 brew "meson"

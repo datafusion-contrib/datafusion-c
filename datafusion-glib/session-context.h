@@ -35,21 +35,21 @@ struct _GDFSessionContextClass
   GObjectClass parent_class;
 };
 
-GDF_AVAILABLE_IN_8_0
+GDF_AVAILABLE_IN_10_0
 GDFSessionContext *
 gdf_session_context_new(void);
-GDF_AVAILABLE_IN_8_0
+GDF_AVAILABLE_IN_10_0
 GDFDataFrame *
 gdf_session_context_sql(GDFSessionContext *context,
                         const gchar *sql,
                         GError **error);
-GDF_AVAILABLE_IN_8_0
+GDF_AVAILABLE_IN_10_0
 gboolean
 gdf_session_context_register_record_batch(GDFSessionContext *context,
                                           const gchar *name,
                                           GArrowRecordBatch *record_batch,
                                           GError **error);
-GDF_AVAILABLE_IN_8_0
+GDF_AVAILABLE_IN_10_0
 gboolean
 gdf_session_context_register_table(GDFSessionContext *context,
                                    const gchar *name,

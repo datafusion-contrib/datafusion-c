@@ -36,7 +36,7 @@
  *
  * The major version.
  *
- * Since: 8.0.0
+ * Since: 10.0.0
  */
 #define GDF_VERSION_MAJOR (@GDF_VERSION_MAJOR@)
 
@@ -45,7 +45,7 @@
  *
  * The minor version.
  *
- * Since: 8.0.0
+ * Since: 10.0.0
  */
 #define GDF_VERSION_MINOR (@GDF_VERSION_MINOR@)
 
@@ -54,7 +54,7 @@
  *
  * The micro version.
  *
- * Since: 8.0.0
+ * Since: 10.0.0
  */
 #define GDF_VERSION_MICRO (@GDF_VERSION_MICRO@)
 
@@ -69,7 +69,7 @@
  * Returns: %TRUE if the compile time DataFusion GLib version is the
  *   same as or newer than the passed version, %FALSE otherwise.
  *
- * Since: 8.0.0
+ * Since: 10.0.0
  */
 #define GDF_VERSION_CHECK(major, minor, micro)          \
   (GDF_VERSION_MAJOR > (major) ||                       \
@@ -87,7 +87,7 @@
  * You must define this macro before including the
  * arrow-glib/arrow-glib.h header.
  *
- * Since: 8.0.0
+ * Since: 10.0.0
  */
 
 #ifdef GDF_DISABLE_DEPRECATION_WARNINGS
@@ -101,13 +101,13 @@
 #endif
 
 /**
- * GDF_VERSION_8_0:
+ * GDF_VERSION_10_0:
  *
  * You can use this macro value for compile time API version check.
  *
- * Since: 8.0.0
+ * Since: 10.0.0
  */
-#define GDF_VERSION_8_0 G_ENCODE_VERSION(8, 0)
+#define GDF_VERSION_10_0 G_ENCODE_VERSION(8, 0)
 
 /**
  * GDF_VERSION_MIN_REQUIRED:
@@ -115,7 +115,7 @@
  * You can use this macro for compile time API version check.
  *
  * This macro value must be one of the predefined version macros such
- * as %GDF_VERSION_8_0.
+ * as %GDF_VERSION_10_0.
  *
  * If you use any functions that is defined by newer version than
  * %GDF_VERSION_MIN_REQUIRED, deprecated warnings are produced at
@@ -124,7 +124,7 @@
  * You must define this macro before including the
  * datafusion-glib/datafusion-glib.h header.
  *
- * Since: 8.0.0
+ * Since: 10.0.0
  */
 #ifndef GDF_VERSION_MIN_REQUIRED
 #  define GDF_VERSION_MIN_REQUIRED                              \
@@ -137,7 +137,7 @@
  * You can use this macro for compile time API version check.
  *
  * This macro value must be one of the predefined version macros such
- * as %GDF_VERSION_8_0.
+ * as %GDF_VERSION_10_0.
  *
  * If you use any functions that is defined by newer version than
  * %GDF_VERSION_MAX_ALLOWED, deprecated warnings are produced at
@@ -146,7 +146,7 @@
  * You must define this macro before including the
  * datafusion-glib/datafusion-glib.h header.
  *
- * Since: 8.0.0
+ * Since: 10.0.0
  */
 #ifndef GDF_VERSION_MAX_ALLOWED
 #  define GDF_VERSION_MAX_ALLOWED                               \
@@ -156,16 +156,16 @@
 
 #define GDF_AVAILABLE_IN_ALL
 
-#if GDF_VERSION_MIN_REQUIRED >= GDF_VERSION_8_0
-#  define GDF_DEPRECATED_IN_8_0                GDF_DEPRECATED
-#  define GDF_DEPRECATED_IN_8_0_FOR(function)  GDF_DEPRECATED_FOR(function)
+#if GDF_VERSION_MIN_REQUIRED >= GDF_VERSION_10_0
+#  define GDF_DEPRECATED_IN_10_0                GDF_DEPRECATED
+#  define GDF_DEPRECATED_IN_10_0_FOR(function)  GDF_DEPRECATED_FOR(function)
 #else
-#  define GDF_DEPRECATED_IN_8_0
-#  define GDF_DEPRECATED_IN_8_0_FOR(function)
+#  define GDF_DEPRECATED_IN_10_0
+#  define GDF_DEPRECATED_IN_10_0_FOR(function)
 #endif
 
-#if GDF_VERSION_MAX_ALLOWED < GDF_VERSION_8_0
-#  define GDF_AVAILABLE_IN_8_0 GDF_UNAVAILABLE(8, 0)
+#if GDF_VERSION_MAX_ALLOWED < GDF_VERSION_10_0
+#  define GDF_AVAILABLE_IN_10_0 GDF_UNAVAILABLE(8, 0)
 #else
-#  define GDF_AVAILABLE_IN_8_0
+#  define GDF_AVAILABLE_IN_10_0
 #endif

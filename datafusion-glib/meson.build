@@ -44,14 +44,12 @@ version_h = configure_file(input: 'version.h.in',
 headers += version_h
 
 gnome = import('gnome')
-enums = gnome.mkenums('enums',
-                      sources: headers,
-                      identifier_prefix: 'GDF',
-                      symbol_prefix: 'gdf',
-                      c_template: 'enums.c.template',
-                      h_template: 'enums.h.template',
-                      install_dir: include_dir / 'datafusion-glib',
-                      install_header: true)
+enums = gnome.mkenums_simple('enums',
+                             identifier_prefix: 'GDF',
+                             install_dir: include_dir / 'datafusion-glib',
+                             install_header: true,
+                             sources: headers,
+                             symbol_prefix: 'gdf')
 enums_source = enums[0]
 enums_header = enums[1]
 
