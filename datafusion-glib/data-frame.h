@@ -20,7 +20,8 @@
 #pragma once
 
 #include <arrow-glib/arrow-glib.h>
-#include <datafusion-glib/error.h>
+
+#include <datafusion-glib/version.h>
 
 G_BEGIN_DECLS
 

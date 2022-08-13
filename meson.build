@@ -168,3 +168,31 @@ test('unit test',
      env: [
        'BUILD=no'
      ])
+
+custom_target('format',
+              command: [
+                find_program('cargo'),
+                'fmt',
+                '--all',
+                '--manifest-path', '@INPUT0@',
+              ],
+              input: ['Cargo.toml'],
+              # This file never generated. We can use this as a Ninja target:
+              #   $ ninja format
+              output: ['format'])
+
+custom_target('clippy',
+              command: [
+                find_program('cargo'),
+                'clippy',
+                '--all-features',
+                '--all-targets',
+                '--manifest-path', '@INPUT0@',
+                '--',
+                '-D', 'clippy::all',
+                '-D', 'warnings',
+              ],
+              input: ['Cargo.toml'],
+              # This file never generated. We can use this as a Ninja target:
+              #   $ ninja clippy
+              output: ['clippy'])

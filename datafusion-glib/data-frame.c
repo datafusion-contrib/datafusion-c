@@ -18,6 +18,7 @@
  */
 
 #include <datafusion-glib/data-frame-raw.h>
+#include <datafusion-glib/error.h>
 
 G_BEGIN_DECLS
 

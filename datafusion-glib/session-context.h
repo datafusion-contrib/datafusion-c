@@ -20,6 +20,7 @@
 #pragma once
 
 #include <arrow-glib/arrow-glib.h>
+
 #include <datafusion-glib/data-frame.h>
 
 G_BEGIN_DECLS
@@ -55,5 +56,14 @@ gdf_session_context_register_table(GDFSessionContext *context,
                                    const gchar *name,
                                    GArrowTable *table,
                                    GError **error);
+
+GDF_AVAILABLE_IN_10_0
+gboolean
+gdf_session_context_register_csv(GDFSessionContext *context,
+                                 const gchar *name,
+                                 const gchar *path,
+                                 GDFCSVReadOptions *options,
+                                 GError **error);
+
 
 G_END_DECLS

@@ -19,5 +19,6 @@
 
 #pragma once
 
+#include <datafusion-glib/csv-read-options-raw.h>
 #include <datafusion-glib/data-frame-raw.h>
 #include <datafusion-glib/session-context-raw.h>
