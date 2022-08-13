@@ -122,7 +122,7 @@ gdf_session_context_class_init(GDFSessionContextClass *klass)
  *
  * Returns: A new session context.
  *
- * Since: 8.0.0
+ * Since: 10.0.0
  */
 GDFSessionContext *
 gdf_session_context_new(void)
@@ -139,7 +139,7 @@ gdf_session_context_new(void)
  * Returns: (transfer full) (nullable): The executed result as
  *   #GDFDataFrame, %NULL on error.
  *
- * Since: 8.0.0
+ * Since: 10.0.0
  */
 GDFDataFrame *
 gdf_session_context_sql(GDFSessionContext *context,
@@ -195,7 +195,7 @@ df_arrow_array_release_destroy(gpointer array)
  *
  * Returns: %TRUE on success, %FALSE otherwise.
  *
- * Since: 8.0.0
+ * Since: 10.0.0
  */
 gboolean
 gdf_session_context_register_record_batch(GDFSessionContext *context,
@@ -248,7 +248,7 @@ gdf_session_context_register_record_batch(GDFSessionContext *context,
  *
  * Returns: %TRUE on success, %FALSE otherwise.
  *
- * Since: 8.0.0
+ * Since: 10.0.0
  */
 gboolean
 gdf_session_context_register_table(GDFSessionContext *context,

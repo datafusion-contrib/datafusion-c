@@ -45,6 +45,7 @@ pub enum DFErrorCode {
     Parquet,
     #[allow(dead_code)]
     Avro,
+    ObjectStore,
     IO,
     SQL,
     NotImplemented,
@@ -170,6 +171,7 @@ impl<V> IntoDFError for Result<V, DataFusionError> {
                     DataFusionError::ParquetError(_) => DFErrorCode::Parquet,
                     #[cfg(feature = "avro")]
                     DataFusionError::AvroError(_) => DFErrorCode::Avro,
+                    DataFusionError::ObjectStore(_) => DFErrorCode::ObjectStore,
                     DataFusionError::IoError(_) => DFErrorCode::IO,
                     DataFusionError::SQL(_) => DFErrorCode::SQL,
                     DataFusionError::NotImplemented(_) => DFErrorCode::NotImplemented,

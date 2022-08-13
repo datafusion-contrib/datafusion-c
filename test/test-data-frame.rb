@@ -22,10 +22,8 @@ class DataFrameTest < Test::Unit::TestCase
   end
 
   def test_to_table
-    notify("TODO: Use Arrow::Table once ARROW-16931 is released.")
-    assert_equal(<<-TABLE, @data_frame.to_table.to_s)
-	Int64(1)
-0	       1
-                 TABLE
+    schema = Arrow::Schema.new([Arrow::Field.new("Int64(1)", :int64, false)])
+    assert_equal(Arrow::Table.new(schema, [Arrow::Int64Array.new([1])]),
+                 @data_frame.to_table)
   end
 end

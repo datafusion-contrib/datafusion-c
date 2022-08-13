@@ -20,7 +20,7 @@ project('datafusion-c', 'rust', 'c',
           'c_std=c99',
         ],
         license: 'Apache-2.0',
-        version: '8.0.0')
+        version: '10.0.0')
 
 version = meson.project_version()
 version_numbers = version.split('.')

@@ -25,7 +25,7 @@
 
 G_BEGIN_DECLS
 
-GDF_AVAILABLE_IN_8_0
+GDF_AVAILABLE_IN_10_0
 GDFDataFrame *
 gdf_data_frame_new_raw(DFDataFrame *raw_data_frame);
 

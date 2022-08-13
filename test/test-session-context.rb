@@ -21,11 +21,9 @@ class SessionContextTest < Test::Unit::TestCase
   end
 
   def test_sql
-    notify("TODO: Use Arrow::Table once ARROW-16931 is released.")
-    assert_equal(<<-TABLE, @context.sql("SELECT 1").to_table.to_s)
-	Int64(1)
-0	       1
-                 TABLE
+    schema = Arrow::Schema.new([Arrow::Field.new("Int64(1)", :int64, false)])
+    assert_equal(Arrow::Table.new(schema, [Arrow::Int64Array.new([1])]),
+                 @context.sql("SELECT 1").to_table)
   end
 
   def test_register_record_batch

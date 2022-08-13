@@ -95,7 +95,7 @@ gdf_data_frame_class_init(GDFDataFrameClass *klass)
  *
  * Shows @data_frame content to standard output.
  *
- * Since: 8.0.0
+ * Since: 10.0.0
  */
 gboolean
 gdf_data_frame_show(GDFDataFrame *data_frame, GError **error)
@@ -123,7 +123,7 @@ gdf_data_frame_show(GDFDataFrame *data_frame, GError **error)
  *
  * Returns: (transfer full): A #GArrowTable of this data frame, %NULL on error.
  *
- * Since: 8.0.0
+ * Since: 10.0.0
  */
 GArrowTable *
 gdf_data_frame_to_table(GDFDataFrame *data_frame, GError **error)

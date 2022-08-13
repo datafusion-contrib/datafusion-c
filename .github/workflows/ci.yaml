@@ -156,14 +156,12 @@ jobs:
       - name: Setup on non-Windows
         if: |
           matrix.runs-on != 'windows-latest'
-        # Enable -Dvapi=true and -Dwerror=true after Apache Arrow GLib
-        # 9.0.0 is released.
         run: |
           meson setup \
             --prefix=${HOME}/local \
             -Ddoc=true \
-            -Dvapi=false \
-            -Dwerror=false \
+            -Dvapi=${{ matrix.runs-on == 'ubuntu-latest' }} \
+            -Dwerror=true \
             build \
             .
       - name: Build on non-Windows
@@ -193,12 +191,11 @@ jobs:
           matrix.runs-on != 'windows-latest'
         run: |
           build/examples/sql-c
-      # Enable this after Apache Arrow GLib 9.0.0 is released.
-      # - name: Run Vala example
-      #   if: |
-      #     matrix.runs-on != 'windows-latest'
-      #   run: |
-      #     build/examples/sql-vala
+      - name: Run Vala example
+        if: |
+          matrix.runs-on == 'ubuntu-latest'
+        run: |
+          build/examples/sql-vala
       - name: Run Python example
         if: |
           matrix.runs-on != 'windows-latest'
