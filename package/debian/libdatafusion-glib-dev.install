@@ -1,0 +1,8 @@
+usr/include/datafusion-glib/
+usr/lib/*/cmake/datafusion-glib/
+usr/lib/*/libdatafusion-glib.a
+usr/lib/*/libdatafusion-glib.so
+usr/lib/*/pkgconfig/datafusion-glib.pc
+usr/share/datafusion-glib/example/
+usr/share/gir-1.0/DataFusion-*.gir
+usr/share/vala/vapi/datafusion-glib.*

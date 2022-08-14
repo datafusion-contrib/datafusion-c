@@ -1,0 +1,143 @@
+# -*- sh-shell: rpm -*-
+#
+# Copyright 2022 Sutou Kouhei <kou@clear-code.com>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# TODO: Enable debug package
+%define debug_package %{nil}
+
+%define major_version %(echo @VERSION@ | grep -o '^[0-9]*')
+
+Name:		@PACKAGE@
+Version:	@VERSION@
+Release:	@RELEASE@%{?dist}
+Summary:	DataFusion C is C API for DataFusion
+
+License:	Apache-2.0
+URL:		https://github.com/datafusion-contrib/datafusion-c
+Source0:	https://github.com/datafusion-contrib/datafusion-c/releases/download/%{version}/%{name}-%{version}.tar.gz
+
+BuildRequires:	gcc
+BuildRequires:	git
+BuildRequires:	gobject-introspection-devel
+BuildRequires:	gtk-doc
+BuildRequires:	ninja-build
+BuildRequires:	pkgconfig
+BuildRequires:	vala
+
+%description
+DataFusion C is C API for DataFusion.
+
+%prep
+%setup -q
+
+%build
+pip3 install meson
+meson setup build \
+  --buildtype=debugoptimized \
+  --default-library=both \
+  --libdir=%{_libdir} \
+  --prefix=%{_prefix} \
+  -Ddoc=true \
+  -Dvapi=true
+meson compile -C build %{?_smp_mflags}
+
+%install
+DESTDIR=%{buildroot} meson install -C build
+
+%package -n datafusion%{major_version}-libs
+Summary:	Runtime libraries for DataFusion C
+License:	Apache-2.0
+
+%description -n datafusion%{major_version}-libs
+This package contains the libraries for DataFusion C.
+
+%files -n datafusion%{major_version}-libs
+%defattr(-,root,root,-)
+%doc README.md
+%license LICENSE
+%{_libdir}/libdatafusion.so.*
+
+%package -n datafusion-devel
+Summary:	Libraries and header files for DataFusion C
+License:	Apache-2.0
+Requires:	datafusion%{major_version}-libs = %{version}-%{release}
+
+%description -n datafusion-devel
+Libraries and header files for DataFusion C.
+
+%files -n datafusion-devel
+%defattr(-,root,root,-)
+%doc README.md
+%license LICENSE
+%{_includedir}/datafusion.h
+%{_libdir}/cmake/datafusion/
+%{_libdir}/libdatafusion.so
+%{_libdir}/pkgconfig/datafusion.pc
+
+%package -n datafusion-glib%{major_version}-libs
+Summary:	Runtime libraries for DataFusion GLib
+License:	Apache-2.0
+Requires:	datafusion%{major_version}-libs = %{version}-%{release}
+Requires:	glib2
+
+%description -n datafusion-glib%{major_version}-libs
+This package contains the libraries for Data Fusion GLib.
+
+%files -n datafusion-glib%{major_version}-libs
+%defattr(-,root,root,-)
+%doc README.md
+%license LICENSE
+%{_libdir}/girepository-1.0/DataFusion-*.typelib
+%{_libdir}/libdatafusion-glib.so.*
+
+%package -n datafusion-glib-devel
+Summary:	Libraries and header files for DataFusion GLib
+License:	Apache-2.0
+Requires:	arrow-glib-devel
+Requires:	datafusion-devel = %{version}-%{release}
+Requires:	datafusion-glib%{major_version}-libs = %{version}-%{release}
+Requires:	glib2-devel
+Requires:	gobject-introspection-devel
+
+%description -n datafusion-glib-devel
+Libraries and header files for DataFusion GLib.
+
+%files -n datafusion-glib-devel
+%defattr(-,root,root,-)
+%doc README.md
+%license LICENSE
+%{_includedir}/datafusion-glib/
+%{_libdir}/cmake/datafusion-glib/
+%{_libdir}/libdatafusion-glib.a
+%{_libdir}/libdatafusion-glib.so
+%{_libdir}/pkgconfig/datafusion-glib.pc
+%{_datadir}/datafusion-glib/example/
+%{_datadir}/gir-1.0/DataFusion-*.gir
+%{_datadir}/vala/vapi/datafusion-glib.*
+
+%package -n datafusion-glib-doc
+Summary:	Documentation for DataFusion GLib
+License:	Apache-2.0
+
+%description -n datafusion-glib-doc
+Documentation for DataFusion GLib.
+
+%files -n datafusion-glib-doc
+%defattr(-,root,root,-)
+%doc README.md
+%license LICENSE
+%{_datadir}/gtk-doc/html/datafusion-glib/
+
+%changelog
