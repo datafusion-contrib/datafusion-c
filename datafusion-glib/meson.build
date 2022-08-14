@@ -16,12 +16,14 @@
 # under the License.
 
 sources = files(
+  'csv-read-options.c',
   'data-frame.c',
   'error.c',
   'session-context.c',
 )
 
 headers = files(
+  'csv-read-options.h',
   'data-frame.h',
   'datafusion-glib.h',
   'error.h',
@@ -29,6 +31,7 @@ headers = files(
 )
 
 raw_headers = files(
+  'csv-read-options-raw.h',
   'data-frame-raw.h',
   'datafusion-glib-raw.h',
   'session-context-raw.h',
@@ -90,6 +93,7 @@ if have_gi
                        extra_args: [
                          '--warn-all',
                        ],
+                       fatal_warnings: true,
                        header: 'datafusion-glib/datafusion-glib.h',
                        identifier_prefix: 'GDF',
                        includes: [

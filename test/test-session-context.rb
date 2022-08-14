@@ -29,7 +29,9 @@ class SessionContextTest < Test::Unit::TestCase
   def test_register_record_batch
     record_batch = Arrow::RecordBatch.new(boolean: [true, false, nil],
                                           integer: [1, nil, 3])
-    @context.register_record_batch("data", record_batch)
+    assert do
+      @context.register_record_batch("data", record_batch)
+    end
     data_frame = @context.sql("SELECT * FROM data")
     assert_equal(record_batch.to_table, data_frame.to_table)
   end
@@ -48,5 +50,61 @@ class SessionContextTest < Test::Unit::TestCase
     @context.register_table("data", table)
     data_frame = @context.sql("SELECT * FROM data")
     assert_equal(table, data_frame.to_table)
+  end
+
+  sub_test_case("#register_csv") do
+    def setup
+      super
+      Tempfile.open(["datafusion", ".csv"]) do |csv_file|
+        @csv_file = csv_file
+        @csv_file.puts(<<-CSV)
+a,b,c
+1,2,3
+10,20,30
+        CSV
+        @csv_file.close
+        schema = Arrow::Schema.new([
+                                     Arrow::Field.new("a", :int64, false),
+                                     Arrow::Field.new("b", :int64, false),
+                                     Arrow::Field.new("c", :int64, false),
+                                   ])
+        @table = Arrow::Table.new(schema,
+                                  [
+                                    Arrow::Int64Array.new([1, 10]),
+                                    Arrow::Int64Array.new([2, 20]),
+                                    Arrow::Int64Array.new([3, 30]),
+                                  ])
+        yield
+      end
+    end
+
+    def test_no_options
+      assert do
+        @context.register_csv("data", @csv_file.path)
+      end
+      data_frame = @context.sql("SELECT * FROM data")
+      assert_equal(@table, data_frame.to_table)
+    end
+
+    def test_options
+      options = DataFusion::CSVReadOptions.new
+      schema = Arrow::Schema.new([
+                                   Arrow::Field.new("a", :int8, false),
+                                   Arrow::Field.new("b", :int8, false),
+                                   Arrow::Field.new("c", :int8, false),
+                                 ])
+      table = Arrow::Table.new(schema,
+                               [
+                                 Arrow::Int8Array.new([1, 10]),
+                                 Arrow::Int8Array.new([2, 20]),
+                                 Arrow::Int8Array.new([3, 30]),
+                               ])
+      options.schema = schema
+      assert do
+        @context.register_csv("data", @csv_file.path, options)
+      end
+      data_frame = @context.sql("SELECT * FROM data")
+      assert_equal(table, data_frame.to_table)
+    end
   end
 end

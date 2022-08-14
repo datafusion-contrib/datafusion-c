@@ -20,7 +20,13 @@
 #pragma once
 
 #include <datafusion-glib/csv-read-options.h>
-#include <datafusion-glib/data-frame.h>
-#include <datafusion-glib/error.h>
-#include <datafusion-glib/session-context.h>
-#include <datafusion-glib/version.h>
+
+#include <datafusion.h>
+
+G_BEGIN_DECLS
+
+GDF_AVAILABLE_IN_10_0
+DFCSVReadOptions *
+gdf_csv_read_options_get_raw(GDFCSVReadOptions *context);
+
+G_END_DECLS

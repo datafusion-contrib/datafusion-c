@@ -34,6 +34,23 @@ use datafusion::common::DataFusionError;
 use datafusion::dataframe::DataFrame;
 use datafusion::datasource::MemTable;
 use datafusion::execution::context::SessionContext;
+use datafusion::execution::options::CsvReadOptions;
+
+fn strdup(rs_str: &str) -> *mut libc::c_char {
+    unsafe {
+        let c_str =
+            libc::malloc(std::mem::size_of::<*mut libc::c_char>() * rs_str.len() + 1)
+                as *mut libc::c_char;
+        std::ptr::copy_nonoverlapping(rs_str.as_ptr() as *const i8, c_str, rs_str.len());
+        let nul = "\0";
+        std::ptr::copy_nonoverlapping(
+            nul.as_ptr() as *const i8,
+            c_str.add(rs_str.len()),
+            nul.len(),
+        );
+        c_str
+    }
+}
 
 /// cbindgen:prefix-with-name
 /// cbindgen:rename-all=ScreamingSnakeCase
@@ -210,6 +227,23 @@ impl<V> IntoDFError for Result<V, std::str::Utf8Error> {
     }
 }
 
+impl<V> IntoDFError for Result<V, std::ffi::IntoStringError> {
+    type Value = V;
+    fn into_df_error(
+        self,
+        error: *mut *mut DFError,
+        error_value: Option<Self::Value>,
+    ) -> Option<Self::Value> {
+        match self {
+            Ok(value) => Some(value),
+            Err(e) => {
+                df_error_set(error, DFErrorCode::External, &e.to_string());
+                error_value
+            }
+        }
+    }
+}
+
 #[repr(C)]
 #[derive(Debug)]
 pub struct DFArrowSchema {
@@ -222,6 +256,13 @@ pub struct DFArrowSchema {
     dictionary: *mut DFArrowSchema,
     release: Option<unsafe extern "C" fn(schema: *mut DFArrowSchema)>,
     private_data: *mut libc::c_void,
+}
+
+impl From<FFI_ArrowSchema> for Box<DFArrowSchema> {
+    fn from(rs_ffi_schema: FFI_ArrowSchema) -> Self {
+        let rs_ffi_schema_ptr = Box::into_raw(Box::new(rs_ffi_schema));
+        unsafe { Box::from_raw(rs_ffi_schema_ptr as *mut DFArrowSchema) }
+    }
 }
 
 #[repr(C)]
@@ -410,6 +451,198 @@ pub extern "C" fn df_session_context_register_record_batches(
             .context
             .register_table(rs_name, rs_table)
             .into_df_error(error, None)?;
+        Some(true)
+    }();
+    option.unwrap_or(false)
+}
+
+pub struct DFCSVReadOptions<'a> {
+    options: CsvReadOptions<'a>,
+    schema: Option<Schema>,
+}
+
+impl<'a> DFCSVReadOptions<'a> {
+    pub fn new() -> Self {
+        let options = CsvReadOptions::default();
+        let schema = None;
+        Self { options, schema }
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn df_csv_read_options_new<'a>() -> Box<DFCSVReadOptions<'a>> {
+    Box::new(DFCSVReadOptions::new())
+}
+
+#[no_mangle]
+pub extern "C" fn df_csv_read_options_free(_options: Option<Box<DFCSVReadOptions>>) {}
+
+#[no_mangle]
+pub extern "C" fn df_csv_read_options_set_has_header(
+    options: &mut DFCSVReadOptions,
+    has_header: bool,
+) {
+    options.options.has_header = has_header;
+}
+
+#[no_mangle]
+pub extern "C" fn df_csv_read_options_get_has_header(
+    options: &mut DFCSVReadOptions,
+) -> bool {
+    options.options.has_header
+}
+
+#[no_mangle]
+pub extern "C" fn df_csv_read_options_set_delimiter(
+    options: &mut DFCSVReadOptions,
+    delimiter: u8,
+) {
+    options.options.delimiter = delimiter;
+}
+
+#[no_mangle]
+pub extern "C" fn df_csv_read_options_get_delimiter(
+    options: &mut DFCSVReadOptions,
+) -> u8 {
+    options.options.delimiter
+}
+
+#[no_mangle]
+pub extern "C" fn df_csv_read_options_set_schema<'a>(
+    options: &'a mut DFCSVReadOptions<'a>,
+    schema: Option<Box<DFArrowSchema>>,
+    error: *mut *mut DFError,
+) -> bool {
+    let option = || -> Option<bool> {
+        match schema {
+            Some(mut s) => {
+                let rs_ffi_schema =
+                    (s.as_mut() as *mut DFArrowSchema) as *mut FFI_ArrowSchema;
+                let rs_schema = Schema::try_from(unsafe { &*rs_ffi_schema })
+                    .into_df_error(error, None)?;
+                options.schema = Some(rs_schema);
+                options.options.schema = options.schema.as_ref();
+            }
+            None => {
+                options.schema = None;
+                options.options.schema = None;
+            }
+        };
+        Some(true)
+    }();
+    option.unwrap_or(false)
+}
+
+#[no_mangle]
+pub extern "C" fn df_csv_read_options_get_schema(
+    options: &mut DFCSVReadOptions,
+    error: *mut *mut DFError,
+) -> Option<Box<DFArrowSchema>> {
+    match options.options.schema {
+        Some(rs_schema) => {
+            let rs_ffi_schema =
+                FFI_ArrowSchema::try_from(rs_schema).into_df_error(error, None)?;
+            Some(Box::<DFArrowSchema>::from(rs_ffi_schema))
+        }
+        None => None,
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn df_csv_read_options_set_schema_infer_max_records(
+    options: &mut DFCSVReadOptions,
+    n: usize,
+) {
+    options.options.schema_infer_max_records = n;
+}
+
+#[no_mangle]
+pub extern "C" fn df_csv_read_options_get_schema_infer_max_records(
+    options: &mut DFCSVReadOptions,
+) -> usize {
+    options.options.schema_infer_max_records
+}
+
+#[no_mangle]
+pub extern "C" fn df_csv_read_options_set_file_extension(
+    options: &mut DFCSVReadOptions,
+    file_extension: *const libc::c_char,
+    error: *mut *mut DFError,
+) -> bool {
+    let option = || -> Option<bool> {
+        let cstr_file_extension = unsafe { CStr::from_ptr(file_extension) };
+        options.options.file_extension =
+            cstr_file_extension.to_str().into_df_error(error, None)?;
+        Some(true)
+    }();
+    option.unwrap_or(false)
+}
+
+#[no_mangle]
+pub extern "C" fn df_csv_read_options_get_file_extension(
+    options: &mut DFCSVReadOptions,
+) -> *mut libc::c_char {
+    strdup(options.options.file_extension)
+}
+
+#[no_mangle]
+pub extern "C" fn df_csv_read_options_set_table_partition_columns(
+    options: &mut DFCSVReadOptions,
+    columns: *const *const libc::c_char,
+    n_columns: usize,
+    error: *mut *mut DFError,
+) -> bool {
+    let option = || -> Option<bool> {
+        let columns_slice = unsafe { std::slice::from_raw_parts(columns, n_columns) };
+        let mut rs_columns = Vec::new();
+        for &column in columns_slice {
+            let cstr_column = CString::from(unsafe { CStr::from_ptr(column) });
+            rs_columns.push(cstr_column.into_string().into_df_error(error, None)?);
+        }
+        options.options.table_partition_cols = rs_columns;
+        Some(true)
+    }();
+    option.unwrap_or(false)
+}
+
+#[no_mangle]
+pub extern "C" fn df_csv_read_options_get_table_partition_columns(
+    options: &mut DFCSVReadOptions,
+    n_columns: *mut usize,
+) -> *mut *mut libc::c_char {
+    let n = options.options.table_partition_cols.len();
+    unsafe {
+        *n_columns = n;
+    };
+    let columns = unsafe { libc::malloc(std::mem::size_of::<*mut libc::c_char>() * n) }
+        as *mut *mut libc::c_char;
+    let columns_slice = unsafe { std::slice::from_raw_parts_mut(columns, n) };
+    for (i, column) in options.options.table_partition_cols.iter().enumerate() {
+        columns_slice[i] = strdup(column);
+    }
+    columns
+}
+
+#[no_mangle]
+#[allow(clippy::not_unsafe_ptr_arg_deref)]
+pub extern "C" fn df_session_context_register_csv(
+    context: &mut DFSessionContext,
+    name: *const libc::c_char,
+    path: *const libc::c_char,
+    options: Option<&mut DFCSVReadOptions>,
+    error: *mut *mut DFError,
+) -> bool {
+    let option = || -> Option<bool> {
+        let cstr_name = unsafe { CStr::from_ptr(name) };
+        let rs_name = cstr_name.to_str().into_df_error(error, None)?;
+        let cstr_path = unsafe { CStr::from_ptr(path) };
+        let rs_path = cstr_path.to_str().into_df_error(error, None)?;
+        let rs_options = match options {
+            Some(o) => o.options.clone(),
+            None => CsvReadOptions::default(),
+        };
+        let result = context.context.register_csv(rs_name, rs_path, rs_options);
+        block_on(result).into_df_error(error, None)?;
         Some(true)
     }();
     option.unwrap_or(false)
