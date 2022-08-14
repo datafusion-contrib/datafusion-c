@@ -36,6 +36,22 @@ use datafusion::datasource::MemTable;
 use datafusion::execution::context::SessionContext;
 use datafusion::execution::options::CsvReadOptions;
 
+fn strdup(rs_str: &str) -> *mut libc::c_char {
+    unsafe {
+        let c_str =
+            libc::malloc(std::mem::size_of::<*mut libc::c_char>() * rs_str.len() + 1)
+                as *mut libc::c_char;
+        std::ptr::copy_nonoverlapping(rs_str.as_ptr() as *const i8, c_str, rs_str.len());
+        let nul = "\0";
+        std::ptr::copy_nonoverlapping(
+            nul.as_ptr() as *const i8,
+            c_str.add(rs_str.len()),
+            nul.len(),
+        );
+        c_str
+    }
+}
+
 /// cbindgen:prefix-with-name
 /// cbindgen:rename-all=ScreamingSnakeCase
 #[repr(C)]
@@ -566,12 +582,7 @@ pub extern "C" fn df_csv_read_options_set_file_extension(
 pub extern "C" fn df_csv_read_options_get_file_extension(
     options: &mut DFCSVReadOptions,
 ) -> *mut libc::c_char {
-    unsafe {
-        libc::strndup(
-            options.options.file_extension.as_ptr() as *const i8,
-            options.options.file_extension.len(),
-        )
-    }
+    strdup(options.options.file_extension)
 }
 
 #[no_mangle]
@@ -607,8 +618,7 @@ pub extern "C" fn df_csv_read_options_get_table_partition_columns(
         as *mut *mut libc::c_char;
     let columns_slice = unsafe { std::slice::from_raw_parts_mut(columns, n) };
     for (i, column) in options.options.table_partition_cols.iter().enumerate() {
-        columns_slice[i] =
-            unsafe { libc::strndup(column.as_ptr() as *const i8, column.len()) };
+        columns_slice[i] = strdup(column);
     }
     columns
 }
