@@ -26,6 +26,24 @@ class SessionContextTest < Test::Unit::TestCase
                  @context.sql("SELECT 1").to_table)
   end
 
+  def test_deregister
+    record_batch = Arrow::RecordBatch.new(boolean: [true, false, nil],
+                                          integer: [1, nil, 3])
+    assert do
+      @context.register_record_batch("data", record_batch)
+    end
+    data_frame = @context.sql("SELECT * FROM data")
+    assert_equal(record_batch.to_table, data_frame.to_table)
+    assert do
+      @context.deregister("data")
+    end
+    message = "[session-context][sql] Error during planning: " +
+              "'datafusion.public.data' not found"
+    assert_raise(DataFusion::Error::Plan.new(message)) do
+      @context.sql("SELECT * FROM data")
+    end
+  end
+
   def test_register_record_batch
     record_batch = Arrow::RecordBatch.new(boolean: [true, false, nil],
                                           integer: [1, nil, 3])
