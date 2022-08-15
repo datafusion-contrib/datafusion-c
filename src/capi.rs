@@ -406,6 +406,25 @@ pub extern "C" fn df_session_context_sql(
 
 #[no_mangle]
 #[allow(clippy::not_unsafe_ptr_arg_deref)]
+pub extern "C" fn df_session_context_deregister(
+    context: &mut DFSessionContext,
+    name: *const libc::c_char,
+    error: *mut *mut DFError,
+) -> bool {
+    let option = || -> Option<bool> {
+        let cstr_name = unsafe { CStr::from_ptr(name) };
+        let rs_name = cstr_name.to_str().into_df_error(error, None)?;
+        context
+            .context
+            .deregister_table(rs_name)
+            .into_df_error(error, None)?;
+        Some(true)
+    }();
+    option.unwrap_or(false)
+}
+
+#[no_mangle]
+#[allow(clippy::not_unsafe_ptr_arg_deref)]
 pub extern "C" fn df_session_context_register_record_batches(
     context: &mut DFSessionContext,
     name: *const libc::c_char,

@@ -189,6 +189,41 @@ df_arrow_array_release_destroy(gpointer array)
 }
 
 /**
+ * gdf_session_context_deregister:
+ * @context: A #GDFSessionContext.
+ * @name: A name to be deregistered.
+ * @error: (nullable): Return location for a #GError or %NULL.
+ *
+ * Deregisters a registered table. If there isn't a registered table
+ * associated with @name, this function does nothing.
+ *
+ * Returns: %TRUE on success, %FALSE otherwise.
+ *
+ * Since: 10.0.0
+ */
+gboolean
+gdf_session_context_deregister(GDFSessionContext *context,
+                               const gchar *name,
+                               GError **error)
+{
+  GDFSessionContextPrivate *priv =
+    gdf_session_context_get_instance_private(context);
+  DFError *df_error = NULL;
+  bool success = df_session_context_deregister(priv->context, name, &df_error);
+  if (success) {
+    g_hash_table_remove(priv->registered_record_batches, name);
+  } else {
+    g_set_error(error,
+                GDF_ERROR,
+                df_error_get_code(df_error),
+                "[session-context][deregister] %s",
+                df_error_get_message(df_error));
+    df_error_free(df_error);
+  }
+  return success;
+}
+
+/**
  * gdf_session_context_register_record_batch:
  * @context: A #GDFSessionContext.
  * @name: A name for the record batch in the context.
@@ -233,7 +268,6 @@ gdf_session_context_register_record_batch(GDFSessionContext *context,
     df_arrow_schema_release(c_abi_schema);
     df_arrow_array_release(c_abi_array);
   } else {
-    /* TODO: Remove this on unregister */
     g_hash_table_insert(priv->registered_record_batches,
                         g_strdup(name),
                         g_list_prepend(NULL, g_object_ref(record_batch)));
@@ -324,7 +358,6 @@ gdf_session_context_register_table(GDFSessionContext *context,
     df_arrow_schema_release(c_abi_schema);
   } else {
     g_ptr_array_set_free_func(c_abi_arrays, NULL);
-    /* TODO: Remove this on unregister */
     g_hash_table_insert(priv->registered_record_batches,
                         g_strdup(name),
                         record_batches);
