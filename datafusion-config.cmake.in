@@ -1,0 +1,31 @@
+# Copyright 2022 Sutou Kouhei <kou@clear-code.com>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+@PACKAGE_INIT@
+
+set(datafusion_PACKAGE_PREFIX_DIR "${PACKAGE_PREFIX_DIR}")
+set(datafusion_INCLUDE_DIR "${datafusion_PACKAGE_PREFIX_DIR}/@INCLUDE_DIR@")
+set(datafusion_LIB_DIR "${datafusion_PACKAGE_PREFIX_DIR}/@LIB_DIR@")
+
+add_library(datafusion::datafusion SHARED IMPORTED)
+set_target_properties(datafusion::datafusion PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "${datafusion_INCLUDE_DIR}")
+if(WIN32)
+  set_target_properties(datafusion::datafusion PROPERTIES
+    IMPORTED_LOCATION "${datafusion_LIB_DIR}/${CMAKE_IMPORT_LIBRARY_PREFIX}datafusion${CMAKE_IMPORT_LIBRARY_SUFFIX}")
+else()
+  set_target_properties(datafusion::datafusion PROPERTIES
+    IMPORTED_LOCATION "${datafusion_LIB_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}datafusion${CMAKE_SHARED_LIBRARY_SUFFIX}.@PACKAGE_VERSION@"
+    IMPORTED_SONAME "${CMAKE_SHARED_LIBRARY_PREFIX}datafusion${CMAKE_SHARED_LIBRARY_SUFFIX}.@PACKAGE_VERSION_MAJOR@")
+endif()

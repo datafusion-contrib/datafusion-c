@@ -157,6 +157,25 @@ if generate_vapi
 endif
 
 subdir('datafusion-glib')
+
+cmake = import('cmake')
+cmake_config = configuration_data()
+cmake_config.set('DEFAULT_LIBRARY', get_option('default_library'))
+cmake_config.set('INCLUDE_DIR', include_dir)
+cmake_config.set('LIB_DIR', lib_dir)
+cmake_config.set('PACKAGE_VERSION', version)
+cmake_config.set('PACKAGE_VERSION_MAJOR', version_major)
+cmake_config.set('PACKAGE_VERSION_MICRO', version_micro)
+cmake_config.set('PACKAGE_VERSION_MINOR', version_minor)
+cmake.write_basic_package_version_file(name: 'datafusion', version: version)
+cmake.configure_package_config_file(name: 'datafusion',
+                                    input: 'datafusion-config.cmake.in',
+                                    configuration: cmake_config)
+cmake.write_basic_package_version_file(name: 'datafusion-glib', version: version)
+cmake.configure_package_config_file(name: 'datafusion-glib',
+                                    input: 'datafusion-glib-config.cmake.in',
+                                    configuration: cmake_config)
+
 subdir('examples')
 if get_option('doc')
   subdir('doc/datafusion-glib')
