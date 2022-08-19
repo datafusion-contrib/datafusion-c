@@ -144,6 +144,14 @@ gdf_csv_read_options_class_init(GDFCSVReadOptionsClass *klass)
   DFCSVReadOptions *options = df_csv_read_options_new();
 
   GParamSpec *spec;
+  /**
+   * GDFCSVReadOptions:has-header:
+   *
+   * Whether the CSV file have a header or not.
+   *
+   * If schema inference is run on a file with no headers, default
+   * column names are created.
+   */
   spec = g_param_spec_boolean("has-header",
                               NULL,
                               NULL,
@@ -151,6 +159,11 @@ gdf_csv_read_options_class_init(GDFCSVReadOptionsClass *klass)
                               G_PARAM_READWRITE);
   g_object_class_install_property(gobject_class, PROP_HAS_HEADER, spec);
 
+  /**
+   * GDFCSVReadOptions:delimiter:
+   *
+   * An optional column delimiter. Defaults to `','`.
+   */
   spec = g_param_spec_char("delimiter",
                            NULL,
                            NULL,
@@ -160,6 +173,12 @@ gdf_csv_read_options_class_init(GDFCSVReadOptionsClass *klass)
                            G_PARAM_READWRITE);
   g_object_class_install_property(gobject_class, PROP_DELIMITER, spec);
 
+  /**
+   * GDFCSVReadOptions:schema-infer-max-n-records:
+   *
+   * The max number of rows to read from CSV files for schema
+   * inference if needed. Defaults to `1000`.
+   */
   spec = g_param_spec_uint64("schema-infer-max-n-records",
                              NULL,
                              NULL,

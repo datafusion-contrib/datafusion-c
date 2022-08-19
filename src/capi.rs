@@ -32,6 +32,7 @@ use datafusion::dataframe::DataFrame;
 use datafusion::datasource::MemTable;
 use datafusion::execution::context::SessionContext;
 use datafusion::execution::options::CsvReadOptions;
+use datafusion::execution::options::ParquetReadOptions;
 
 fn strdup(rs_str: &str) -> *mut libc::c_char {
     unsafe {
@@ -47,6 +48,43 @@ fn strdup(rs_str: &str) -> *mut libc::c_char {
         );
         c_str
     }
+}
+
+fn c_string_to_str<'a>(
+    c_string: *const libc::c_char,
+) -> Result<&'a str, std::str::Utf8Error> {
+    let cstr = unsafe { CStr::from_ptr(c_string) };
+    cstr.to_str()
+}
+
+fn c_strings_to_strings(
+    c_strings: *const *const libc::c_char,
+    n: usize,
+) -> Result<Vec<String>, std::ffi::IntoStringError> {
+    let slice = unsafe { std::slice::from_raw_parts(c_strings, n) };
+    let mut strings = Vec::new();
+    for &c_string in slice {
+        let cstring = CString::from(unsafe { CStr::from_ptr(c_string) });
+        strings.push(cstring.into_string()?);
+    }
+    Ok(strings)
+}
+
+fn strings_to_c_strings(
+    strings: &Vec<String>,
+    n_c_strings: *mut usize,
+) -> *mut *mut libc::c_char {
+    let n = strings.len();
+    unsafe {
+        *n_c_strings = n;
+    };
+    let c_strings = unsafe { libc::malloc(std::mem::size_of::<*mut libc::c_char>() * n) }
+        as *mut *mut libc::c_char;
+    let slice = unsafe { std::slice::from_raw_parts_mut(c_strings, n) };
+    for (i, string) in strings.iter().enumerate() {
+        slice[i] = strdup(string);
+    }
+    c_strings
 }
 
 /// cbindgen:prefix-with-name
@@ -409,8 +447,7 @@ pub extern "C" fn df_session_context_deregister(
     error: *mut *mut DFError,
 ) -> bool {
     let option = || -> Option<bool> {
-        let cstr_name = unsafe { CStr::from_ptr(name) };
-        let rs_name = cstr_name.to_str().into_df_error(error, None)?;
+        let rs_name = c_string_to_str(name).into_df_error(error, None)?;
         context
             .context
             .deregister_table(rs_name)
@@ -586,9 +623,8 @@ pub extern "C" fn df_csv_read_options_set_file_extension(
     error: *mut *mut DFError,
 ) -> bool {
     let option = || -> Option<bool> {
-        let cstr_file_extension = unsafe { CStr::from_ptr(file_extension) };
         options.options.file_extension =
-            cstr_file_extension.to_str().into_df_error(error, None)?;
+            c_string_to_str(file_extension).into_df_error(error, None)?;
         Some(true)
     }();
     option.unwrap_or(false)
@@ -609,13 +645,8 @@ pub extern "C" fn df_csv_read_options_set_table_partition_columns(
     error: *mut *mut DFError,
 ) -> bool {
     let option = || -> Option<bool> {
-        let columns_slice = unsafe { std::slice::from_raw_parts(columns, n_columns) };
-        let mut rs_columns = Vec::new();
-        for &column in columns_slice {
-            let cstr_column = CString::from(unsafe { CStr::from_ptr(column) });
-            rs_columns.push(cstr_column.into_string().into_df_error(error, None)?);
-        }
-        options.options.table_partition_cols = rs_columns;
+        options.options.table_partition_cols =
+            c_strings_to_strings(columns, n_columns).into_df_error(error, None)?;
         Some(true)
     }();
     option.unwrap_or(false)
@@ -626,17 +657,7 @@ pub extern "C" fn df_csv_read_options_get_table_partition_columns(
     options: &mut DFCSVReadOptions,
     n_columns: *mut usize,
 ) -> *mut *mut libc::c_char {
-    let n = options.options.table_partition_cols.len();
-    unsafe {
-        *n_columns = n;
-    };
-    let columns = unsafe { libc::malloc(std::mem::size_of::<*mut libc::c_char>() * n) }
-        as *mut *mut libc::c_char;
-    let columns_slice = unsafe { std::slice::from_raw_parts_mut(columns, n) };
-    for (i, column) in options.options.table_partition_cols.iter().enumerate() {
-        columns_slice[i] = strdup(column);
-    }
-    columns
+    strings_to_c_strings(&options.options.table_partition_cols, n_columns)
 }
 
 #[no_mangle]
@@ -644,20 +665,124 @@ pub extern "C" fn df_csv_read_options_get_table_partition_columns(
 pub extern "C" fn df_session_context_register_csv(
     context: &mut DFSessionContext,
     name: *const libc::c_char,
-    path: *const libc::c_char,
+    url: *const libc::c_char,
     options: Option<&mut DFCSVReadOptions>,
     error: *mut *mut DFError,
 ) -> bool {
     let option = || -> Option<bool> {
-        let cstr_name = unsafe { CStr::from_ptr(name) };
-        let rs_name = cstr_name.to_str().into_df_error(error, None)?;
-        let cstr_path = unsafe { CStr::from_ptr(path) };
-        let rs_path = cstr_path.to_str().into_df_error(error, None)?;
+        let rs_name = c_string_to_str(name).into_df_error(error, None)?;
+        let rs_url = c_string_to_str(url).into_df_error(error, None)?;
         let rs_options = match options {
             Some(o) => o.options.clone(),
             None => CsvReadOptions::default(),
         };
-        let result = context.context.register_csv(rs_name, rs_path, rs_options);
+        let result = context.context.register_csv(rs_name, rs_url, rs_options);
+        block_on(result).into_df_error(error, None)?;
+        Some(true)
+    }();
+    option.unwrap_or(false)
+}
+
+pub struct DFParquetReadOptions<'a> {
+    options: ParquetReadOptions<'a>,
+}
+
+impl<'a> DFParquetReadOptions<'a> {
+    pub fn new() -> Self {
+        let options = ParquetReadOptions::default();
+        Self { options }
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn df_parquet_read_options_new<'a>() -> Box<DFParquetReadOptions<'a>> {
+    Box::new(DFParquetReadOptions::new())
+}
+
+#[no_mangle]
+pub extern "C" fn df_parquet_read_options_free(
+    _options: Option<Box<DFParquetReadOptions>>,
+) {
+}
+
+#[no_mangle]
+pub extern "C" fn df_parquet_read_options_set_file_extension(
+    options: &mut DFParquetReadOptions,
+    file_extension: *const libc::c_char,
+    error: *mut *mut DFError,
+) -> bool {
+    let option = || -> Option<bool> {
+        options.options.file_extension =
+            c_string_to_str(file_extension).into_df_error(error, None)?;
+        Some(true)
+    }();
+    option.unwrap_or(false)
+}
+
+#[no_mangle]
+pub extern "C" fn df_parquet_read_options_get_file_extension(
+    options: &mut DFParquetReadOptions,
+) -> *mut libc::c_char {
+    strdup(options.options.file_extension)
+}
+
+#[no_mangle]
+pub extern "C" fn df_parquet_read_options_set_table_partition_columns(
+    options: &mut DFParquetReadOptions,
+    columns: *const *const libc::c_char,
+    n_columns: usize,
+    error: *mut *mut DFError,
+) -> bool {
+    let option = || -> Option<bool> {
+        options.options.table_partition_cols =
+            c_strings_to_strings(columns, n_columns).into_df_error(error, None)?;
+        Some(true)
+    }();
+    option.unwrap_or(false)
+}
+
+#[no_mangle]
+pub extern "C" fn df_parquet_read_options_get_table_partition_columns(
+    options: &mut DFParquetReadOptions,
+    n_columns: *mut usize,
+) -> *mut *mut libc::c_char {
+    strings_to_c_strings(&options.options.table_partition_cols, n_columns)
+}
+
+#[no_mangle]
+pub extern "C" fn df_parquet_read_options_set_pruning(
+    options: &mut DFParquetReadOptions,
+    pruning: bool,
+) {
+    options.options.parquet_pruning = pruning;
+}
+
+#[no_mangle]
+pub extern "C" fn df_parquet_read_options_get_pruning(
+    options: &mut DFParquetReadOptions,
+) -> bool {
+    options.options.parquet_pruning
+}
+
+#[no_mangle]
+#[allow(clippy::not_unsafe_ptr_arg_deref)]
+pub extern "C" fn df_session_context_register_parquet(
+    context: &mut DFSessionContext,
+    name: *const libc::c_char,
+    url: *const libc::c_char,
+    options: Option<&mut DFParquetReadOptions>,
+    error: *mut *mut DFError,
+) -> bool {
+    let option = || -> Option<bool> {
+        let rs_name = c_string_to_str(name).into_df_error(error, None)?;
+        let rs_url = c_string_to_str(url).into_df_error(error, None)?;
+        let rs_options = match options {
+            Some(o) => o.options.clone(),
+            None => ParquetReadOptions::default(),
+        };
+        let result = context
+            .context
+            .register_parquet(rs_name, rs_url, rs_options);
         block_on(result).into_df_error(error, None)?;
         Some(true)
     }();

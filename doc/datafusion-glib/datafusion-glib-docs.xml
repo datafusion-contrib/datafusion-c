@@ -36,6 +36,7 @@
       <xi:include href="xml/data-frame.xml"/>
       <xi:include href="xml/session-context.xml"/>
       <xi:include href="xml/csv-read-options.xml"/>
+      <xi:include href="xml/parquet-read-options.xml"/>
     </chapter>
     <chapter id="error">
       <title>Error</title>

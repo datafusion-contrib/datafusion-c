@@ -16,6 +16,7 @@ sources = files(
   'csv-read-options.c',
   'data-frame.c',
   'error.c',
+  'parquet-read-options.c',
   'session-context.c',
 )
 
@@ -24,6 +25,7 @@ headers = files(
   'data-frame.h',
   'datafusion-glib.h',
   'error.h',
+  'parquet-read-options.h',
   'session-context.h',
 )
 
@@ -31,6 +33,7 @@ raw_headers = files(
   'csv-read-options-raw.h',
   'data-frame-raw.h',
   'datafusion-glib-raw.h',
+  'parquet-read-options-raw.h',
   'session-context-raw.h',
 )
 

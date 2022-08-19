@@ -18,7 +18,9 @@
 
 #include <arrow-glib/arrow-glib.h>
 
+#include <datafusion-glib/csv-read-options.h>
 #include <datafusion-glib/data-frame.h>
+#include <datafusion-glib/parquet-read-options.h>
 
 G_BEGIN_DECLS
 
@@ -63,9 +65,17 @@ GDF_AVAILABLE_IN_10_0
 gboolean
 gdf_session_context_register_csv(GDFSessionContext *context,
                                  const gchar *name,
-                                 const gchar *path,
+                                 const gchar *url,
                                  GDFCSVReadOptions *options,
                                  GError **error);
+
+GDF_AVAILABLE_IN_10_0
+gboolean
+gdf_session_context_register_parquet(GDFSessionContext *context,
+                                     const gchar *name,
+                                     const gchar *url,
+                                     GDFParquetReadOptions *options,
+                                     GError **error);
 
 
 G_END_DECLS
