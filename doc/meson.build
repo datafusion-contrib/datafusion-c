@@ -23,6 +23,8 @@ depend_files = files(
   'source' / 'index.rst',
   'source' / 'install.rst',
   'source' / 'introduction.rst',
+  'source' / 'news' / '10.0.0.md',
+  'source' / 'news.rst',
   'source' / 'raw-c-api.rst',
 )
 depend_files += [gi_docgen_toml]

@@ -26,7 +26,12 @@ release = version
 
 extensions = [
     'breathe',
+    'myst_parser',
 ]
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}
 
 breathe_default_project = 'datafusion-c'
 breathe_domain_by_extension = {'h' : 'c'}

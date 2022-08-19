@@ -45,14 +45,7 @@ jobs:
             libgirepository1.0-dev \
             ninja-build \
             valac
-          pip install \
-            Jinja2 \
-            Pygments \
-            Sphinx \
-            breathe \
-            gi-docgen \
-            meson \
-            pydata_sphinx_theme
+          pip install -r requirements.txt
           case ${GITHUB_REF} in
             refs/tags/*)
               version=${GITHUB_REF#refs/tags/}
@@ -96,17 +89,15 @@ jobs:
           path: html/
       - uses: actions/checkout@v3
         if: |
-          github.event_name == 'push' &&
-            (startsWith(github.ref, 'refs/tags/') ||
-             github.ref == 'refs/heads/main')
+          startsWith(github.ref, 'refs/tags/') ||
+            github.ref == 'refs/heads/main'
         with:
           ref: gh-pages
           path: gh-pages
       - name: Deploy
         if: |
-          github.event_name == 'push' &&
-            (startsWith(github.ref, 'refs/tags/') ||
-             github.ref == 'refs/heads/main')
+          startsWith(github.ref, 'refs/tags/') ||
+            github.ref == 'refs/heads/main'
         run: |
           rm -rf gh-pages/${VERSION}
           cp -a build/doc/html/ gh-pages/${VERSION}
