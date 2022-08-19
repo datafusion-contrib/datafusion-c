@@ -17,6 +17,7 @@
 #include <datafusion-glib/csv-read-options-raw.h>
 #include <datafusion-glib/data-frame-raw.h>
 #include <datafusion-glib/error.h>
+#include <datafusion-glib/parquet-read-options-raw.h>
 #include <datafusion-glib/session-context-raw.h>
 
 G_BEGIN_DECLS
@@ -374,7 +375,7 @@ exit:
  * gdf_session_context_register_csv:
  * @context: A #GDFSessionContext.
  * @name: A name for the CSV in the context.
- * @path: A path of the CSV to be registered.
+ * @url: An URL of the CSV to be registered.
  * @options: (nullable): A #GDFCSVReadOptions.
  * @error: (nullable): Return location for a #GError or %NULL.
  *
@@ -385,7 +386,7 @@ exit:
 gboolean
 gdf_session_context_register_csv(GDFSessionContext *context,
                                  const gchar *name,
-                                 const gchar *path,
+                                 const gchar *url,
                                  GDFCSVReadOptions *options,
                                  GError **error)
 {
@@ -399,7 +400,7 @@ gdf_session_context_register_csv(GDFSessionContext *context,
   bool success =
     df_session_context_register_csv(priv->context,
                                     name,
-                                    path,
+                                    url,
                                     df_options,
                                     &df_error);
   if (!success) {
@@ -407,6 +408,49 @@ gdf_session_context_register_csv(GDFSessionContext *context,
                 GDF_ERROR,
                 df_error_get_code(df_error),
                 "[session-context][register-csv] %s",
+                df_error_get_message(df_error));
+    df_error_free(df_error);
+  }
+  return success;
+}
+
+/**
+ * gdf_session_context_register_parquet:
+ * @context: A #GDFSessionContext.
+ * @name: A name for the Parquet in the context.
+ * @url: An URL of the Parquet to be registered.
+ * @options: (nullable): A #GDFParquetReadOptions.
+ * @error: (nullable): Return location for a #GError or %NULL.
+ *
+ * Returns: %TRUE on success, %FALSE otherwise.
+ *
+ * Since: 10.0.0
+ */
+gboolean
+gdf_session_context_register_parquet(GDFSessionContext *context,
+                                     const gchar *name,
+                                     const gchar *url,
+                                     GDFParquetReadOptions *options,
+                                     GError **error)
+{
+  GDFSessionContextPrivate *priv =
+    gdf_session_context_get_instance_private(context);
+  DFParquetReadOptions *df_options = NULL;
+  if (options) {
+    df_options = gdf_parquet_read_options_get_raw(options);
+  }
+  DFError *df_error = NULL;
+  bool success =
+    df_session_context_register_parquet(priv->context,
+                                    name,
+                                        url,
+                                        df_options,
+                                        &df_error);
+  if (!success) {
+    g_set_error(error,
+                GDF_ERROR,
+                df_error_get_code(df_error),
+                "[session-context][register-parquet] %s",
                 df_error_get_message(df_error));
     df_error_free(df_error);
   }
