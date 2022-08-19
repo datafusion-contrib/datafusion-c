@@ -1,0 +1,127 @@
+# Copyright 2022 Sutou Kouhei <kou@clear-code.com>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+require "pathname"
+
+require_relative "../vendor/apache-arrow/dev/tasks/linux-packages/package-task"
+
+class DataFusionPackageTask < PackageTask
+  def initialize
+    super("datafusion-c", detect_version, detect_release_time)
+    @archive_name = "datafusion-c-#{@version}.tar.gz"
+  end
+
+  private
+  def detect_version
+    version_env = ENV["VERSION"]
+    return version_env if version_env
+
+    meson_build = top_source_dir / "meson.build"
+    meson_build.read.scan(/version: '(.+?)'/)[0][0]
+  end
+
+  def detect_release_time
+    release_time_env = ENV["RELEASE_TIME"]
+    if release_time_env
+      Time.parse(release_time_env).utc
+    else
+      Time.now.utc
+    end
+  end
+
+  def top_source_dir
+    Pathname(__dir__).parent
+  end
+
+  def define_archive_task
+    file @archive_name do
+      cd(top_source_dir) do
+        sh("git",
+           "archive",
+           "HEAD",
+           "--output", @full_archive_name,
+           "--prefix", "#{@archive_base_name}/")
+      end
+    end
+  end
+
+  def apt_targets_default
+    [
+      "debian-bullseye",
+      "debian-bullseye-arm64",
+      "debian-bookworm",
+      "debian-bookworm-arm64",
+      "ubuntu-focal",
+      "ubuntu-focal-arm64",
+      "ubuntu-jammy",
+      "ubuntu-jammy-arm64",
+    ]
+  end
+
+  def yum_targets_default
+    [
+      "almalinux-8",
+      "almalinux-8-aarch64",
+      "almalinux-9",
+      "almalinux-9-aarch64",
+    ]
+  end
+
+  def built_package_url(target_namespace, target)
+    url = "https://github.com/datafusion-contrib/datafusion-c/releases/download/#{@version}/"
+    case target_namespace
+    when :apt
+      if target.end_with?("-arm64")
+        url << "#{target}.tar.gz"
+      else
+        url << "#{target}-amd64.tar.gz"
+      end
+    when :yum
+      if target.end_with?("-aarch64")
+        url << "#{target}.tar.gz"
+      else
+        url << "#{target}-x86_64.tar.gz"
+      end
+    end
+    url
+  end
+
+  def download_packages(target_namespace)
+    download_dir = "#{__dir__}/vendor/apache-arrow/packages/#{@version}"
+    mkdir_p(download_dir)
+    __send__("#{target_namespace}_targets").each do |target|
+      url = built_package_url(target_namespace, target)
+      archive = download(url, download_dir)
+      cd(download_dir) do
+        sh("tar", "xf", archive)
+      end
+    end
+  end
+
+  def define_download_tasks
+    [:apt, :yum].each do |target_namespace|
+      tasks = []
+      namespace target_namespace do
+        desc "Download #{target_namespace} packages"
+        task :download do
+          download_packages(target_namespace)
+        end
+        tasks << "#{target_namespace}:download"
+      end
+      task target_namespace => tasks
+    end
+  end
+end
+
+DataFusionPackageTask.new.define

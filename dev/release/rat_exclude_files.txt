@@ -1,1 +1,12 @@
 dev/release/rat_exclude_files.txt
+package/debian/compat
+package/debian/control
+package/debian/gir1.2-datafusion-10.0.install
+package/debian/libdatafusion-dev.install
+package/debian/libdatafusion-glib-dev.install
+package/debian/libdatafusion-glib-doc.doc-base
+package/debian/libdatafusion-glib-doc.install
+package/debian/libdatafusion-glib-doc.links
+package/debian/libdatafusion-glib10.install
+package/debian/libdatafusion10.install
+package/debian/rules

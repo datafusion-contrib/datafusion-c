@@ -1,0 +1,4 @@
+usr/include/datafusion.h
+usr/lib/*/cmake/datafusion/
+usr/lib/*/libdatafusion.so
+usr/lib/*/pkgconfig/datafusion.pc

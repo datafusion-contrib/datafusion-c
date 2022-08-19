@@ -1,19 +1,16 @@
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements.  See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership.  The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License.  You may obtain a copy of the License at
+# Copyright 2022 Sutou Kouhei <kou@clear-code.com>
 #
-#   http://www.apache.org/licenses/LICENSE-2.0
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied.  See the License for the
-# specific language governing permissions and limitations
-# under the License.
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 project('datafusion-c', 'rust', 'c',
         default_options: [
@@ -48,7 +45,12 @@ rustc_target_libdir = run_command(find_program('rustc'), '--print=target-libdir'
                                   check: true)
 libdatafusion_output_base_dir = fs.name(fs.parent(rustc_target_libdir.stdout()))
 build_type = get_option('buildtype')
-libdatafusion_output_dir = libdatafusion_output_base_dir / build_type
+if build_type == 'release' or build_type == 'debugoptimized'
+  cargo_build_type = 'release'
+else
+  cargo_build_type = 'debug'
+endif
+libdatafusion_output_dir = libdatafusion_output_base_dir / cargo_build_type
 if build_machine.system() == 'darwin'
   libdatafusion_so_path = 'libdatafusion.dylib'
   libdatafusion_so_install_dir = lib_dir
@@ -129,7 +131,7 @@ libdatafusion_command = [
   '--prefix', prefix,
   '--target-dir','@OUTDIR@',
 ]
-if build_type == 'release'
+if cargo_build_type == 'release'
   libdatafusion_command += ['--release']
 endif
 libdatafusion = custom_target('libdatafusion',
@@ -176,7 +178,7 @@ cmake.configure_package_config_file(name: 'datafusion-glib',
                                     input: 'datafusion-glib-config.cmake.in',
                                     configuration: cmake_config)
 
-subdir('examples')
+subdir('example')
 if get_option('doc')
   subdir('doc/datafusion-glib')
 endif

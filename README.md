@@ -1,20 +1,17 @@
 <!--
-  Licensed to the Apache Software Foundation (ASF) under one
-  or more contributor license agreements.  See the NOTICE file
-  distributed with this work for additional information
-  regarding copyright ownership.  The ASF licenses this file
-  to you under the Apache License, Version 2.0 (the
-  "License"); you may not use this file except in compliance
-  with the License.  You may obtain a copy of the License at
+  Copyright 2022 Sutou Kouhei <kou@clear-code.com>
 
-    http://www.apache.org/licenses/LICENSE-2.0
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
 
-  Unless required by applicable law or agreed to in writing,
-  software distributed under the License is distributed on an
-  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-  KIND, either express or implied.  See the License for the
-  specific language governing permissions and limitations
-  under the License.
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
 -->
 
 # DataFusion C API
@@ -44,10 +41,10 @@ meson install -C build
 
 #### Examples
 
-See `examples/sql.c` for C.
+See `example/sql.c` for C.
 
 ```console
-$ build/examples/sql-c
+$ build/example/sql-c
 +----------+
 | Int64(1) |
 +----------+
@@ -55,10 +52,10 @@ $ build/examples/sql-c
 +----------+
 ```
 
-See `examples/sql.py` for Python.
+See `example/sql.py` for Python.
 
 ```console
-$ LD_LIBRARY_PATH=$PWD/build examples/sql.py
+$ LD_LIBRARY_PATH=$PWD/build example/sql.py
 +----------+
 | Int64(1) |
 +----------+
@@ -66,10 +63,10 @@ $ LD_LIBRARY_PATH=$PWD/build examples/sql.py
 +----------+
 ```
 
-See `examples/sql.rb` for Ruby.
+See `example/sql.rb` for Ruby.
 
 ```console
-$ LD_LIBRARY_PATH=$PWD/build examples/sql.rb
+$ LD_LIBRARY_PATH=$PWD/build example/sql.rb
 +----------+
 | Int64(1) |
 +----------+
@@ -77,13 +74,13 @@ $ LD_LIBRARY_PATH=$PWD/build examples/sql.rb
 +----------+
 ```
 
-See `examples/sql.vala` for Vala.
+See `example/sql.vala` for Vala.
 
-You need to add `-Dvala=true` option to `meson setup` to enable Vala
+You need to add `-Dvapi=true` option to `meson setup` to enable Vala
 support.
 
 ```console
-$ build/examples/sql-vala
+$ build/example/sql-vala
 +----------+
 | Int64(1) |
 +----------+
