@@ -15,10 +15,10 @@
 
 /*
  * How to build:
- *   $ cc -o sql sql.c $(pkg-config --cflags --libs datafusion)
+ *   $ cc -o sql-glib sql-glib.c $(pkg-config --cflags --libs datafusion-glib)
  *
  * How to run:
- *   $ ./sql
+ *   $ ./sql-glib
  *   +----------+
  *   | Int64(1) |
  *   +----------+
@@ -26,29 +26,30 @@
  *   +----------+
  */
 
-#include <datafusion.h>
+#include <datafusion-glib/datafusion-glib.h>
 
-#include <stdio.h>
 #include <stdlib.h>
 
 int
 main(void)
 {
-  DFSessionContext *context = df_session_context_new();
-  DFError *error = NULL;
-  DFDataFrame *data_frame = df_session_context_sql(context, "SELECT 1;", &error);
+  GDFSessionContext *context = gdf_session_context_new();
+  GError *error = NULL;
+  GDFDataFrame *data_frame = gdf_session_context_sql(context,
+                                                     "SELECT 1;",
+                                                     &error);
   if (error) {
-    printf("failed to run SQL: %s\n", df_error_get_message(error));
-    df_error_free(error);
-    df_session_context_free(context);
+    g_print("failed to run SQL: %s\n", error->message);
+    g_error_free(error);
+    g_object_unref(context);
     return EXIT_FAILURE;
   }
-  df_data_frame_show(data_frame, &error);
+  gdf_data_frame_show(data_frame, &error);
   if (error) {
-    printf("failed to show data frame: %s\n", df_error_get_message(error));
-    df_error_free(error);
+    g_print("failed to show data frame: %s\n", error->message);
+    g_error_free(error);
   }
-  df_data_frame_free(data_frame);
-  df_session_context_free(context);
+  g_object_unref(data_frame);
+  g_object_unref(context);
   return EXIT_SUCCESS;
 }

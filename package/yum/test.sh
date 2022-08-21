@@ -59,10 +59,10 @@ export G_DEBUG=fatal-warnings
 
 ${DNF_INSTALL} vala
 mkdir -p build/vala/
-cp -a /host/example/sql.vala build/vala/
+cp -a /host/example/sql-glib.vala build/vala/
 pushd build/vala/
-valac --pkg datafusion-glib --pkg posix sql.vala
-./sql
+valac --pkg datafusion-glib --pkg posix sql-glib.vala
+./sql-glib
 popd
 
 ${DNF_INSTALL} ruby-devel redhat-rpm-config

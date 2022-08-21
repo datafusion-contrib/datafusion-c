@@ -136,7 +136,7 @@ jobs:
         env:
           APT_TARGETS: ${{ matrix.target }}
           YUM_TARGETS: ${{ matrix.target }}
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: package-${{ matrix.id }}
           path: package/${{ matrix.task-namespace }}/repositories/

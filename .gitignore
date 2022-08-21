@@ -13,7 +13,6 @@
 # limitations under the License.
 
 /Cargo.lock
-/target
 /package/*.tar.gz
 /package/apt/build.sh
 /package/apt/env.sh
@@ -23,3 +22,4 @@
 /package/yum/env.sh
 /package/yum/repositories/
 /package/yum/tmp/
+/target

@@ -33,11 +33,22 @@ prefix = get_option('prefix')
 data_dir = get_option('datadir')
 include_dir = get_option('includedir')
 lib_dir = get_option('libdir')
+
+gir_dir = data_dir / 'gir-1.0'
+vapi_dir = data_dir / 'vala' / 'vapi'
 pkg_config_dir = lib_dir / 'pkgconfig'
+
 full_data_dir = prefix / data_dir
 full_include_dir = prefix / include_dir
 full_lib_dir = prefix / lib_dir
 full_pkg_config_dir = prefix / pkg_config_dir
+
+pkgconfig_variables = [
+  'girdir=${prefix}/@0@'.format(gir_dir),
+  'vapidir=${prefix}/@0@'.format(vapi_dir),
+]
+
+source_reference = get_option('source-reference')
 
 fs = import('fs')
 rustc_target_libdir = run_command(find_program('rustc'), '--print=target-libdir',
@@ -180,7 +191,7 @@ cmake.configure_package_config_file(name: 'datafusion-glib',
 
 subdir('example')
 if get_option('doc')
-  subdir('doc/datafusion-glib')
+  subdir('doc')
 endif
 
 test_run = find_program('test/run.sh')
