@@ -109,12 +109,12 @@ jobs:
             ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
           sudo apt update
           sudo apt install -y -V \
-            gtk-doc-tools \
             libarrow-glib-dev \
             libgirepository1.0-dev \
             ninja-build \
             valac
           pip install meson
+          echo "GI_TYPELIB_PATH=${HOME}/local/lib/girepository-1.0" >> ${GITHUB_ENV}
           echo "LD_LIBRARY_PATH=${PWD}/build:${HOME}/local/lib:${LD_LIBRARY_PATH}" >> ${GITHUB_ENV}
       - name: Prepare on macOS
         if: |
@@ -123,6 +123,7 @@ jobs:
           brew update --preinstall
           brew bundle --file=Brewfile
           echo "DYLD_LIBRARY_PATH=${PWD}/build:${HOME}/local/lib:${DYLD_LIBRARY_PATH}" >> ${GITHUB_ENV}
+          echo "GI_TYPELIB_PATH=${HOME}/local/lib/girepository-1.0" >> ${GITHUB_ENV}
           echo "XML_CATALOG_FILES=$(brew --prefix)/etc/xml/catalog" >> ${GITHUB_ENV}
       # - name: Prepare on Windows
       #   if: |
@@ -155,8 +156,8 @@ jobs:
           matrix.runs-on != 'windows-latest'
         run: |
           meson setup \
+            --libdir=lib \
             --prefix=${HOME}/local \
-            -Ddoc=true \
             -Dvapi=${{ matrix.runs-on == 'ubuntu-latest' }} \
             -Dwerror=true \
             build \
@@ -188,11 +189,6 @@ jobs:
           matrix.runs-on != 'windows-latest'
         run: |
           build/example/sql-c
-      - name: Run Vala example
-        if: |
-          matrix.runs-on == 'ubuntu-latest'
-        run: |
-          build/example/sql-vala
       - name: Run Python example
         if: |
           matrix.runs-on != 'windows-latest'
@@ -205,3 +201,24 @@ jobs:
         run: |
           cd build
           ../example/sql.rb
+      - name: Run GLib C example
+        if: |
+          matrix.runs-on != 'windows-latest'
+        run: |
+          build/example/sql-glib-c
+      - name: Run GLib Vala example
+        if: |
+          matrix.runs-on == 'ubuntu-latest'
+        run: |
+          build/example/sql-glib-vala
+      - name: Run GLib Python example
+        if: |
+          matrix.runs-on == 'ubuntu-latest'
+        run: |
+          pip install PyGObject
+          example/sql-glib.py
+      - name: Run GLib Ruby example
+        if: |
+          matrix.runs-on == 'ubuntu-latest'
+        run: |
+          bundle exec example/sql-glib.rb

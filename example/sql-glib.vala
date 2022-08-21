@@ -12,6 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// How to build:
+//   $ valac \
+//       --vapidir $(pkg-config --variable=vapidir datafusion-glib) \
+//       --pkg datafusion-glib \
+//       --pkg posix \
+//       sql-glib.vala
+//
+// How to run:
+//   $ ./sql-glib
+//   +----------+
+//   | Int64(1) |
+//   +----------+
+//   | 1        |
+//   +----------+
+
 int main(string[] args) {
     var context = new GDF.SessionContext();
     GDF.DataFrame data_frame;

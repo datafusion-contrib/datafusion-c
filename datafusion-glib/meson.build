@@ -83,6 +83,7 @@ pkgconfig.generate(libdatafusion_glib,
                    filebase: 'datafusion-glib',
                    name: 'DataFusion GLib',
                    requires: ['datafusion', 'arrow-glib', 'gobject-2.0'],
+                   variables: pkgconfig_variables,
                    version: version)
 
 if have_gi

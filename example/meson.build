@@ -14,6 +14,9 @@
 
 executable('sql-c', 'sql.c',
            dependencies: [datafusion])
+executable('sql-glib-c', 'sql-glib.c',
+           dependencies: [datafusion_glib],
+           include_directories: include_directories('..'))
 
 if generate_vapi
   vala_example_executable_kwargs = {
@@ -31,12 +34,14 @@ if generate_vapi
       '--vapidir', arrow_glib.get_variable('vapidir'),
     ],
   }
-  executable('sql-vala', 'sql.vala',
+  executable('sql-glib-vala', 'sql-glib.vala',
              kwargs: vala_example_executable_kwargs)
 endif
 
-install_data('sql.c',
+install_data('sql-glib.py',
+             'sql-glib.rb',
+             'sql-glib.vala',
+             'sql.c',
              'sql.py',
              'sql.rb',
-             'sql.vala',
              install_dir: data_dir / 'datafusion-glib' / 'example')

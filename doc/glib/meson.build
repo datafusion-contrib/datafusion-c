@@ -28,6 +28,13 @@ configure_file(input: 'entities.xml.in',
                output: 'entities.xml',
                configuration: entities_conf)
 
+gi_docgen_toml_conf = configuration_data()
+gi_docgen_toml_conf.set('SOURCE_REFERENCE', source_reference)
+gi_docgen_toml_conf.set('VERSION', meson.project_version())
+gi_docgen_toml = configure_file(input: 'gi-docgen.toml.in',
+                                output: 'gi-docgen.toml',
+                                configuration: gi_docgen_toml_conf)
+
 glib_prefix = dependency('glib-2.0').get_pkgconfig_variable('prefix')
 glib_doc_path = glib_prefix / 'share' / 'gtk-doc' / 'html'
 arrow_glib_prefix = dependency('arrow-glib').get_pkgconfig_variable('prefix')

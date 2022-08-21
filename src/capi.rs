@@ -87,6 +87,9 @@ fn strings_to_c_strings(
     c_strings
 }
 
+/// \enum DFErrorCode
+/// \brief Error category
+///
 /// cbindgen:prefix-with-name
 /// cbindgen:rename-all=ScreamingSnakeCase
 #[repr(C)]
@@ -111,6 +114,14 @@ pub enum DFErrorCode {
     JIT,
 }
 
+/// \struct DFError
+/// \brief A struct that holds error information.
+///
+/// You can access to error information by `df_error_get_code()` and
+/// `df_error_get_message()`.
+///
+/// You need to free error information by `df_error_free()` when no
+/// longer needed.
 pub struct DFError {
     code: DFErrorCode,
     message: Box<CStr>,
@@ -132,6 +143,10 @@ pub extern "C" fn df_error_new(
     Box::new(DFError::new(code, Box::<CStr>::from(c_str_message)))
 }
 
+/// \brief Free the given `DFError`.
+///
+/// \param _error A `DFError` returned by `df_*()` functions.
+///
 /// # Safety
 ///
 /// This function should not be called with `error` that is not
@@ -142,6 +157,11 @@ pub extern "C" fn df_error_new(
 #[no_mangle]
 pub extern "C" fn df_error_free(_error: Option<Box<DFError>>) {}
 
+/// \brief Get a message of this error.
+///
+/// \param error A `DFError`.
+/// \return A message of this error.
+///
 /// # Safety
 ///
 /// This function should not be called with `error` that is not
@@ -154,6 +174,11 @@ pub extern "C" fn df_error_get_message(error: &mut DFError) -> *const libc::c_ch
     error.message.as_ptr()
 }
 
+/// \brief Get a code of this error.
+///
+/// \param error A `DFError`.
+/// \return A code of this error.
+///
 /// # Safety
 ///
 /// This function should not be called with `error` that is not
@@ -279,6 +304,10 @@ impl<V> IntoDFError for Result<V, std::ffi::IntoStringError> {
     }
 }
 
+/// \struct DFArrowSchema
+/// \brief Same as the `ArrowSchema` struct in the Arrow C data interface
+///
+/// See also: https://arrow.apache.org/docs/format/CDataInterface.html#the-arrowschema-structure
 #[repr(C)]
 #[derive(Debug)]
 pub struct DFArrowSchema {
@@ -300,6 +329,10 @@ impl From<FFI_ArrowSchema> for Box<DFArrowSchema> {
     }
 }
 
+/// \struct DFArrowArray
+/// \brief Same as the `ArrowArray` struct in the Arrow C data interface
+///
+/// See also: https://arrow.apache.org/docs/format/CDataInterface.html#the-arrowarray-structure
 #[repr(C)]
 #[derive(Debug)]
 pub struct DFArrowArray {
@@ -319,6 +352,13 @@ fn block_on<F: Future>(future: F) -> F::Output {
     tokio::runtime::Runtime::new().unwrap().block_on(future)
 }
 
+/// \struct DFDataFrame
+/// \brief A struct for data frame.
+///
+/// You get execution result as a data frame.
+///
+/// You need to free data frame by `df_data_frame_free()` when no
+/// longer needed.
 pub struct DFDataFrame {
     data_frame: Arc<DataFrame>,
 }
@@ -329,6 +369,10 @@ impl DFDataFrame {
     }
 }
 
+/// \brief Free the given `DFDataFrame`.
+///
+/// \param _data_frame A `DFDataFrame`.
+///
 /// # Safety
 ///
 /// This function should not be called for the same `data_frame`
@@ -336,6 +380,10 @@ impl DFDataFrame {
 #[no_mangle]
 pub extern "C" fn df_data_frame_free(_data_frame: Option<Box<DFDataFrame>>) {}
 
+/// \brief Show the given data frame contents to the standard output.
+///
+/// \param data_frame A `DFDataFrame` to be shown.
+/// \param error Return location for a `DFError` or `NULL`.
 #[no_mangle]
 pub extern "C" fn df_data_frame_show(
     data_frame: &mut DFDataFrame,
@@ -396,6 +444,10 @@ pub extern "C" fn df_data_frame_export(
     }
 }
 
+/// \struct DFSessionContext
+/// \brief An entry point of DataFusion API.
+///
+/// You need to create `DFSessionContext` to use DataFusion API.
 pub struct DFSessionContext {
     context: SessionContext,
 }
@@ -406,11 +458,22 @@ impl DFSessionContext {
     }
 }
 
+/// \brief Create a new `DFSessionContext`.
+///
+/// \return A newly created `DFSessionContext`.
+///
+///   It should be freed by `df_session_context_free()` when no longer
+///   needed.
 #[no_mangle]
 pub extern "C" fn df_session_context_new() -> Box<DFSessionContext> {
     Box::new(DFSessionContext::new(SessionContext::new()))
 }
 
+/// \brief Free the given `DFSessionContext`.
+///
+/// \param _context A `DFSessionContext` created by
+///   `df_session_context_new()`.
+///
 /// # Safety
 ///
 /// This function should not be called with `context` that is not
