@@ -1,0 +1,863 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Example - SQL &#8212; DataFusion C 10.0.0 documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Raw C API" href="../raw-c-api.html" />
+    <link rel="prev" title="Install" href="../install.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">DataFusion C 10.0.0 documentation</p>
+  
+</a>
+    
+    <div class="dropdown" id="version_switcher">
+    <button type="button" class="btn btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
+        main  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+
+<!-- NOTE: this JS must live here (not in our global JS file) because it relies
+     on being processed by Jinja before it is run (specifically for replacing
+     variables example/sql and {'json_url': 'https://datafusion-contrib.github.io/datafusion-c/latest/_static/switcher.json', 'version_match': 'main'}.
+-->
+
+<script type="text/javascript">
+// Check if corresponding page path exists in other version of docs
+// and, if so, go there instead of the homepage of the other docs version
+function checkPageExistsAndRedirect(event) {
+    const currentFilePath = "example/sql.html",
+          tryUrl = event.target.getAttribute("href");
+    let otherDocsHomepage = tryUrl.replace(currentFilePath, "");
+    $.ajax({
+        type: 'HEAD',
+        url: tryUrl,
+        // if the page exists, go there
+        success: function() {
+            location.href = tryUrl;
+        }
+    }).fail(function() {
+        location.href = otherDocsHomepage;
+    });
+    // this prevents the browser from following the href of the clicked node
+    // (which is fine because this function takes care of redirecting)
+    return false;
+}
+
+// Populate the version switcher from the JSON config file
+(function () {
+    $.getJSON("https://datafusion-contrib.github.io/datafusion-c/latest/_static/switcher.json", function(data, textStatus, jqXHR) {
+        const currentFilePath = "example/sql.html";
+        let btn = document.getElementById("version_switcher_button");
+        // Set empty strings by default so that these attributes exist and can be used in CSS selectors
+        btn.dataset["activeVersionName"] = "";
+        btn.dataset["activeVersion"] = "";
+        // create links to the corresponding page in the other docs versions
+        $.each(data, function(index, entry) {
+            // if no custom name specified (e.g., "latest"), use version string
+            if (!("name" in entry)) {
+                entry.name = entry.version;
+            }
+            // create the node
+            const node = document.createElement("a");
+            node.setAttribute("class", "list-group-item list-group-item-action py-1");
+            node.textContent = `${entry.name}`;
+            node.setAttribute("href", `${entry.url}${currentFilePath}`);
+            // on click, AJAX calls will check if the linked page exists before
+            // trying to redirect, and if not, will redirect to the homepage
+            // for that version of the docs.
+            node.onclick = checkPageExistsAndRedirect;
+            // Add dataset values for the version and name in case people want
+            // to apply CSS styling based on this information.
+            node.dataset["versionName"] = entry.name;
+            node.dataset["version"] = entry.version;
+
+            $("#version_switcher_menu").append(node);
+            // replace dropdown button text with the preferred display name of
+            // this version, rather than using sphinx's 10.0.0 variable.
+            // also highlight the dropdown entry for the currently-viewed
+            // version's entry
+            if (entry.version == "main") {
+                node.classList.add("active");
+                btn.innerText = btn.dataset["activeVersionName"] = entry.name;
+                btn.dataset["activeVersion"] = entry.version;
+            }
+        });
+    });
+})();
+</script>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/datafusion-contrib/datafusion-c" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../introduction.html">
+  Introduction
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../install.html">
+  Install
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="current reference internal nav-link" href="#">
+  Example - SQL
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../raw-c-api.html">
+  Raw C API
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../glib-api.html">
+  GLib API
+ </a>
+</li>
+
+    
+</ul><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#raw-c-api-from-c">
+   Raw C API from C
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#glib-api-from-c">
+   GLib API from C
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#raw-c-api-from-python">
+   Raw C API from Python
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#glib-api-from-python">
+   GLib API from Python
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#raw-c-api-from-ruby">
+   Raw C API from Ruby
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#glib-api-from-ruby">
+   GLib API from Ruby
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#glib-api-from-vala">
+   GLib API from Vala
+  </a>
+ </li>
+</ul>
+
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+
+<div class="tocsection editthispage">
+    <a href="https://github.com/datafusion-contrib/datafusion-c/edit/main/doc/source/example/sql.rst">
+        <i class="fas fa-pencil-alt"></i> Edit this page
+    </a>
+</div>
+
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section id="example-sql">
+<h1>Example - SQL<a class="headerlink" href="#example-sql" title="Permalink to this heading">#</a></h1>
+<p>This section shows examples that execute a simple SQL in
+multiple ways.</p>
+<section id="raw-c-api-from-c">
+<span id="example-sql-raw-c-api-from-c"></span><h2>Raw C API from C<a class="headerlink" href="#raw-c-api-from-c" title="Permalink to this heading">#</a></h2>
+<p>The following code shows how to execute a simple SQL with raw C API
+in C. Here are points:</p>
+<ul class="simple">
+<li><p>You can create a session context (<a class="reference internal" href="../raw-c-api.html#c.DFSessionContext" title="DFSessionContext"><code class="xref c c-struct docutils literal notranslate"><span class="pre">DFSessionContext</span></code></a>) by
+<a class="reference internal" href="../raw-c-api.html#c.df_session_context_new" title="df_session_context_new"><code class="xref c c-func docutils literal notranslate"><span class="pre">df_session_context_new()</span></code></a>.</p></li>
+<li><p>You can run a SQL by <a class="reference internal" href="../raw-c-api.html#c.df_session_context_sql" title="df_session_context_sql"><code class="xref c c-func docutils literal notranslate"><span class="pre">df_session_context_sql()</span></code></a>.</p></li>
+<li><p>You can get details on error by <a class="reference internal" href="../raw-c-api.html#c.DFError" title="DFError"><code class="xref c c-struct docutils literal notranslate"><span class="pre">DFError</span></code></a>. See also
+<a class="reference internal" href="../raw-c-api.html#c.df_error_get_code" title="df_error_get_code"><code class="xref c c-func docutils literal notranslate"><span class="pre">df_error_get_code()</span></code></a> and <a class="reference internal" href="../raw-c-api.html#c.df_error_get_message" title="df_error_get_message"><code class="xref c c-func docutils literal notranslate"><span class="pre">df_error_get_message()</span></code></a>.</p></li>
+<li><p>You need to free <a class="reference internal" href="../raw-c-api.html#c.DFError" title="DFError"><code class="xref c c-struct docutils literal notranslate"><span class="pre">DFError</span></code></a> by <a class="reference internal" href="../raw-c-api.html#c.df_error_free" title="df_error_free"><code class="xref c c-func docutils literal notranslate"><span class="pre">df_error_free()</span></code></a>
+when no longer needed.</p></li>
+<li><p>You can get <a class="reference internal" href="../raw-c-api.html#c.DFDataFrame" title="DFDataFrame"><code class="xref c c-struct docutils literal notranslate"><span class="pre">DFDataFrame</span></code></a> as a result of the SQL execution.</p></li>
+<li><p>You can show <a class="reference internal" href="../raw-c-api.html#c.DFDataFrame" title="DFDataFrame"><code class="xref c c-struct docutils literal notranslate"><span class="pre">DFDataFrame</span></code></a> contents by
+<a class="reference internal" href="../raw-c-api.html#c.df_data_frame_show" title="df_data_frame_show"><code class="xref c c-func docutils literal notranslate"><span class="pre">df_data_frame_show()</span></code></a>.</p></li>
+<li><p>You can free <a class="reference internal" href="../raw-c-api.html#c.DFDataFrame" title="DFDataFrame"><code class="xref c c-struct docutils literal notranslate"><span class="pre">DFDataFrame</span></code></a> by
+<a class="reference internal" href="../raw-c-api.html#c.df_data_frame_free" title="df_data_frame_free"><code class="xref c c-func docutils literal notranslate"><span class="pre">df_data_frame_free()</span></code></a>.</p></li>
+<li><p>You can free <a class="reference internal" href="../raw-c-api.html#c.DFSessionContext" title="DFSessionContext"><code class="xref c c-struct docutils literal notranslate"><span class="pre">DFSessionContext</span></code></a> by
+<a class="reference internal" href="../raw-c-api.html#c.df_session_context_free" title="df_session_context_free"><code class="xref c c-func docutils literal notranslate"><span class="pre">df_session_context_free()</span></code></a>.</p></li>
+</ul>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="cm">/*</span>
+<span class="linenos"> 2</span><span class="cm"> * Copyright 2022 Sutou Kouhei &lt;kou@clear-code.com&gt;</span>
+<span class="linenos"> 3</span><span class="cm"> *</span>
+<span class="linenos"> 4</span><span class="cm"> * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="linenos"> 5</span><span class="cm"> * you may not use this file except in compliance with the License.</span>
+<span class="linenos"> 6</span><span class="cm"> * You may obtain a copy of the License at</span>
+<span class="linenos"> 7</span><span class="cm"> *</span>
+<span class="linenos"> 8</span><span class="cm"> *     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="linenos"> 9</span><span class="cm"> *</span>
+<span class="linenos">10</span><span class="cm"> * Unless required by applicable law or agreed to in writing, software</span>
+<span class="linenos">11</span><span class="cm"> * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="linenos">12</span><span class="cm"> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="linenos">13</span><span class="cm"> * See the License for the specific language governing permissions and</span>
+<span class="linenos">14</span><span class="cm"> */</span><span class="w"></span>
+<span class="linenos">15</span>
+<span class="linenos">16</span><span class="cm">/*</span>
+<span class="linenos">17</span><span class="cm"> * How to build:</span>
+<span class="linenos">18</span><span class="cm"> *   $ cc -o sql sql.c $(pkg-config --cflags --libs datafusion)</span>
+<span class="linenos">19</span><span class="cm"> *</span>
+<span class="linenos">20</span><span class="cm"> * How to run:</span>
+<span class="linenos">21</span><span class="cm"> *   $ ./sql</span>
+<span class="linenos">22</span><span class="cm"> *   +----------+</span>
+<span class="linenos">23</span><span class="cm"> *   | Int64(1) |</span>
+<span class="linenos">24</span><span class="cm"> *   +----------+</span>
+<span class="linenos">25</span><span class="cm"> *   | 1        |</span>
+<span class="linenos">26</span><span class="cm"> *   +----------+</span>
+<span class="linenos">27</span><span class="cm"> */</span><span class="w"></span>
+<span class="linenos">28</span>
+<span class="linenos">29</span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;datafusion.h&gt;</span><span class="cp"></span>
+<span class="linenos">30</span>
+<span class="linenos">31</span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="linenos">32</span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+<span class="linenos">33</span>
+<span class="linenos">34</span><span class="kt">int</span><span class="w"></span>
+<span class="linenos">35</span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"></span>
+<span class="linenos">36</span><span class="p">{</span><span class="w"></span>
+<span class="linenos">37</span><span class="w">  </span><span class="n">DFSessionContext</span><span class="w"> </span><span class="o">*</span><span class="n">context</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df_session_context_new</span><span class="p">();</span><span class="w"></span>
+<span class="linenos">38</span><span class="w">  </span><span class="n">DFError</span><span class="w"> </span><span class="o">*</span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w"></span>
+<span class="linenos">39</span><span class="w">  </span><span class="n">DFDataFrame</span><span class="w"> </span><span class="o">*</span><span class="n">data_frame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df_session_context_sql</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;SELECT 1;&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">error</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">40</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="linenos">41</span><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;failed to run SQL: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">df_error_get_message</span><span class="p">(</span><span class="n">error</span><span class="p">));</span><span class="w"></span>
+<span class="linenos">42</span><span class="w">    </span><span class="n">df_error_free</span><span class="p">(</span><span class="n">error</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">43</span><span class="w">    </span><span class="n">df_session_context_free</span><span class="p">(</span><span class="n">context</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">44</span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">EXIT_FAILURE</span><span class="p">;</span><span class="w"></span>
+<span class="linenos">45</span><span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="linenos">46</span><span class="w">  </span><span class="n">df_data_frame_show</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">error</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">47</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="linenos">48</span><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;failed to show data frame: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">df_error_get_message</span><span class="p">(</span><span class="n">error</span><span class="p">));</span><span class="w"></span>
+<span class="linenos">49</span><span class="w">    </span><span class="n">df_error_free</span><span class="p">(</span><span class="n">error</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">50</span><span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="linenos">51</span><span class="w">  </span><span class="n">df_data_frame_free</span><span class="p">(</span><span class="n">data_frame</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">52</span><span class="w">  </span><span class="n">df_session_context_free</span><span class="p">(</span><span class="n">context</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">53</span><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">EXIT_SUCCESS</span><span class="p">;</span><span class="w"></span>
+<span class="linenos">54</span><span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="glib-api-from-c">
+<span id="example-sql-glib-api-from-c"></span><h2>GLib API from C<a class="headerlink" href="#glib-api-from-c" title="Permalink to this heading">#</a></h2>
+<p>The following code shows how to execute a simple SQL with GLib API
+in C. Here are points:</p>
+<ul class="simple">
+<li><p>You can create a session context (<a class="reference external" href="../glib/class.SessionContext.html">GDFSessionContext</a>) by
+<a class="reference external" href="../glib/ctor.SessionContext.new.html">gdf_session_context_new()</a>.</p></li>
+<li><p>You can run a SQL by <a class="reference external" href="../glib/method.SessionContext.sql.html">gdf_session_context_sql()</a>.</p></li>
+<li><p>You can handle error the usual way in GLib. See <a class="reference external" href="https://docs.gtk.org/glib/struct.Error.html">GError</a>.</p></li>
+<li><p>You can get <a class="reference external" href="../glib/class.DataFrame.html">GDFDataFrame</a> as a result of the SQL execution.</p></li>
+<li><p>You can show <a class="reference external" href="../glib/class.DataFrame.html">GDFDataFrame</a> contents by
+<a class="reference external" href="../glib/method.DataFrame.show.html">gdf_data_frame_show()</a>.</p></li>
+<li><p>You can free all <a class="reference external" href="https://docs.gtk.org/gobject/class.Object.html">GObject</a> based objects such as
+<a class="reference external" href="../glib/class.SessionContext.html">GDFSessionContext</a> and <a class="reference external" href="../glib/class.DataFrame.html">GDFDataFrame</a> by <a class="reference external" href="https://docs.gtk.org/gobject/method.Object.unref.html">g_object_unref()</a>.</p></li>
+</ul>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="cm">/*</span>
+<span class="linenos"> 2</span><span class="cm"> * Copyright 2022 Sutou Kouhei &lt;kou@clear-code.com&gt;</span>
+<span class="linenos"> 3</span><span class="cm"> *</span>
+<span class="linenos"> 4</span><span class="cm"> * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="linenos"> 5</span><span class="cm"> * you may not use this file except in compliance with the License.</span>
+<span class="linenos"> 6</span><span class="cm"> * You may obtain a copy of the License at</span>
+<span class="linenos"> 7</span><span class="cm"> *</span>
+<span class="linenos"> 8</span><span class="cm"> *     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="linenos"> 9</span><span class="cm"> *</span>
+<span class="linenos">10</span><span class="cm"> * Unless required by applicable law or agreed to in writing, software</span>
+<span class="linenos">11</span><span class="cm"> * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="linenos">12</span><span class="cm"> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="linenos">13</span><span class="cm"> * See the License for the specific language governing permissions and</span>
+<span class="linenos">14</span><span class="cm"> */</span><span class="w"></span>
+<span class="linenos">15</span>
+<span class="linenos">16</span><span class="cm">/*</span>
+<span class="linenos">17</span><span class="cm"> * How to build:</span>
+<span class="linenos">18</span><span class="cm"> *   $ cc -o sql-glib sql-glib.c $(pkg-config --cflags --libs datafusion-glib)</span>
+<span class="linenos">19</span><span class="cm"> *</span>
+<span class="linenos">20</span><span class="cm"> * How to run:</span>
+<span class="linenos">21</span><span class="cm"> *   $ ./sql-glib</span>
+<span class="linenos">22</span><span class="cm"> *   +----------+</span>
+<span class="linenos">23</span><span class="cm"> *   | Int64(1) |</span>
+<span class="linenos">24</span><span class="cm"> *   +----------+</span>
+<span class="linenos">25</span><span class="cm"> *   | 1        |</span>
+<span class="linenos">26</span><span class="cm"> *   +----------+</span>
+<span class="linenos">27</span><span class="cm"> */</span><span class="w"></span>
+<span class="linenos">28</span>
+<span class="linenos">29</span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;datafusion-glib/datafusion-glib.h&gt;</span><span class="cp"></span>
+<span class="linenos">30</span>
+<span class="linenos">31</span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+<span class="linenos">32</span>
+<span class="linenos">33</span><span class="kt">int</span><span class="w"></span>
+<span class="linenos">34</span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"></span>
+<span class="linenos">35</span><span class="p">{</span><span class="w"></span>
+<span class="linenos">36</span><span class="w">  </span><span class="n">GDFSessionContext</span><span class="w"> </span><span class="o">*</span><span class="n">context</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gdf_session_context_new</span><span class="p">();</span><span class="w"></span>
+<span class="linenos">37</span><span class="w">  </span><span class="n">GError</span><span class="w"> </span><span class="o">*</span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w"></span>
+<span class="linenos">38</span><span class="w">  </span><span class="n">GDFDataFrame</span><span class="w"> </span><span class="o">*</span><span class="n">data_frame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gdf_session_context_sql</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"></span>
+<span class="linenos">39</span><span class="w">                                                     </span><span class="s">&quot;SELECT 1;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="linenos">40</span><span class="w">                                                     </span><span class="o">&amp;</span><span class="n">error</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">41</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="linenos">42</span><span class="w">    </span><span class="n">g_print</span><span class="p">(</span><span class="s">&quot;failed to run SQL: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="o">-&gt;</span><span class="n">message</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">43</span><span class="w">    </span><span class="n">g_error_free</span><span class="p">(</span><span class="n">error</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">44</span><span class="w">    </span><span class="n">g_object_unref</span><span class="p">(</span><span class="n">context</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">45</span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">EXIT_FAILURE</span><span class="p">;</span><span class="w"></span>
+<span class="linenos">46</span><span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="linenos">47</span><span class="w">  </span><span class="n">gdf_data_frame_show</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">error</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">48</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="linenos">49</span><span class="w">    </span><span class="n">g_print</span><span class="p">(</span><span class="s">&quot;failed to show data frame: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="o">-&gt;</span><span class="n">message</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">50</span><span class="w">    </span><span class="n">g_error_free</span><span class="p">(</span><span class="n">error</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">51</span><span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="linenos">52</span><span class="w">  </span><span class="n">g_object_unref</span><span class="p">(</span><span class="n">data_frame</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">53</span><span class="w">  </span><span class="n">g_object_unref</span><span class="p">(</span><span class="n">context</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">54</span><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">EXIT_SUCCESS</span><span class="p">;</span><span class="w"></span>
+<span class="linenos">55</span><span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="raw-c-api-from-python">
+<span id="example-sql-raw-c-api-from-python"></span><h2>Raw C API from Python<a class="headerlink" href="#raw-c-api-from-python" title="Permalink to this heading">#</a></h2>
+<p>The following code shows how to execute a simple SQL with raw C
+API in Python. You can use a FFI library such as <a class="reference external" href="https://docs.python.org/3/library/ctypes.html">ctypes</a> to use raw C API from Python. Here are points:</p>
+<ul class="simple">
+<li><p>You need to open DataFusion C’s shared library explicitly but shared
+library name depends on platform. For example, it’s
+<code class="docutils literal notranslate"><span class="pre">libdatafusion.so</span></code> on Linux. <code class="docutils literal notranslate"><span class="pre">ctypes.util.find_library()</span></code> may help you.</p></li>
+<li><p>You need to open DataFusion C’s shared library by <code class="docutils literal notranslate"><span class="pre">ctypes.CDLL()</span></code>.</p></li>
+<li><p>You need to prepare signature of raw C API’s functions that you need
+to use before you call them.</p></li>
+<li><p>See <a class="reference internal" href="#example-sql-raw-c-api-from-c"><span class="std std-ref">Raw C API from C</span></a> how to use raw C API.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="ch">#!/usr/bin/env python3</span>
+<span class="linenos"> 2</span><span class="c1">#</span>
+<span class="linenos"> 3</span><span class="c1"># Copyright 2022 Sutou Kouhei &lt;kou@clear-code.com&gt;</span>
+<span class="linenos"> 4</span><span class="c1">#</span>
+<span class="linenos"> 5</span><span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="linenos"> 6</span><span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="linenos"> 7</span><span class="c1"># You may obtain a copy of the License at</span>
+<span class="linenos"> 8</span><span class="c1">#</span>
+<span class="linenos"> 9</span><span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="linenos">10</span><span class="c1">#</span>
+<span class="linenos">11</span><span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="linenos">12</span><span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="linenos">13</span><span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="linenos">14</span><span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="linenos">15</span><span class="c1"># limitations under the License.</span>
+<span class="linenos">16</span>
+<span class="linenos">17</span><span class="c1"># How to run:</span>
+<span class="linenos">18</span><span class="c1">#   $ ./sql.py</span>
+<span class="linenos">19</span><span class="c1">#   +----------+</span>
+<span class="linenos">20</span><span class="c1">#   | Int64(1) |</span>
+<span class="linenos">21</span><span class="c1">#   +----------+</span>
+<span class="linenos">22</span><span class="c1">#   | 1        |</span>
+<span class="linenos">23</span><span class="c1">#   +----------+</span>
+<span class="linenos">24</span>
+<span class="linenos">25</span><span class="kn">import</span> <span class="nn">ctypes</span>
+<span class="linenos">26</span><span class="kn">import</span> <span class="nn">ctypes.util</span>
+<span class="linenos">27</span>
+<span class="linenos">28</span><span class="n">datafusion_so_path</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">find_library</span><span class="p">(</span><span class="s1">&#39;datafusion&#39;</span><span class="p">)</span>
+<span class="linenos">29</span><span class="k">if</span> <span class="n">datafusion_so_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">30</span>    <span class="kn">import</span> <span class="nn">sys</span>
+<span class="linenos">31</span>    <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s1">&#39;darwin&#39;</span><span class="p">:</span>
+<span class="linenos">32</span>        <span class="n">datafusion_so_path</span> <span class="o">=</span> <span class="s1">&#39;libdatafusion.dylib&#39;</span>
+<span class="linenos">33</span>    <span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s1">&#39;win32&#39;</span><span class="p">:</span>
+<span class="linenos">34</span>        <span class="n">datafusion_so_path</span> <span class="o">=</span> <span class="s1">&#39;datafusion.dll&#39;</span>
+<span class="linenos">35</span>    <span class="k">else</span><span class="p">:</span>
+<span class="linenos">36</span>        <span class="n">datafusion_so_path</span> <span class="o">=</span> <span class="s1">&#39;libdatafusion.so&#39;</span>
+<span class="linenos">37</span><span class="n">datafusion</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">CDLL</span><span class="p">(</span><span class="n">datafusion_so_path</span><span class="p">)</span>
+<span class="linenos">38</span>
+<span class="linenos">39</span><span class="n">datafusion</span><span class="o">.</span><span class="n">df_error_free</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">]</span>
+<span class="linenos">40</span><span class="n">datafusion</span><span class="o">.</span><span class="n">df_error_free</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="linenos">41</span><span class="n">datafusion</span><span class="o">.</span><span class="n">df_error_get_message</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">]</span>
+<span class="linenos">42</span><span class="n">datafusion</span><span class="o">.</span><span class="n">df_error_get_message</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_char_p</span>
+<span class="linenos">43</span>
+<span class="linenos">44</span><span class="n">datafusion</span><span class="o">.</span><span class="n">df_session_context_new</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">45</span><span class="n">datafusion</span><span class="o">.</span><span class="n">df_session_context_new</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span>
+<span class="linenos">46</span><span class="n">datafusion</span><span class="o">.</span><span class="n">df_session_context_free</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">]</span>
+<span class="linenos">47</span><span class="n">datafusion</span><span class="o">.</span><span class="n">df_session_context_free</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="linenos">48</span><span class="n">datafusion</span><span class="o">.</span><span class="n">df_session_context_sql</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> \
+<span class="linenos">49</span>    <span class="p">[</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_char_p</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">]</span>
+<span class="linenos">50</span><span class="n">datafusion</span><span class="o">.</span><span class="n">df_session_context_sql</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span>
+<span class="linenos">51</span>
+<span class="linenos">52</span><span class="n">datafusion</span><span class="o">.</span><span class="n">df_data_frame_free</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">]</span>
+<span class="linenos">53</span><span class="n">datafusion</span><span class="o">.</span><span class="n">df_data_frame_free</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="linenos">54</span><span class="n">datafusion</span><span class="o">.</span><span class="n">df_data_frame_show</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">]</span>
+<span class="linenos">55</span><span class="n">datafusion</span><span class="o">.</span><span class="n">df_data_frame_show</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="linenos">56</span>
+<span class="linenos">57</span><span class="n">context</span> <span class="o">=</span> <span class="n">datafusion</span><span class="o">.</span><span class="n">df_session_context_new</span><span class="p">()</span>
+<span class="linenos">58</span><span class="k">try</span><span class="p">:</span>
+<span class="linenos">59</span>    <span class="n">error</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span> <span class="o">*</span> <span class="mi">1</span><span class="p">)()</span>
+<span class="linenos">60</span>    <span class="k">try</span><span class="p">:</span>
+<span class="linenos">61</span>        <span class="n">data_frame</span> <span class="o">=</span> <span class="n">datafusion</span><span class="o">.</span><span class="n">df_session_context_sql</span><span class="p">(</span>
+<span class="linenos">62</span>            <span class="n">context</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;SELECT 1;&#39;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">pointer</span><span class="p">(</span><span class="n">error</span><span class="p">))</span>
+<span class="linenos">63</span>        <span class="k">if</span> <span class="n">error</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">64</span>            <span class="n">message</span> <span class="o">=</span> <span class="n">datafusion</span><span class="o">.</span><span class="n">df_error_get_message</span><span class="p">(</span><span class="n">error</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="linenos">65</span>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;failed to run SQL: </span><span class="si">{</span><span class="n">message</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="linenos">66</span>            <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="linenos">67</span>        <span class="k">try</span><span class="p">:</span>
+<span class="linenos">68</span>            <span class="n">datafusion</span><span class="o">.</span><span class="n">df_data_frame_show</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">pointer</span><span class="p">(</span><span class="n">error</span><span class="p">));</span>
+<span class="linenos">69</span>            <span class="k">if</span> <span class="n">error</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">70</span>                <span class="n">message</span> <span class="o">=</span> <span class="n">datafusion</span><span class="o">.</span><span class="n">df_error_get_message</span><span class="p">(</span><span class="n">error</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="linenos">71</span>                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;failed to show data frame: {message.decode()}&#39;</span><span class="p">)</span>
+<span class="linenos">72</span>                <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="linenos">73</span>        <span class="k">finally</span><span class="p">:</span>
+<span class="linenos">74</span>            <span class="n">datafusion</span><span class="o">.</span><span class="n">df_data_frame_free</span><span class="p">(</span><span class="n">data_frame</span><span class="p">)</span>
+<span class="linenos">75</span>    <span class="k">finally</span><span class="p">:</span>
+<span class="linenos">76</span>        <span class="k">if</span> <span class="n">error</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">77</span>            <span class="n">datafusion</span><span class="o">.</span><span class="n">df_error_free</span><span class="p">(</span><span class="n">error</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="linenos">78</span><span class="k">finally</span><span class="p">:</span>
+<span class="linenos">79</span>    <span class="n">datafusion</span><span class="o">.</span><span class="n">df_session_context_free</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="glib-api-from-python">
+<span id="example-sql-glib-api-from-python"></span><h2>GLib API from Python<a class="headerlink" href="#glib-api-from-python" title="Permalink to this heading">#</a></h2>
+<p>The following code shows how to execute a simple SQL with GLib API in
+Python. You can use <a class="reference external" href="https://pygobject.readthedocs.io/en/latest/">PyGObject</a> to use GLib API from Python. Here are
+points:</p>
+<ul class="simple">
+<li><p>You can use <code class="docutils literal notranslate"><span class="pre">DataFusion</span></code> as GObject Introspection namespace.</p></li>
+<li><p>See <a class="reference internal" href="#example-sql-glib-api-from-c"><span class="std std-ref">GLib API from C</span></a> how to use GLib API.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="ch">#!/usr/bin/env python3</span>
+<span class="linenos"> 2</span><span class="c1">#</span>
+<span class="linenos"> 3</span><span class="c1"># Copyright 2022 Sutou Kouhei &lt;kou@clear-code.com&gt;</span>
+<span class="linenos"> 4</span><span class="c1">#</span>
+<span class="linenos"> 5</span><span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="linenos"> 6</span><span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="linenos"> 7</span><span class="c1"># You may obtain a copy of the License at</span>
+<span class="linenos"> 8</span><span class="c1">#</span>
+<span class="linenos"> 9</span><span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="linenos">10</span><span class="c1">#</span>
+<span class="linenos">11</span><span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="linenos">12</span><span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="linenos">13</span><span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="linenos">14</span><span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="linenos">15</span><span class="c1"># limitations under the License.</span>
+<span class="linenos">16</span>
+<span class="linenos">17</span><span class="c1"># How to run:</span>
+<span class="linenos">18</span><span class="c1">#   $ ./sql-glib.py</span>
+<span class="linenos">19</span><span class="c1">#   +----------+</span>
+<span class="linenos">20</span><span class="c1">#   | Int64(1) |</span>
+<span class="linenos">21</span><span class="c1">#   +----------+</span>
+<span class="linenos">22</span><span class="c1">#   | 1        |</span>
+<span class="linenos">23</span><span class="c1">#   +----------+</span>
+<span class="linenos">24</span>
+<span class="linenos">25</span><span class="kn">import</span> <span class="nn">gi</span>
+<span class="linenos">26</span><span class="kn">from</span> <span class="nn">gi.repository</span> <span class="kn">import</span> <span class="n">DataFusion</span>
+<span class="linenos">27</span>
+<span class="linenos">28</span><span class="n">context</span> <span class="o">=</span> <span class="n">DataFusion</span><span class="o">.</span><span class="n">SessionContext</span><span class="o">.</span><span class="n">new</span><span class="p">()</span>
+<span class="linenos">29</span><span class="n">data_frame</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">&quot;SELECT 1;&quot;</span><span class="p">,</span> <span class="p">)</span>
+<span class="linenos">30</span><span class="n">data_frame</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="raw-c-api-from-ruby">
+<span id="example-sql-raw-c-api-from-ruby"></span><h2>Raw C API from Ruby<a class="headerlink" href="#raw-c-api-from-ruby" title="Permalink to this heading">#</a></h2>
+<p>The following code shows how to execute a simple SQL with raw C
+API in Ruby. You can use a FFI library such as <a class="reference external" href="https://github.com/ruby/fiddle">Fiddle</a> to use raw C API from Ruby. Here are points:</p>
+<ul class="simple">
+<li><p>You need to open DataFusion C’s shared library explicitly but shared
+library name depends on platform. For example, it’s
+<code class="docutils literal notranslate"><span class="pre">libdatafusion.so</span></code> on Linux. <code class="docutils literal notranslate"><span class="pre">RbConfig::CONFIG[&quot;SOEXT&quot;]</span></code> may
+help you.</p></li>
+<li><p>You need to open DataFusion C’s shared library by
+<code class="docutils literal notranslate"><span class="pre">Fiddle::Importer.dlload</span></code>.</p></li>
+<li><p>You need to register raw C API’s functions that you need
+to use explicitly before you call them.</p></li>
+<li><p>See <a class="reference internal" href="#example-sql-raw-c-api-from-c"><span class="std std-ref">Raw C API from C</span></a> how to use raw C API.</p></li>
+</ul>
+<div class="highlight-ruby notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="ch">#!/usr/bin/env ruby</span>
+<span class="linenos"> 2</span><span class="c1">#</span>
+<span class="linenos"> 3</span><span class="c1"># Copyright 2022 Sutou Kouhei &lt;kou@clear-code.com&gt;</span>
+<span class="linenos"> 4</span><span class="c1">#</span>
+<span class="linenos"> 5</span><span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="linenos"> 6</span><span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="linenos"> 7</span><span class="c1"># You may obtain a copy of the License at</span>
+<span class="linenos"> 8</span><span class="c1">#</span>
+<span class="linenos"> 9</span><span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="linenos">10</span><span class="c1">#</span>
+<span class="linenos">11</span><span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="linenos">12</span><span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="linenos">13</span><span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="linenos">14</span><span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="linenos">15</span><span class="c1"># limitations under the License.</span>
+<span class="linenos">16</span>
+<span class="linenos">17</span><span class="c1"># How to run:</span>
+<span class="linenos">18</span><span class="c1">#   $ ./sql.rb</span>
+<span class="linenos">19</span><span class="c1">#   +----------+</span>
+<span class="linenos">20</span><span class="c1">#   | Int64(1) |</span>
+<span class="linenos">21</span><span class="c1">#   +----------+</span>
+<span class="linenos">22</span><span class="c1">#   | 1        |</span>
+<span class="linenos">23</span><span class="c1">#   +----------+</span>
+<span class="linenos">24</span>
+<span class="linenos">25</span><span class="nb">require</span> <span class="s2">&quot;rbconfig&quot;</span>
+<span class="linenos">26</span><span class="nb">require</span> <span class="s2">&quot;fiddle/import&quot;</span>
+<span class="linenos">27</span>
+<span class="linenos">28</span><span class="k">module</span> <span class="nn">DataFusion</span>
+<span class="linenos">29</span>  <span class="kp">extend</span> <span class="no">Fiddle</span><span class="o">::</span><span class="no">Importer</span>
+<span class="linenos">30</span>
+<span class="linenos">31</span>  <span class="n">ext</span> <span class="o">=</span> <span class="no">RbConfig</span><span class="o">::</span><span class="no">CONFIG</span><span class="o">[</span><span class="s2">&quot;SOEXT&quot;</span><span class="o">]</span>
+<span class="linenos">32</span>  <span class="k">if</span> <span class="sr">/mingw|mswin/</span><span class="o">.</span><span class="n">match?</span><span class="p">(</span><span class="no">RUBY_PLATFORM</span><span class="p">)</span>
+<span class="linenos">33</span>    <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="linenos">34</span>  <span class="k">else</span>
+<span class="linenos">35</span>    <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;lib&quot;</span>
+<span class="linenos">36</span>  <span class="k">end</span>
+<span class="linenos">37</span>  <span class="n">dlload</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">datafusion.</span><span class="si">#{</span><span class="n">ext</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="linenos">38</span>
+<span class="linenos">39</span>  <span class="n">typealias</span> <span class="s2">&quot;DFError *&quot;</span><span class="p">,</span> <span class="s2">&quot;void *&quot;</span>
+<span class="linenos">40</span>  <span class="n">extern</span> <span class="s2">&quot;void df_error_free(DFError *error)&quot;</span>
+<span class="linenos">41</span>  <span class="n">extern</span> <span class="s2">&quot;const char *df_error_get_message(DFError *error)&quot;</span>
+<span class="linenos">42</span>
+<span class="linenos">43</span>  <span class="n">typealias</span> <span class="s2">&quot;DFDataFrame *&quot;</span><span class="p">,</span> <span class="s2">&quot;void *&quot;</span>
+<span class="linenos">44</span>  <span class="n">extern</span> <span class="s2">&quot;void df_data_frame_free(DFDataFrame *data_frame)&quot;</span>
+<span class="linenos">45</span>  <span class="n">extern</span> <span class="s2">&quot;void df_data_frame_show(DFDataFrame *data_frame, DFError **error)&quot;</span>
+<span class="linenos">46</span>
+<span class="linenos">47</span>  <span class="n">typealias</span> <span class="s2">&quot;DFSessionContext *&quot;</span><span class="p">,</span> <span class="s2">&quot;void *&quot;</span>
+<span class="linenos">48</span>  <span class="n">extern</span> <span class="s2">&quot;DFSessionContext *df_session_context_new(void)&quot;</span>
+<span class="linenos">49</span>  <span class="n">extern</span> <span class="s2">&quot;void df_session_context_free(DFSessionContext *ctx)&quot;</span>
+<span class="linenos">50</span>  <span class="n">extern</span> <span class="s2">&quot;DFDataFrame *df_session_context_sql(DFSessionContext *ctx, const char *sql, DFError **error)&quot;</span>
+<span class="linenos">51</span><span class="k">end</span>
+<span class="linenos">52</span>
+<span class="linenos">53</span><span class="k">begin</span>
+<span class="linenos">54</span>  <span class="n">context</span> <span class="o">=</span> <span class="no">DataFusion</span><span class="o">.</span><span class="n">df_session_context_new</span>
+<span class="linenos">55</span>  <span class="no">Fiddle</span><span class="o">::</span><span class="no">Pointer</span><span class="o">.</span><span class="n">malloc</span><span class="p">(</span><span class="no">Fiddle</span><span class="o">::</span><span class="no">SIZEOF_VOIDP</span><span class="p">,</span> <span class="no">Fiddle</span><span class="o">::</span><span class="no">RUBY_FREE</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">error</span><span class="o">|</span>
+<span class="linenos">56</span>    <span class="k">begin</span>
+<span class="linenos">57</span>      <span class="n">data_frame</span> <span class="o">=</span> <span class="no">DataFusion</span><span class="o">.</span><span class="n">df_session_context_sql</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="s2">&quot;SELECT 1;&quot;</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
+<span class="linenos">58</span>      <span class="k">unless</span> <span class="n">error</span><span class="o">.</span><span class="n">ptr</span><span class="o">.</span><span class="n">null?</span>
+<span class="linenos">59</span>        <span class="n">message</span> <span class="o">=</span> <span class="no">DataFusion</span><span class="o">.</span><span class="n">df_error_get_message</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">ptr</span><span class="p">)</span>
+<span class="linenos">60</span>        <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;failed to run SQL: </span><span class="si">#{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">61</span>        <span class="nb">exit</span><span class="p">(</span><span class="kp">false</span><span class="p">)</span>
+<span class="linenos">62</span>      <span class="k">end</span>
+<span class="linenos">63</span>      <span class="k">begin</span>
+<span class="linenos">64</span>        <span class="no">DataFusion</span><span class="o">.</span><span class="n">df_data_frame_show</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
+<span class="linenos">65</span>        <span class="k">unless</span> <span class="n">error</span><span class="o">.</span><span class="n">ptr</span><span class="o">.</span><span class="n">null?</span>
+<span class="linenos">66</span>          <span class="n">message</span> <span class="o">=</span> <span class="no">DataFusion</span><span class="o">.</span><span class="n">df_error_get_message</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">ptr</span><span class="p">)</span>
+<span class="linenos">67</span>          <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;failed to show data frame: </span><span class="si">#{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">68</span>          <span class="nb">exit</span><span class="p">(</span><span class="kp">false</span><span class="p">)</span>
+<span class="linenos">69</span>        <span class="k">end</span>
+<span class="linenos">70</span>      <span class="k">ensure</span>
+<span class="linenos">71</span>        <span class="no">DataFusion</span><span class="o">.</span><span class="n">df_data_frame_free</span><span class="p">(</span><span class="n">data_frame</span><span class="p">)</span>
+<span class="linenos">72</span>      <span class="k">end</span>
+<span class="linenos">73</span>    <span class="k">ensure</span>
+<span class="linenos">74</span>      <span class="no">DataFusion</span><span class="o">.</span><span class="n">df_error_free</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">ptr</span><span class="p">)</span> <span class="k">unless</span> <span class="n">error</span><span class="o">.</span><span class="n">ptr</span><span class="o">.</span><span class="n">null?</span>
+<span class="linenos">75</span>    <span class="k">end</span>
+<span class="linenos">76</span>  <span class="k">end</span>
+<span class="linenos">77</span><span class="k">ensure</span>
+<span class="linenos">78</span>  <span class="no">DataFusion</span><span class="o">.</span><span class="n">df_session_context_free</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+<span class="linenos">79</span><span class="k">end</span>
+</pre></div>
+</div>
+</section>
+<section id="glib-api-from-ruby">
+<span id="example-sql-glib-api-from-ruby"></span><h2>GLib API from Ruby<a class="headerlink" href="#glib-api-from-ruby" title="Permalink to this heading">#</a></h2>
+<p>The following code shows how to execute a simple SQL with GLib API in
+Ruby. You can use <a class="reference external" href="https://rubygems.org/gems/gobject-introspection">gobject-introspection gem</a> or <a class="reference external" href="https://rubygems.org/gems/red-datafusion">red-datafusion gem</a> to use GLib API from Ruby. The following
+example uses gobject-introspection gem but you should use
+red-datafusion gem in production. red-datafusion gem is built on top
+of the gobject-introspection gem and adds many useful APIs. Here are
+points:</p>
+<ul class="simple">
+<li><p>You can use <code class="docutils literal notranslate"><span class="pre">DataFusion</span></code> as GObject Introspection namespace.</p></li>
+<li><p>See <a class="reference internal" href="#example-sql-glib-api-from-c"><span class="std std-ref">GLib API from C</span></a> how to use GLib API.</p></li>
+</ul>
+<div class="highlight-ruby notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="ch">#!/usr/bin/env ruby</span>
+<span class="linenos"> 2</span><span class="c1">#</span>
+<span class="linenos"> 3</span><span class="c1"># Copyright 2022 Sutou Kouhei &lt;kou@clear-code.com&gt;</span>
+<span class="linenos"> 4</span><span class="c1">#</span>
+<span class="linenos"> 5</span><span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="linenos"> 6</span><span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="linenos"> 7</span><span class="c1"># You may obtain a copy of the License at</span>
+<span class="linenos"> 8</span><span class="c1">#</span>
+<span class="linenos"> 9</span><span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="linenos">10</span><span class="c1">#</span>
+<span class="linenos">11</span><span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="linenos">12</span><span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="linenos">13</span><span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="linenos">14</span><span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="linenos">15</span><span class="c1"># limitations under the License.</span>
+<span class="linenos">16</span>
+<span class="linenos">17</span><span class="c1"># How to run:</span>
+<span class="linenos">18</span><span class="c1">#   $ ./sql-glib.rb</span>
+<span class="linenos">19</span><span class="c1">#   +----------+</span>
+<span class="linenos">20</span><span class="c1">#   | Int64(1) |</span>
+<span class="linenos">21</span><span class="c1">#   +----------+</span>
+<span class="linenos">22</span><span class="c1">#   | 1        |</span>
+<span class="linenos">23</span><span class="c1">#   +----------+</span>
+<span class="linenos">24</span>
+<span class="linenos">25</span><span class="nb">require</span> <span class="s2">&quot;gi&quot;</span>
+<span class="linenos">26</span>
+<span class="linenos">27</span><span class="no">DataFusion</span> <span class="o">=</span> <span class="no">GI</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;DataFusion&quot;</span><span class="p">)</span>
+<span class="linenos">28</span>
+<span class="linenos">29</span><span class="n">context</span> <span class="o">=</span> <span class="no">DataFusion</span><span class="o">::</span><span class="no">SessionContext</span><span class="o">.</span><span class="n">new</span>
+<span class="linenos">30</span><span class="n">data_frame</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">&quot;SELECT 1;&quot;</span><span class="p">)</span>
+<span class="linenos">31</span><span class="n">data_frame</span><span class="o">.</span><span class="n">show</span>
+</pre></div>
+</div>
+</section>
+<section id="glib-api-from-vala">
+<h2>GLib API from Vala<a class="headerlink" href="#glib-api-from-vala" title="Permalink to this heading">#</a></h2>
+<p>The following code shows how to execute a simple SQL with GLib API in
+Vala. You need to add <code class="docutils literal notranslate"><span class="pre">-Dvapi=true</span></code> when you run <code class="docutils literal notranslate"><span class="pre">meson</span> <span class="pre">setup</span></code> to
+enable Vala support. Here are points:</p>
+<ul class="simple">
+<li><p>You can use <code class="docutils literal notranslate"><span class="pre">datafusion-glib</span></code> as Vala package name.</p></li>
+<li><p>You can get a directory where Vala API file for <code class="docutils literal notranslate"><span class="pre">datafusion-glib</span></code>
+package exists by <code class="docutils literal notranslate"><span class="pre">pkg-config</span> <span class="pre">--variable=vapidir</span> <span class="pre">datafusion-glib</span></code>.</p></li>
+<li><p>See <a class="reference internal" href="#example-sql-glib-api-from-c"><span class="std std-ref">GLib API from C</span></a> how to use GLib API.</p></li>
+</ul>
+<div class="highlight-vala notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1">// Copyright 2022 Sutou Kouhei &lt;kou@clear-code.com&gt;</span>
+<span class="linenos"> 2</span><span class="c1">//</span>
+<span class="linenos"> 3</span><span class="c1">// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="linenos"> 4</span><span class="c1">// you may not use this file except in compliance with the License.</span>
+<span class="linenos"> 5</span><span class="c1">// You may obtain a copy of the License at</span>
+<span class="linenos"> 6</span><span class="c1">//</span>
+<span class="linenos"> 7</span><span class="c1">//     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="linenos"> 8</span><span class="c1">//</span>
+<span class="linenos"> 9</span><span class="c1">// Unless required by applicable law or agreed to in writing, software</span>
+<span class="linenos">10</span><span class="c1">// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="linenos">11</span><span class="c1">// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="linenos">12</span><span class="c1">// See the License for the specific language governing permissions and</span>
+<span class="linenos">13</span><span class="c1">// limitations under the License.</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span><span class="c1">// How to build:</span>
+<span class="linenos">16</span><span class="c1">//   $ valac \</span>
+<span class="linenos">17</span><span class="c1">//       --vapidir $(pkg-config --variable=vapidir datafusion-glib) \</span>
+<span class="linenos">18</span><span class="c1">//       --pkg datafusion-glib \</span>
+<span class="linenos">19</span><span class="c1">//       --pkg posix \</span>
+<span class="linenos">20</span><span class="c1">//       sql-glib.vala</span>
+<span class="linenos">21</span><span class="c1">//</span>
+<span class="linenos">22</span><span class="c1">// How to run:</span>
+<span class="linenos">23</span><span class="c1">//   $ ./sql-glib</span>
+<span class="linenos">24</span><span class="c1">//   +----------+</span>
+<span class="linenos">25</span><span class="c1">//   | Int64(1) |</span>
+<span class="linenos">26</span><span class="c1">//   +----------+</span>
+<span class="linenos">27</span><span class="c1">//   | 1        |</span>
+<span class="linenos">28</span><span class="c1">//   +----------+</span>
+<span class="linenos">29</span>
+<span class="linenos">30</span><span class="kt">int</span><span class="w"> </span><span class="n">main</span><span class="p">(</span><span class="kt">string</span><span class="p">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="linenos">31</span><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">context</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">GDF</span><span class="p">.</span><span class="n">SessionContext</span><span class="p">();</span><span class="w"></span>
+<span class="linenos">32</span><span class="w">    </span><span class="n">GDF</span><span class="p">.</span><span class="n">DataFrame</span><span class="w"> </span><span class="n">data_frame</span><span class="p">;</span><span class="w"></span>
+<span class="linenos">33</span><span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="linenos">34</span><span class="w">        </span><span class="n">data_frame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">sql</span><span class="p">(</span><span class="s">&quot;SELECT 1;&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">35</span><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Error</span><span class="w"> </span><span class="n">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="linenos">36</span><span class="w">        </span><span class="n">stderr</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;failed to run SQL: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="p">.</span><span class="n">message</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">37</span><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Posix</span><span class="p">.</span><span class="n">EXIT_FAILURE</span><span class="p">;</span><span class="w"></span>
+<span class="linenos">38</span><span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="linenos">39</span><span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="linenos">40</span><span class="w">        </span><span class="n">data_frame</span><span class="p">.</span><span class="n">show</span><span class="p">();</span><span class="w"></span>
+<span class="linenos">41</span><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Error</span><span class="w"> </span><span class="n">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="linenos">42</span><span class="w">        </span><span class="n">stderr</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;failed to show data frame: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="p">.</span><span class="n">message</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">43</span><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Posix</span><span class="p">.</span><span class="n">EXIT_FAILURE</span><span class="p">;</span><span class="w"></span>
+<span class="linenos">44</span><span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="linenos">45</span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">Posix</span><span class="p">.</span><span class="n">EXIT_SUCCESS</span><span class="p">;</span><span class="w"></span>
+<span class="linenos">46</span><span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+              </article>
+              
+
+              
+              <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="../install.html" title="previous page">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">Install</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="../raw-c-api.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">Raw C API</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
+</div>
+              </footer>
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022-2022, Sutou Kouhei.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>
