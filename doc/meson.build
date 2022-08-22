@@ -14,9 +14,14 @@
 
 subdir('glib')
 
+doxyfile_conf = configuration_data()
+doxyfile_conf.set('DATAFUSION_H', datafusion_h.full_path())
+doxyfile = configure_file(input: 'Doxyfile.in',
+                          output: 'Doxyfile',
+                          configuration: doxyfile_conf)
+
 depend_files = files(
   '..' / 'cbindgen.toml',
-  'Doxyfile',
   'source' / 'conf.py',
   'source' / 'example' / 'sql.rst',
   'source' / 'glib-api.rst',
@@ -27,7 +32,10 @@ depend_files = files(
   'source' / 'news.rst',
   'source' / 'raw-c-api.rst',
 )
-depend_files += [gi_docgen_toml]
+depend_files += [
+  doxyfile,
+  gi_docgen_toml,
+]
 
 custom_target('html',
               command: [

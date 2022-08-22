@@ -52,20 +52,15 @@ arrow_glib_gir_dir = pathlib.Path(args.arrow_glib_gir_dir).resolve()
 source_reference = args.source_reference
 
 datafusion_gir = next((build_root / 'datafusion-glib').glob('DataFusion-*.gir'))
-doxygen_dir = build_root / 'doc' / 'doxygen'
-gi_docgen_config = build_root / 'doc' / 'glib' / 'gi-docgen.toml'
-html_dir = build_root / 'doc' / 'html'
-html_timestamp = build_root / 'doc' / 'html.timestamp'
-sphinx_build_dir = build_root / 'doc' / 'build'
+build_doc_dir = build_root / 'doc'
+gi_docgen_config = build_doc_dir / 'glib' / 'gi-docgen.toml'
+html_dir = build_doc_dir / 'html'
+sphinx_build_dir = build_doc_dir / 'build'
 
-shutil.rmtree(doxygen_dir, ignore_errors=True)
-os.makedirs(doxygen_dir, exist_ok=True)
-shutil.copy2(source_root / 'doc' / 'Doxyfile', doxygen_dir)
-shutil.copy2(build_root / 'datafusion.h', doxygen_dir)
-subprocess.run('doxygen', cwd=doxygen_dir, check=True)
+subprocess.run('doxygen', cwd=build_doc_dir, check=True)
 
 sphinx_env = os.environ.copy()
-sphinx_env['DOXYGEN_XML_DIR'] = str(doxygen_dir / 'xml')
+sphinx_env['DOXYGEN_XML_DIR'] = str(build_doc_dir / 'xml')
 sphinx_env['SWITCHER_VERSION'] = source_reference
 subprocess.run(['make',
                 '-f' + str(source_root / 'doc' / 'Makefile'),
@@ -76,7 +71,7 @@ subprocess.run(['make',
                check=True)
 
 shutil.rmtree(html_dir, ignore_errors=True)
-shutil.copytree(sphinx_build_dir / 'html', html_dir, doxygen_dir)
+shutil.copytree(sphinx_build_dir / 'html', html_dir)
 
 subprocess.run(['gi-docgen',
                 'generate',
