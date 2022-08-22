@@ -6,37 +6,38 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>DataFusion C &#8212; DataFusion C 10.0.0 documentation</title>
+    <title>Release &#8212; DataFusion C 10.0.0 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
 </script>
 
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
-<link href="_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+  <link href="../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
 
 
   <link rel="stylesheet"
-    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
 
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="_static/doctools.js"></script>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Introduction" href="introduction.html" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="News" href="../news.html" />
+    <link rel="prev" title="Developer" href="../developer.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="docsearch:language" content="en">
   </head>
@@ -57,7 +58,7 @@
   
 
 
-<a class="navbar-brand logo" href="#">
+<a class="navbar-brand logo" href="../index.html">
   
   
   
@@ -79,14 +80,14 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables index and {'json_url': 'https://datafusion-contrib.github.io/datafusion-c/latest/_static/switcher.json', 'version_match': 'main'}.
+     variables developer/release and {'json_url': 'https://datafusion-contrib.github.io/datafusion-c/latest/_static/switcher.json', 'version_match': 'main'}.
 -->
 
 <script type="text/javascript">
 // Check if corresponding page path exists in other version of docs
 // and, if so, go there instead of the homepage of the other docs version
 function checkPageExistsAndRedirect(event) {
-    const currentFilePath = "index.html",
+    const currentFilePath = "developer/release.html",
           tryUrl = event.target.getAttribute("href");
     let otherDocsHomepage = tryUrl.replace(currentFilePath, "");
     $.ajax({
@@ -107,7 +108,7 @@ function checkPageExistsAndRedirect(event) {
 // Populate the version switcher from the JSON config file
 (function () {
     $.getJSON("https://datafusion-contrib.github.io/datafusion-c/latest/_static/switcher.json", function(data, textStatus, jqXHR) {
-        const currentFilePath = "index.html";
+        const currentFilePath = "developer/release.html";
         let btn = document.getElementById("version_switcher_button");
         // Set empty strings by default so that these attributes exist and can be used in CSS selectors
         btn.dataset["activeVersionName"] = "";
@@ -190,48 +191,48 @@ function checkPageExistsAndRedirect(event) {
 
 <!-- Only show if we have sidebars configured, else just a small margin  -->
 <div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
-  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><ul id="navbar-main-elements" class="navbar-nav">
     <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="introduction.html">
+ <a class="reference internal nav-link" href="../introduction.html">
   Introduction
  </a>
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="install.html">
+ <a class="reference internal nav-link" href="../install.html">
   Install
  </a>
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="example/sql.html">
+ <a class="reference internal nav-link" href="../example/sql.html">
   Example - SQL
  </a>
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="raw-c-api.html">
+ <a class="reference internal nav-link" href="../raw-c-api.html">
   Raw C API
  </a>
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="glib-api.html">
+ <a class="reference internal nav-link" href="../glib-api.html">
   GLib API
  </a>
 </li>
 
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="developer.html">
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../developer.html">
   Developer
  </a>
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="news.html">
+ <a class="reference internal nav-link" href="../news.html">
   News
  </a>
 </li>
@@ -239,7 +240,14 @@ function checkPageExistsAndRedirect(event) {
     
 </ul><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
-    
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Release
+  </a>
+ </li>
+</ul>
+
   </div>
 </nav>
   </div>
@@ -262,14 +270,14 @@ function checkPageExistsAndRedirect(event) {
 
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#">
-   DataFusion C
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#prepare">
+   Prepare
   </a>
  </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#indices-and-tables">
-   Indices and tables
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#tag-and-upload">
+   Tag and upload
   </a>
  </li>
 </ul>
@@ -281,7 +289,7 @@ function checkPageExistsAndRedirect(event) {
       
 
 <div class="tocsection editthispage">
-    <a href="https://github.com/datafusion-contrib/datafusion-c/edit/main/doc/source/index.rst">
+    <a href="https://github.com/datafusion-contrib/datafusion-c/edit/main/doc/source/developer/release.rst">
         <i class="fas fa-pencil-alt"></i> Edit this page
     </a>
 </div>
@@ -298,52 +306,54 @@ function checkPageExistsAndRedirect(event) {
               
               <article class="bd-article" role="main">
                 
-  <section id="datafusion-c">
-<h1>DataFusion C<a class="headerlink" href="#datafusion-c" title="Permalink to this heading">#</a></h1>
-<div class="toctree-wrapper compound">
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="introduction.html#apis">APIs</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="install.html">Install</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="install.html#debian-gnu-linux-and-ubuntu">Debian GNU/Linux and Ubuntu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="install.html#almalinux-8-and-red-hat-enterprise-linux-8">AlmaLinux 8 and Red Hat Enterprise Linux 8</a></li>
-<li class="toctree-l2"><a class="reference internal" href="install.html#almalinux-9-and-red-hat-enterprise-linux-9">AlmaLinux 9 and Red Hat Enterprise Linux 9</a></li>
-<li class="toctree-l2"><a class="reference internal" href="install.html#build-from-source">Build from source</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="example/sql.html">Example - SQL</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="example/sql.html#raw-c-api-from-c">Raw C API from C</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example/sql.html#glib-api-from-c">GLib API from C</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example/sql.html#raw-c-api-from-python">Raw C API from Python</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example/sql.html#glib-api-from-python">GLib API from Python</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example/sql.html#raw-c-api-from-ruby">Raw C API from Ruby</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example/sql.html#glib-api-from-ruby">GLib API from Ruby</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example/sql.html#glib-api-from-vala">GLib API from Vala</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="raw-c-api.html">Raw C API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="glib-api.html">GLib API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="developer.html">Developer</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="developer/release.html">Release</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="news.html">News</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="news/10.0.0.html">10.0.0 - 2022-08-22</a></li>
-</ul>
-</li>
-</ul>
+  <section id="release">
+<h1>Release<a class="headerlink" href="#release" title="Permalink to this heading">#</a></h1>
+<p>This document describes how to release a new version.</p>
+<section id="prepare">
+<h2>Prepare<a class="headerlink" href="#prepare" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">dev/release/prepare.sh</span></code> to create a branch for a new version
+and prepare the branch.</p></li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">doc/source/news/${VERSION}.md</span></code>.</p></li>
+<li><p>Commit changes.</p></li>
+<li><p>Push the commit.</p></li>
+<li><p>Open a pull request.</p></li>
+</ol>
+<p>Here are command lines for them:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>dev/release/prepare.sh <span class="si">${</span><span class="nv">VERSION</span><span class="si">}</span>
+<span class="gp">$ </span>editor doc/source/news/<span class="si">${</span><span class="nv">VERSION</span><span class="si">}</span>.md
+<span class="gp">$ </span>git add doc/source/news/<span class="si">${</span><span class="nv">VERSION</span><span class="si">}</span>.md
+<span class="gp">$ </span>git commit
+<span class="gp">$ </span>git push
+</pre></div>
+</div>
+<p>Create a pull request for the branch on
+<a class="reference external" href="https://github.com/datafusion-contrib/datafusion-c/pulls">https://github.com/datafusion-contrib/datafusion-c/pulls</a> .</p>
+</section>
+<section id="tag-and-upload">
+<h2>Tag and upload<a class="headerlink" href="#tag-and-upload" title="Permalink to this heading">#</a></h2>
+<p>We can tag after we merge the prepare branch:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>dev/release/tag.sh
+</pre></div>
+</div>
+<p>Our CI jobs create <code class="docutils literal notranslate"><span class="pre">.deb</span></code> / <code class="docutils literal notranslate"><span class="pre">.rpm</span></code> packages automatically when we
+tag a new version. It takes about 20min. We need to wait for finishing
+these jobs.</p>
+<p>We can download the built <code class="docutils literal notranslate"><span class="pre">.deb</span></code> / <code class="docutils literal notranslate"><span class="pre">.rpm</span></code> packages and upload to
+<a class="reference external" href="https://apache.jfrog.io/artifactory/arrow/">https://apache.jfrog.io/artifactory/arrow/</a> after these jobs are
+finished. Note that this must be done by an Apache Arrow PMC member
+who registers his/her GPG key to
+<a class="reference external" href="https://dist.apache.org/repos/dist/release/arrow/KEYS">https://dist.apache.org/repos/dist/release/arrow/KEYS</a> . Because
+APT/Yum repositories at <a class="reference external" href="https://apache.jfrog.io/artifactory/arrow/">https://apache.jfrog.io/artifactory/arrow/</a> are
+for Apache Arrow. We just reuse these APT/Yum repositories. So we must
+follow policy of <a class="reference external" href="https://apache.jfrog.io/artifactory/arrow/">https://apache.jfrog.io/artifactory/arrow/</a> .</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>rake -C package apt:rc yum:rc
+<span class="gp">$ </span>dev/package/verify-packages.sh rc
+<span class="gp">$ </span>rake -C package apt:release yum:release
+<span class="gp">$ </span>dev/package/verify-packages.sh release
+</pre></div>
 </div>
 </section>
-<section id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading">#</a></h1>
-<ul class="simple">
-<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
-<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
-</ul>
 </section>
 
 
@@ -354,10 +364,17 @@ function checkPageExistsAndRedirect(event) {
               <footer class="bd-footer-article">
                   <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='right-next' id="next-link" href="introduction.html" title="next page">
+  <a class='left-prev' id="prev-link" href="../developer.html" title="previous page">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">Developer</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="../news.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">Introduction</p>
+      <p class="prev-next-title">News</p>
   </div>
   <i class="fas fa-angle-right"></i>
   </a>
@@ -372,7 +389,7 @@ function checkPageExistsAndRedirect(event) {
   
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
 
 <footer class="bd-footer"><div class="bd-footer__inner container">
   

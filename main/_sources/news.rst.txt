@@ -11,24 +11,9 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
 
-DataFusion C
-============
+News
+====
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
 
-   introduction
-   install
-   example/sql
-   raw-c-api
-   glib-api
-   developer
-   news
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   news/10.0.0
