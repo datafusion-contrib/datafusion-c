@@ -1,0 +1,915 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Raw C API &#8212; DataFusion C 10.0.0 documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="GLib API" href="glib-api.html" />
+    <link rel="prev" title="Example - SQL" href="example/sql.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">DataFusion C 10.0.0 documentation</p>
+  
+</a>
+    
+    <div class="dropdown" id="version_switcher">
+    <button type="button" class="btn btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
+        10.0.0  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+
+<!-- NOTE: this JS must live here (not in our global JS file) because it relies
+     on being processed by Jinja before it is run (specifically for replacing
+     variables raw-c-api and {'json_url': 'https://datafusion-contrib.github.io/datafusion-c/latest/_static/switcher.json', 'version_match': '10.0.0'}.
+-->
+
+<script type="text/javascript">
+// Check if corresponding page path exists in other version of docs
+// and, if so, go there instead of the homepage of the other docs version
+function checkPageExistsAndRedirect(event) {
+    const currentFilePath = "raw-c-api.html",
+          tryUrl = event.target.getAttribute("href");
+    let otherDocsHomepage = tryUrl.replace(currentFilePath, "");
+    $.ajax({
+        type: 'HEAD',
+        url: tryUrl,
+        // if the page exists, go there
+        success: function() {
+            location.href = tryUrl;
+        }
+    }).fail(function() {
+        location.href = otherDocsHomepage;
+    });
+    // this prevents the browser from following the href of the clicked node
+    // (which is fine because this function takes care of redirecting)
+    return false;
+}
+
+// Populate the version switcher from the JSON config file
+(function () {
+    $.getJSON("https://datafusion-contrib.github.io/datafusion-c/latest/_static/switcher.json", function(data, textStatus, jqXHR) {
+        const currentFilePath = "raw-c-api.html";
+        let btn = document.getElementById("version_switcher_button");
+        // Set empty strings by default so that these attributes exist and can be used in CSS selectors
+        btn.dataset["activeVersionName"] = "";
+        btn.dataset["activeVersion"] = "";
+        // create links to the corresponding page in the other docs versions
+        $.each(data, function(index, entry) {
+            // if no custom name specified (e.g., "latest"), use version string
+            if (!("name" in entry)) {
+                entry.name = entry.version;
+            }
+            // create the node
+            const node = document.createElement("a");
+            node.setAttribute("class", "list-group-item list-group-item-action py-1");
+            node.textContent = `${entry.name}`;
+            node.setAttribute("href", `${entry.url}${currentFilePath}`);
+            // on click, AJAX calls will check if the linked page exists before
+            // trying to redirect, and if not, will redirect to the homepage
+            // for that version of the docs.
+            node.onclick = checkPageExistsAndRedirect;
+            // Add dataset values for the version and name in case people want
+            // to apply CSS styling based on this information.
+            node.dataset["versionName"] = entry.name;
+            node.dataset["version"] = entry.version;
+
+            $("#version_switcher_menu").append(node);
+            // replace dropdown button text with the preferred display name of
+            // this version, rather than using sphinx's 10.0.0 variable.
+            // also highlight the dropdown entry for the currently-viewed
+            // version's entry
+            if (entry.version == "10.0.0") {
+                node.classList.add("active");
+                btn.innerText = btn.dataset["activeVersionName"] = entry.name;
+                btn.dataset["activeVersion"] = entry.version;
+            }
+        });
+    });
+})();
+</script>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/datafusion-contrib/datafusion-c" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="introduction.html">
+  Introduction
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="install.html">
+  Install
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="example/sql.html">
+  Example - SQL
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="current reference internal nav-link" href="#">
+  Raw C API
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="glib-api.html">
+  GLib API
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="developer.html">
+  Developer
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="news.html">
+  News
+ </a>
+</li>
+
+    
+</ul><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+
+<nav id="bd-toc-nav">
+    
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+
+<div class="tocsection editthispage">
+    <a href="https://github.com/datafusion-contrib/datafusion-c/edit/main/doc/source/raw-c-api.rst">
+        <i class="fas fa-pencil-alt"></i> Edit this page
+    </a>
+</div>
+
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section id="raw-c-api">
+<h1>Raw C API<a class="headerlink" href="#raw-c-api" title="Permalink to this heading">#</a></h1>
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.DFArrowArray">
+<span class="target" id="structDFArrowArray"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DFArrowArray</span></span></span><a class="headerlink" href="#c.DFArrowArray" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;<a class="reference internal" href="#datafusion_8h"><span class="std std-ref">datafusion.h</span></a>&gt;</em></div>
+<p>Same as the <code class="docutils literal notranslate"><span class="pre">ArrowArray</span></code> struct in the Arrow C data interface. </p>
+<p>See also: <a class="reference external" href="https://arrow.apache.org/docs/format/CDataInterface.html#the-arrowarray-structure">https://arrow.apache.org/docs/format/CDataInterface.html#the-arrowarray-structure</a> </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="c var">
+<dt class="sig sig-object c" id="c.DFArrowArray.length">
+<span class="target" id="structDFArrowArray_1a2226c722eb117991e373835a790db435"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">length</span></span></span><a class="headerlink" href="#c.DFArrowArray.length" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c var">
+<dt class="sig sig-object c" id="c.DFArrowArray.null_count">
+<span class="target" id="structDFArrowArray_1a21ce7f7ec67ef138cf147fa7b44b10de"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">null_count</span></span></span><a class="headerlink" href="#c.DFArrowArray.null_count" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c var">
+<dt class="sig sig-object c" id="c.DFArrowArray.offset">
+<span class="target" id="structDFArrowArray_1a1c2542a052f39d0a6b648e1a21348598"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">offset</span></span></span><a class="headerlink" href="#c.DFArrowArray.offset" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c var">
+<dt class="sig sig-object c" id="c.DFArrowArray.n_buffers">
+<span class="target" id="structDFArrowArray_1aa7d28fd9e84332d0962de6f50992a852"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">n_buffers</span></span></span><a class="headerlink" href="#c.DFArrowArray.n_buffers" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c var">
+<dt class="sig sig-object c" id="c.DFArrowArray.n_children">
+<span class="target" id="structDFArrowArray_1a99ed9384be3297e5dc486d612dc2d8a3"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">n_children</span></span></span><a class="headerlink" href="#c.DFArrowArray.n_children" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c var">
+<dt class="sig sig-object c" id="c.DFArrowArray.buffers">
+<span class="target" id="structDFArrowArray_1a971a22f6ea6e6cd41b7c95654afbd3b3"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">buffers</span></span></span><a class="headerlink" href="#c.DFArrowArray.buffers" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c var">
+<dt class="sig sig-object c" id="c.DFArrowArray.children">
+<span class="target" id="structDFArrowArray_1a8d0d03bf4dce65ff96aa4ac701d62a28"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFArrowArray" title="DFArrowArray"><span class="n"><span class="pre">DFArrowArray</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">children</span></span></span><a class="headerlink" href="#c.DFArrowArray.children" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c var">
+<dt class="sig sig-object c" id="c.DFArrowArray.dictionary">
+<span class="target" id="structDFArrowArray_1ab951a818713f53b2e61fbb885fb99a59"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFArrowArray" title="DFArrowArray"><span class="n"><span class="pre">DFArrowArray</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">dictionary</span></span></span><a class="headerlink" href="#c.DFArrowArray.dictionary" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c var">
+<dt class="sig sig-object c" id="c.DFArrowArray.release">
+<span class="target" id="structDFArrowArray_1aa9ecf6ccdb23b1834ea9116a9bf8a5af"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">release</span></span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFArrowArray" title="DFArrowArray"><span class="n"><span class="pre">DFArrowArray</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#c.DFArrowArray.release" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c var">
+<dt class="sig sig-object c" id="c.DFArrowArray.private_data">
+<span class="target" id="structDFArrowArray_1a69ae2f76ed6385f47f14409d06a4e76a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">private_data</span></span></span><a class="headerlink" href="#c.DFArrowArray.private_data" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.DFArrowSchema">
+<span class="target" id="structDFArrowSchema"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DFArrowSchema</span></span></span><a class="headerlink" href="#c.DFArrowSchema" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;<a class="reference internal" href="#datafusion_8h"><span class="std std-ref">datafusion.h</span></a>&gt;</em></div>
+<p>Same as the <code class="docutils literal notranslate"><span class="pre">ArrowSchema</span></code> struct in the Arrow C data interface. </p>
+<p>See also: <a class="reference external" href="https://arrow.apache.org/docs/format/CDataInterface.html#the-arrowschema-structure">https://arrow.apache.org/docs/format/CDataInterface.html#the-arrowschema-structure</a> </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="c var">
+<dt class="sig sig-object c" id="c.DFArrowSchema.format">
+<span class="target" id="structDFArrowSchema_1ad994bc051efb2c424da98353cd964768"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">format</span></span></span><a class="headerlink" href="#c.DFArrowSchema.format" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c var">
+<dt class="sig sig-object c" id="c.DFArrowSchema.name">
+<span class="target" id="structDFArrowSchema_1a50a38696c072a217339718b2aa6dd735"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><a class="headerlink" href="#c.DFArrowSchema.name" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c var">
+<dt class="sig sig-object c" id="c.DFArrowSchema.metadata">
+<span class="target" id="structDFArrowSchema_1a3a10ae68498253ac307049dcd706b0b1"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">metadata</span></span></span><a class="headerlink" href="#c.DFArrowSchema.metadata" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c var">
+<dt class="sig sig-object c" id="c.DFArrowSchema.flags">
+<span class="target" id="structDFArrowSchema_1a76b0c6c4fbfa2b67c8871ae8cc484c41"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">flags</span></span></span><a class="headerlink" href="#c.DFArrowSchema.flags" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c var">
+<dt class="sig sig-object c" id="c.DFArrowSchema.n_children">
+<span class="target" id="structDFArrowSchema_1ae21283c0c54ace792d6c48fdfaceabb9"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">n_children</span></span></span><a class="headerlink" href="#c.DFArrowSchema.n_children" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c var">
+<dt class="sig sig-object c" id="c.DFArrowSchema.children">
+<span class="target" id="structDFArrowSchema_1a34a1c5c19d06988c1f3b711e18257873"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFArrowSchema" title="DFArrowSchema"><span class="n"><span class="pre">DFArrowSchema</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">children</span></span></span><a class="headerlink" href="#c.DFArrowSchema.children" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c var">
+<dt class="sig sig-object c" id="c.DFArrowSchema.dictionary">
+<span class="target" id="structDFArrowSchema_1a43725fc37f726d499e8ea7518b906061"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFArrowSchema" title="DFArrowSchema"><span class="n"><span class="pre">DFArrowSchema</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">dictionary</span></span></span><a class="headerlink" href="#c.DFArrowSchema.dictionary" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c var">
+<dt class="sig sig-object c" id="c.DFArrowSchema.release">
+<span class="target" id="structDFArrowSchema_1ac8e41dbf9608b06c4acb04d63393b37a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">release</span></span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFArrowSchema" title="DFArrowSchema"><span class="n"><span class="pre">DFArrowSchema</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#c.DFArrowSchema.release" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c var">
+<dt class="sig sig-object c" id="c.DFArrowSchema.private_data">
+<span class="target" id="structDFArrowSchema_1ae354f37f2aeb65b29e4946276b78bb6a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">private_data</span></span></span><a class="headerlink" href="#c.DFArrowSchema.private_data" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.DFDataFrame">
+<span class="target" id="structDFDataFrame"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DFDataFrame</span></span></span><a class="headerlink" href="#c.DFDataFrame" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;<a class="reference internal" href="#datafusion_8h"><span class="std std-ref">datafusion.h</span></a>&gt;</em></div>
+<p>A struct for data frame. </p>
+<p>You get execution result as a data frame.</p>
+<p>You need to free data frame by <code class="docutils literal notranslate"><span class="pre">df_data_frame_free()</span></code> when no longer needed. </p>
+</dd></dl>
+
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.DFError">
+<span class="target" id="structDFError"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DFError</span></span></span><a class="headerlink" href="#c.DFError" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;<a class="reference internal" href="#datafusion_8h"><span class="std std-ref">datafusion.h</span></a>&gt;</em></div>
+<p>A struct that holds error information. </p>
+<p>You can access to error information by <code class="docutils literal notranslate"><span class="pre">df_error_get_code()</span></code> and <code class="docutils literal notranslate"><span class="pre">df_error_get_message()</span></code>.</p>
+<p>You need to free error information by <code class="docutils literal notranslate"><span class="pre">df_error_free()</span></code> when no longer needed. </p>
+</dd></dl>
+
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.DFSessionContext">
+<span class="target" id="structDFSessionContext"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DFSessionContext</span></span></span><a class="headerlink" href="#c.DFSessionContext" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;<a class="reference internal" href="#datafusion_8h"><span class="std std-ref">datafusion.h</span></a>&gt;</em></div>
+<p>An entry point of DataFusion API. </p>
+<p>You need to create <code class="docutils literal notranslate"><a class="reference internal" href="#structDFSessionContext"><span class="std std-ref"><span class="pre">DFSessionContext</span></span></a></code> to use DataFusion API. </p>
+</dd></dl>
+
+<dl>
+<dt class="sig sig-object c">
+<span class="target" id="datafusion_8h"></span><em><span class="pre">file</span></em> <span class="sig-name descname"><span class="pre">datafusion.h</span></span></dt>
+<dd><div class="docutils container">
+<em>#include &lt;stdarg.h&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;stdbool.h&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;stdint.h&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;stdlib.h&gt;</em></div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-defines">Defines</p>
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.DATAFUSION_MAJOR">
+<span class="target" id="datafusion_8h_1a3037291a187322c3a56614eb1368ed94"></span><span class="sig-name descname"><span class="n"><span class="pre">DATAFUSION_MAJOR</span></span></span><a class="headerlink" href="#c.DATAFUSION_MAJOR" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.DATAFUSION_MINOR">
+<span class="target" id="datafusion_8h_1a087093d2aa6cf52a19fc0cd6e05f57ca"></span><span class="sig-name descname"><span class="n"><span class="pre">DATAFUSION_MINOR</span></span></span><a class="headerlink" href="#c.DATAFUSION_MINOR" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.DATAFUSION_PATCH">
+<span class="target" id="datafusion_8h_1ab217f8afacc5c3db49f4fa2ef6b3af03"></span><span class="sig-name descname"><span class="n"><span class="pre">DATAFUSION_PATCH</span></span></span><a class="headerlink" href="#c.DATAFUSION_PATCH" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-typedefs">Typedefs</p>
+<dl class="c type">
+<dt class="sig sig-object c">
+<span class="target" id="datafusion_8h_1abc9a8b54a54742052ea8743e6c80091a"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><a class="reference internal" href="#c.DFErrorCode" title="DFErrorCode"><span class="n"><span class="pre">DFErrorCode</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DFErrorCode</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="c type">
+<dt class="sig sig-object c" id="c.DFCSVReadOptions">
+<span class="target" id="datafusion_8h_1a154e9ae6eec5593df62ebabfe200d5b2"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFCSVReadOptions" title="DFCSVReadOptions"><span class="n"><span class="pre">DFCSVReadOptions</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DFCSVReadOptions</span></span></span><a class="headerlink" href="#c.DFCSVReadOptions" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c type">
+<dt class="sig sig-object c">
+<span class="target" id="datafusion_8h_1abe115bab2590cd6b72f47e98b50a5ab9"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFDataFrame" title="DFDataFrame"><span class="n"><span class="pre">DFDataFrame</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DFDataFrame</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="c type">
+<dt class="sig sig-object c">
+<span class="target" id="datafusion_8h_1a0a22675fb716d5532e941fb122272944"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFError" title="DFError"><span class="n"><span class="pre">DFError</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DFError</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="c type">
+<dt class="sig sig-object c" id="c.DFParquetReadOptions">
+<span class="target" id="datafusion_8h_1a7a9db29703d969f748b6750d8fb5b016"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFParquetReadOptions" title="DFParquetReadOptions"><span class="n"><span class="pre">DFParquetReadOptions</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DFParquetReadOptions</span></span></span><a class="headerlink" href="#c.DFParquetReadOptions" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c type">
+<dt class="sig sig-object c">
+<span class="target" id="datafusion_8h_1a37b76b162353d80720c43f066af08422"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFSessionContext" title="DFSessionContext"><span class="n"><span class="pre">DFSessionContext</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DFSessionContext</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="c type">
+<dt class="sig sig-object c">
+<span class="target" id="datafusion_8h_1a27e622be07544337b3335938060a3a5f"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFArrowSchema" title="DFArrowSchema"><span class="n"><span class="pre">DFArrowSchema</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DFArrowSchema</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="c type">
+<dt class="sig sig-object c">
+<span class="target" id="datafusion_8h_1af2f3a5438840c1e873e132381f849c77"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFArrowArray" title="DFArrowArray"><span class="n"><span class="pre">DFArrowArray</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DFArrowArray</span></span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-enums">Enums</p>
+<dl class="c enum">
+<dt class="sig sig-object c" id="c.DFErrorCode">
+<span class="target" id="datafusion_8h_1af28a4d9bce1a67fb8e0afaa733d457ec"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DFErrorCode</span></span></span><a class="headerlink" href="#c.DFErrorCode" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Error category. </p>
+<p><em>Values:</em></p>
+<dl class="c enumerator">
+<dt class="sig sig-object c" id="c.DFErrorCode.DF_ERROR_CODE_ARROW">
+<span class="target" id="datafusion_8h_1af28a4d9bce1a67fb8e0afaa733d457eca852bb2ab5462f5835bd732bbd1cd9849"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DF_ERROR_CODE_ARROW</span></span></span><a class="headerlink" href="#c.DFErrorCode.DF_ERROR_CODE_ARROW" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c enumerator">
+<dt class="sig sig-object c" id="c.DFErrorCode.DF_ERROR_CODE_PARQUET">
+<span class="target" id="datafusion_8h_1af28a4d9bce1a67fb8e0afaa733d457eca19e286384d4c781f0426a5bed1ee9b2f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DF_ERROR_CODE_PARQUET</span></span></span><a class="headerlink" href="#c.DFErrorCode.DF_ERROR_CODE_PARQUET" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c enumerator">
+<dt class="sig sig-object c" id="c.DFErrorCode.DF_ERROR_CODE_AVRO">
+<span class="target" id="datafusion_8h_1af28a4d9bce1a67fb8e0afaa733d457eca34d3fc8d43376669686f5ec558805c7d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DF_ERROR_CODE_AVRO</span></span></span><a class="headerlink" href="#c.DFErrorCode.DF_ERROR_CODE_AVRO" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c enumerator">
+<dt class="sig sig-object c" id="c.DFErrorCode.DF_ERROR_CODE_OBJECT_STORE">
+<span class="target" id="datafusion_8h_1af28a4d9bce1a67fb8e0afaa733d457eca661ab6a77b6c84cc153891e02dc3bd5f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DF_ERROR_CODE_OBJECT_STORE</span></span></span><a class="headerlink" href="#c.DFErrorCode.DF_ERROR_CODE_OBJECT_STORE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c enumerator">
+<dt class="sig sig-object c" id="c.DFErrorCode.DF_ERROR_CODE_IO">
+<span class="target" id="datafusion_8h_1af28a4d9bce1a67fb8e0afaa733d457eca1a7b74771a667f7737c05ad7ce635dbe"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DF_ERROR_CODE_IO</span></span></span><a class="headerlink" href="#c.DFErrorCode.DF_ERROR_CODE_IO" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c enumerator">
+<dt class="sig sig-object c" id="c.DFErrorCode.DF_ERROR_CODE_SQL">
+<span class="target" id="datafusion_8h_1af28a4d9bce1a67fb8e0afaa733d457eca67504b5a80a18d3c9600b5c0be855e69"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DF_ERROR_CODE_SQL</span></span></span><a class="headerlink" href="#c.DFErrorCode.DF_ERROR_CODE_SQL" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c enumerator">
+<dt class="sig sig-object c" id="c.DFErrorCode.DF_ERROR_CODE_NOT_IMPLEMENTED">
+<span class="target" id="datafusion_8h_1af28a4d9bce1a67fb8e0afaa733d457ecad2c408d04d3866f4cbe9495278c3d87f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DF_ERROR_CODE_NOT_IMPLEMENTED</span></span></span><a class="headerlink" href="#c.DFErrorCode.DF_ERROR_CODE_NOT_IMPLEMENTED" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c enumerator">
+<dt class="sig sig-object c" id="c.DFErrorCode.DF_ERROR_CODE_INTERNAL">
+<span class="target" id="datafusion_8h_1af28a4d9bce1a67fb8e0afaa733d457eca2bc225ef32942752a5fe46b9397206ad"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DF_ERROR_CODE_INTERNAL</span></span></span><a class="headerlink" href="#c.DFErrorCode.DF_ERROR_CODE_INTERNAL" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c enumerator">
+<dt class="sig sig-object c" id="c.DFErrorCode.DF_ERROR_CODE_PLAN">
+<span class="target" id="datafusion_8h_1af28a4d9bce1a67fb8e0afaa733d457eca5ae8f9b11fccb1042e4d96cc697b4b03"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DF_ERROR_CODE_PLAN</span></span></span><a class="headerlink" href="#c.DFErrorCode.DF_ERROR_CODE_PLAN" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c enumerator">
+<dt class="sig sig-object c" id="c.DFErrorCode.DF_ERROR_CODE_SCHEMA">
+<span class="target" id="datafusion_8h_1af28a4d9bce1a67fb8e0afaa733d457eca6b54937195de552d2903c9bdac1ea1d1"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DF_ERROR_CODE_SCHEMA</span></span></span><a class="headerlink" href="#c.DFErrorCode.DF_ERROR_CODE_SCHEMA" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c enumerator">
+<dt class="sig sig-object c" id="c.DFErrorCode.DF_ERROR_CODE_EXECUTION">
+<span class="target" id="datafusion_8h_1af28a4d9bce1a67fb8e0afaa733d457eca139f79d4559f4b34f154889921fef073"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DF_ERROR_CODE_EXECUTION</span></span></span><a class="headerlink" href="#c.DFErrorCode.DF_ERROR_CODE_EXECUTION" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c enumerator">
+<dt class="sig sig-object c" id="c.DFErrorCode.DF_ERROR_CODE_RESOURCES_EXHAUSTED">
+<span class="target" id="datafusion_8h_1af28a4d9bce1a67fb8e0afaa733d457ecadd8c40ed2139108f054ae22f1cae0a66"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DF_ERROR_CODE_RESOURCES_EXHAUSTED</span></span></span><a class="headerlink" href="#c.DFErrorCode.DF_ERROR_CODE_RESOURCES_EXHAUSTED" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c enumerator">
+<dt class="sig sig-object c" id="c.DFErrorCode.DF_ERROR_CODE_EXTERNAL">
+<span class="target" id="datafusion_8h_1af28a4d9bce1a67fb8e0afaa733d457eca60cbac69565dbf1bdfd31712b1349f5c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DF_ERROR_CODE_EXTERNAL</span></span></span><a class="headerlink" href="#c.DFErrorCode.DF_ERROR_CODE_EXTERNAL" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c enumerator">
+<dt class="sig sig-object c" id="c.DFErrorCode.DF_ERROR_CODE_JIT">
+<span class="target" id="datafusion_8h_1af28a4d9bce1a67fb8e0afaa733d457eca1ee2b72a02f5fa4f5b8a488412c32e72"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DF_ERROR_CODE_JIT</span></span></span><a class="headerlink" href="#c.DFErrorCode.DF_ERROR_CODE_JIT" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_error_new">
+<span class="target" id="datafusion_8h_1a0824bc30564e5c26c90a1e67bbdb783e"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFError" title="DFError"><span class="n"><span class="pre">DFError</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">df_error_new</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><a class="reference internal" href="#c.DFErrorCode" title="DFErrorCode"><span class="n"><span class="pre">DFErrorCode</span></span></a><span class="w"> </span><span class="n"><span class="pre">code</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">message</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_error_new" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_error_free">
+<span class="target" id="datafusion_8h_1aa3d4cb6d6ba096998d224a0fd0de5077"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_error_free</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFError" title="DFError"><span class="n"><span class="pre">DFError</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">_error</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_error_free" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Free the given <code class="docutils literal notranslate"><a class="reference internal" href="#structDFError"><span class="std std-ref"><span class="pre">DFError</span></span></a></code>. </p>
+<section id="datafusion_8h_1autotoc_md0">
+<h2>Safety<a class="headerlink" href="#datafusion_8h_1autotoc_md0" title="Permalink to this heading">#</a></h2>
+<p id="datafusion_8h_1autotoc_md0">This function should not be called with <code class="docutils literal notranslate"><span class="pre">error</span></code> that is not created by <code class="docutils literal notranslate"><span class="pre">df_error_new()</span></code>.</p>
+<p>This function should not be called for the same <code class="docutils literal notranslate"><span class="pre">error</span></code> multiple times. </p>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_error</strong> – A <code class="docutils literal notranslate"><a class="reference internal" href="#structDFError"><span class="std std-ref"><span class="pre">DFError</span></span></a></code> returned by <code class="docutils literal notranslate"><span class="pre">df_*()</span></code> functions.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_error_get_message">
+<span class="target" id="datafusion_8h_1a10a78af31e50c42e8c0a873db74e8071"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">df_error_get_message</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFError" title="DFError"><span class="n"><span class="pre">DFError</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">error</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_error_get_message" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get a message of this error. </p>
+<section id="datafusion_8h_1autotoc_md1">
+<h2>Safety<a class="headerlink" href="#datafusion_8h_1autotoc_md1" title="Permalink to this heading">#</a></h2>
+<p id="datafusion_8h_1autotoc_md1">This function should not be called with <code class="docutils literal notranslate"><span class="pre">error</span></code> that is not created by <code class="docutils literal notranslate"><span class="pre">df_error_new()</span></code>.</p>
+<p>This function should not be called with <code class="docutils literal notranslate"><span class="pre">error</span></code> that is freed by <code class="docutils literal notranslate"><span class="pre">df_error_free()</span></code>. </p>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>error</strong> – A <code class="docutils literal notranslate"><a class="reference internal" href="#structDFError"><span class="std std-ref"><span class="pre">DFError</span></span></a></code>. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A message of this error.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_error_get_code">
+<span class="target" id="datafusion_8h_1aeeb1f43f7dae9261f4399d6d90b47925"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><a class="reference internal" href="#c.DFErrorCode" title="DFErrorCode"><span class="n"><span class="pre">DFErrorCode</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_error_get_code</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFError" title="DFError"><span class="n"><span class="pre">DFError</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">error</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_error_get_code" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get a code of this error. </p>
+<section id="datafusion_8h_1autotoc_md2">
+<h2>Safety<a class="headerlink" href="#datafusion_8h_1autotoc_md2" title="Permalink to this heading">#</a></h2>
+<p id="datafusion_8h_1autotoc_md2">This function should not be called with <code class="docutils literal notranslate"><span class="pre">error</span></code> that is not created by <code class="docutils literal notranslate"><span class="pre">df_error_new()</span></code>.</p>
+<p>This function should not be called with <code class="docutils literal notranslate"><span class="pre">error</span></code> that is freed by <code class="docutils literal notranslate"><span class="pre">df_error_free()</span></code>. </p>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>error</strong> – A <code class="docutils literal notranslate"><a class="reference internal" href="#structDFError"><span class="std std-ref"><span class="pre">DFError</span></span></a></code>. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A code of this error.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_data_frame_free">
+<span class="target" id="datafusion_8h_1a3cbc6250cd92b60f88fb7aa1568c445c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_data_frame_free</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFDataFrame" title="DFDataFrame"><span class="n"><span class="pre">DFDataFrame</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">_data_frame</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_data_frame_free" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Free the given <code class="docutils literal notranslate"><a class="reference internal" href="#structDFDataFrame"><span class="std std-ref"><span class="pre">DFDataFrame</span></span></a></code>. </p>
+<section id="datafusion_8h_1autotoc_md3">
+<h2>Safety<a class="headerlink" href="#datafusion_8h_1autotoc_md3" title="Permalink to this heading">#</a></h2>
+<p id="datafusion_8h_1autotoc_md3">This function should not be called for the same <code class="docutils literal notranslate"><span class="pre">data_frame</span></code> multiple times. </p>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_data_frame</strong> – A <code class="docutils literal notranslate"><a class="reference internal" href="#structDFDataFrame"><span class="std std-ref"><span class="pre">DFDataFrame</span></span></a></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_data_frame_show">
+<span class="target" id="datafusion_8h_1a677163d52fdabb244caa45020896e75e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_data_frame_show</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFDataFrame" title="DFDataFrame"><span class="n"><span class="pre">DFDataFrame</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">data_frame</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFError" title="DFError"><span class="n"><span class="pre">DFError</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">error</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_data_frame_show" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Show the given data frame contents to the standard output. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_frame</strong> – A <code class="docutils literal notranslate"><a class="reference internal" href="#structDFDataFrame"><span class="std std-ref"><span class="pre">DFDataFrame</span></span></a></code> to be shown. </p></li>
+<li><p><strong>error</strong> – Return location for a <code class="docutils literal notranslate"><a class="reference internal" href="#structDFError"><span class="std std-ref"><span class="pre">DFError</span></span></a></code> or <code class="docutils literal notranslate"><span class="pre">NULL</span></code>. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_data_frame_export">
+<span class="target" id="datafusion_8h_1ad31afecc4ec0bba4f99a4d1dc9524539"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_data_frame_export</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFDataFrame" title="DFDataFrame"><span class="n"><span class="pre">DFDataFrame</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">data_frame</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFArrowSchema" title="DFArrowSchema"><span class="n"><span class="pre">DFArrowSchema</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">c_abi_schema_out</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFArrowArray" title="DFArrowArray"><span class="n"><span class="pre">DFArrowArray</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">c_abi_record_batches_out</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFError" title="DFError"><span class="n"><span class="pre">DFError</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">error</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_data_frame_export" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_session_context_new">
+<span class="target" id="datafusion_8h_1a1700198e5eed45d76ced59bb78ddd2e9"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFSessionContext" title="DFSessionContext"><span class="n"><span class="pre">DFSessionContext</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">df_session_context_new</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_session_context_new" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Create a new <code class="docutils literal notranslate"><a class="reference internal" href="#structDFSessionContext"><span class="std std-ref"><span class="pre">DFSessionContext</span></span></a></code>. </p>
+<p>
+It should be freed by <code class="docutils literal notranslate"><span class="pre">df_session_context_free()</span></code> when no longer needed. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A newly created <code class="docutils literal notranslate"><a class="reference internal" href="#structDFSessionContext"><span class="std std-ref"><span class="pre">DFSessionContext</span></span></a></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_session_context_free">
+<span class="target" id="datafusion_8h_1ad06ccb819c35e34248c3e14d42a372a4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_session_context_free</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFSessionContext" title="DFSessionContext"><span class="n"><span class="pre">DFSessionContext</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">_context</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_session_context_free" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Free the given <code class="docutils literal notranslate"><a class="reference internal" href="#structDFSessionContext"><span class="std std-ref"><span class="pre">DFSessionContext</span></span></a></code>. </p>
+<section id="datafusion_8h_1autotoc_md4">
+<h2>Safety<a class="headerlink" href="#datafusion_8h_1autotoc_md4" title="Permalink to this heading">#</a></h2>
+<p id="datafusion_8h_1autotoc_md4">This function should not be called with <code class="docutils literal notranslate"><span class="pre">context</span></code> that is not created by <code class="docutils literal notranslate"><span class="pre">df_session_context_new()</span></code>.</p>
+<p>This function should not be called for the same <code class="docutils literal notranslate"><span class="pre">context</span></code> multiple times. </p>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_context</strong> – A <code class="docutils literal notranslate"><a class="reference internal" href="#structDFSessionContext"><span class="std std-ref"><span class="pre">DFSessionContext</span></span></a></code> created by <code class="docutils literal notranslate"><span class="pre">df_session_context_new()</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_session_context_sql">
+<span class="target" id="datafusion_8h_1aaf44d62ea7767f8d75a1dcbb4e32680c"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFDataFrame" title="DFDataFrame"><span class="n"><span class="pre">DFDataFrame</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">df_session_context_sql</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFSessionContext" title="DFSessionContext"><span class="n"><span class="pre">DFSessionContext</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">context</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">sql</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFError" title="DFError"><span class="n"><span class="pre">DFError</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">error</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_session_context_sql" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_session_context_deregister">
+<span class="target" id="datafusion_8h_1a485c7a2d0fdf755bfbd6bc5365957c41"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_session_context_deregister</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFSessionContext" title="DFSessionContext"><span class="n"><span class="pre">DFSessionContext</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">context</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">name</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFError" title="DFError"><span class="n"><span class="pre">DFError</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">error</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_session_context_deregister" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_session_context_register_record_batches">
+<span class="target" id="datafusion_8h_1afbb105010d8d9271df08b5d400bd63e3"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_session_context_register_record_batches</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFSessionContext" title="DFSessionContext"><span class="n"><span class="pre">DFSessionContext</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">context</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">name</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFArrowSchema" title="DFArrowSchema"><span class="n"><span class="pre">DFArrowSchema</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">c_abi_schema</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFArrowArray" title="DFArrowArray"><span class="n"><span class="pre">DFArrowArray</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">c_abi_record_batches</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">n_record_batches</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFError" title="DFError"><span class="n"><span class="pre">DFError</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">error</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_session_context_register_record_batches" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_csv_read_options_new">
+<span class="target" id="datafusion_8h_1a6d295a1d9314849fbddcf6d9e8a8df0f"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFCSVReadOptions" title="DFCSVReadOptions"><span class="n"><span class="pre">DFCSVReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">df_csv_read_options_new</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_csv_read_options_new" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_csv_read_options_free">
+<span class="target" id="datafusion_8h_1affa70688e27e9471c5644a8a40d05186"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_csv_read_options_free</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFCSVReadOptions" title="DFCSVReadOptions"><span class="n"><span class="pre">DFCSVReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">_options</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_csv_read_options_free" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_csv_read_options_set_has_header">
+<span class="target" id="datafusion_8h_1ad63232781865ce2473dccf6de9cec83a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_csv_read_options_set_has_header</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFCSVReadOptions" title="DFCSVReadOptions"><span class="n"><span class="pre">DFCSVReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">options</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n"><span class="pre">has_header</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_csv_read_options_set_has_header" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_csv_read_options_get_has_header">
+<span class="target" id="datafusion_8h_1aaacfd9f8d04013af9c036d60c6033f72"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_csv_read_options_get_has_header</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFCSVReadOptions" title="DFCSVReadOptions"><span class="n"><span class="pre">DFCSVReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">options</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_csv_read_options_get_has_header" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_csv_read_options_set_delimiter">
+<span class="target" id="datafusion_8h_1af8aa02483297be7c09df64ad6a87a309"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_csv_read_options_set_delimiter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFCSVReadOptions" title="DFCSVReadOptions"><span class="n"><span class="pre">DFCSVReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">options</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="n"><span class="pre">delimiter</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_csv_read_options_set_delimiter" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_csv_read_options_get_delimiter">
+<span class="target" id="datafusion_8h_1ac044763eeae2ed10142876d67ea951cf"></span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_csv_read_options_get_delimiter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFCSVReadOptions" title="DFCSVReadOptions"><span class="n"><span class="pre">DFCSVReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">options</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_csv_read_options_get_delimiter" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_csv_read_options_set_schema">
+<span class="target" id="datafusion_8h_1ac9d6b1ae9ae13d960efbcc22f0a91398"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_csv_read_options_set_schema</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFCSVReadOptions" title="DFCSVReadOptions"><span class="n"><span class="pre">DFCSVReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">options</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFArrowSchema" title="DFArrowSchema"><span class="n"><span class="pre">DFArrowSchema</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">schema</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFError" title="DFError"><span class="n"><span class="pre">DFError</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">error</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_csv_read_options_set_schema" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_csv_read_options_get_schema">
+<span class="target" id="datafusion_8h_1abb66bf1f977870e2d73b3b2f49b1990a"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFArrowSchema" title="DFArrowSchema"><span class="n"><span class="pre">DFArrowSchema</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">df_csv_read_options_get_schema</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFCSVReadOptions" title="DFCSVReadOptions"><span class="n"><span class="pre">DFCSVReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">options</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFError" title="DFError"><span class="n"><span class="pre">DFError</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">error</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_csv_read_options_get_schema" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_csv_read_options_set_schema_infer_max_records">
+<span class="target" id="datafusion_8h_1a2dc4bb4ba6d0f4a672010b77357654d0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_csv_read_options_set_schema_infer_max_records</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFCSVReadOptions" title="DFCSVReadOptions"><span class="n"><span class="pre">DFCSVReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">options</span></span>, <span class="n"><span class="pre">uintptr_t</span></span><span class="w"> </span><span class="n"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_csv_read_options_set_schema_infer_max_records" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_csv_read_options_get_schema_infer_max_records">
+<span class="target" id="datafusion_8h_1ae95defa0ae7ed49d7ce67de5815b8a20"></span><span class="n"><span class="pre">uintptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_csv_read_options_get_schema_infer_max_records</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFCSVReadOptions" title="DFCSVReadOptions"><span class="n"><span class="pre">DFCSVReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">options</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_csv_read_options_get_schema_infer_max_records" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_csv_read_options_set_file_extension">
+<span class="target" id="datafusion_8h_1a79e2b578f660de1f55472c41ac0a0adf"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_csv_read_options_set_file_extension</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFCSVReadOptions" title="DFCSVReadOptions"><span class="n"><span class="pre">DFCSVReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">options</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">file_extension</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFError" title="DFError"><span class="n"><span class="pre">DFError</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">error</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_csv_read_options_set_file_extension" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_csv_read_options_get_file_extension">
+<span class="target" id="datafusion_8h_1a4f7db2f4b696e346502f4dab58568a10"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">df_csv_read_options_get_file_extension</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFCSVReadOptions" title="DFCSVReadOptions"><span class="n"><span class="pre">DFCSVReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">options</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_csv_read_options_get_file_extension" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_csv_read_options_set_table_partition_columns">
+<span class="target" id="datafusion_8h_1a4cdeff5696a1db54ba4ca522ea13eb1a"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_csv_read_options_set_table_partition_columns</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFCSVReadOptions" title="DFCSVReadOptions"><span class="n"><span class="pre">DFCSVReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">options</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">columns</span></span>, <span class="n"><span class="pre">uintptr_t</span></span><span class="w"> </span><span class="n"><span class="pre">n_columns</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFError" title="DFError"><span class="n"><span class="pre">DFError</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">error</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_csv_read_options_set_table_partition_columns" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_csv_read_options_get_table_partition_columns">
+<span class="target" id="datafusion_8h_1a6db154b43607c3d074b5b5fe9c207b53"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">df_csv_read_options_get_table_partition_columns</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFCSVReadOptions" title="DFCSVReadOptions"><span class="n"><span class="pre">DFCSVReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">options</span></span>, <span class="n"><span class="pre">uintptr_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">n_columns</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_csv_read_options_get_table_partition_columns" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_session_context_register_csv">
+<span class="target" id="datafusion_8h_1a8237b55d1b5e1b5a4adedc53bb43abe4"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_session_context_register_csv</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFSessionContext" title="DFSessionContext"><span class="n"><span class="pre">DFSessionContext</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">context</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">url</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFCSVReadOptions" title="DFCSVReadOptions"><span class="n"><span class="pre">DFCSVReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">options</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFError" title="DFError"><span class="n"><span class="pre">DFError</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">error</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_session_context_register_csv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_parquet_read_options_new">
+<span class="target" id="datafusion_8h_1a74931695eb67a5c4fca3adc856c13546"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFParquetReadOptions" title="DFParquetReadOptions"><span class="n"><span class="pre">DFParquetReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">df_parquet_read_options_new</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_parquet_read_options_new" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_parquet_read_options_free">
+<span class="target" id="datafusion_8h_1a02466ca1b001d6d016fce3faf2d8af50"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_parquet_read_options_free</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFParquetReadOptions" title="DFParquetReadOptions"><span class="n"><span class="pre">DFParquetReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">_options</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_parquet_read_options_free" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_parquet_read_options_set_file_extension">
+<span class="target" id="datafusion_8h_1a96db913671a854f314f57bdd7a349e05"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_parquet_read_options_set_file_extension</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFParquetReadOptions" title="DFParquetReadOptions"><span class="n"><span class="pre">DFParquetReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">options</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">file_extension</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFError" title="DFError"><span class="n"><span class="pre">DFError</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">error</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_parquet_read_options_set_file_extension" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_parquet_read_options_get_file_extension">
+<span class="target" id="datafusion_8h_1ad2162b43287d631f3792d07ad57d19ba"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">df_parquet_read_options_get_file_extension</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFParquetReadOptions" title="DFParquetReadOptions"><span class="n"><span class="pre">DFParquetReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">options</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_parquet_read_options_get_file_extension" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_parquet_read_options_set_table_partition_columns">
+<span class="target" id="datafusion_8h_1aa1d4b484e96a86382fe352dcf883444f"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_parquet_read_options_set_table_partition_columns</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFParquetReadOptions" title="DFParquetReadOptions"><span class="n"><span class="pre">DFParquetReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">options</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">columns</span></span>, <span class="n"><span class="pre">uintptr_t</span></span><span class="w"> </span><span class="n"><span class="pre">n_columns</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFError" title="DFError"><span class="n"><span class="pre">DFError</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">error</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_parquet_read_options_set_table_partition_columns" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_parquet_read_options_get_table_partition_columns">
+<span class="target" id="datafusion_8h_1aab1f588722f4938a969c779cd9f5fe10"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">df_parquet_read_options_get_table_partition_columns</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFParquetReadOptions" title="DFParquetReadOptions"><span class="n"><span class="pre">DFParquetReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">options</span></span>, <span class="n"><span class="pre">uintptr_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">n_columns</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_parquet_read_options_get_table_partition_columns" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_parquet_read_options_set_pruning">
+<span class="target" id="datafusion_8h_1a854bf0552a8a20efe3c61e3dde74381b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_parquet_read_options_set_pruning</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFParquetReadOptions" title="DFParquetReadOptions"><span class="n"><span class="pre">DFParquetReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">options</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n"><span class="pre">pruning</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_parquet_read_options_set_pruning" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_parquet_read_options_get_pruning">
+<span class="target" id="datafusion_8h_1a50c0b7fcd0599331676654792e070739"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_parquet_read_options_get_pruning</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFParquetReadOptions" title="DFParquetReadOptions"><span class="n"><span class="pre">DFParquetReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">options</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_parquet_read_options_get_pruning" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_session_context_register_parquet">
+<span class="target" id="datafusion_8h_1ab186164f99faf8571c667850045ca44f"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_session_context_register_parquet</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFSessionContext" title="DFSessionContext"><span class="n"><span class="pre">DFSessionContext</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">context</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">url</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFParquetReadOptions" title="DFParquetReadOptions"><span class="n"><span class="pre">DFParquetReadOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">options</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFError" title="DFError"><span class="n"><span class="pre">DFError</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">error</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_session_context_register_parquet" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+              </article>
+              
+
+              
+              <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="example/sql.html" title="previous page">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">Example - SQL</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="glib-api.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">GLib API</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
+</div>
+              </footer>
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022-2022, Sutou Kouhei.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>
