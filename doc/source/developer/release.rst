@@ -61,7 +61,7 @@ APT/Yum repositories at https://apache.jfrog.io/artifactory/arrow/ are
 for Apache Arrow. We just reuse these APT/Yum repositories. So we must
 follow policy of https://apache.jfrog.io/artifactory/arrow/ .
 
-.. see-also::
+.. seealso::
 
    `Release Management Guide for Apache Arrow <apache-arrow-release_>`__.
 
