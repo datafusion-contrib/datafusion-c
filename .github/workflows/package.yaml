@@ -23,6 +23,47 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  source:
+    name: Source
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare
+        run: |
+          case ${GITHUB_REF} in
+            refs/tags/*)
+              version=${GITHUB_REF#refs/tags/}
+              ;;
+            *)
+              version=${GITHUB_SHA}
+              ;;
+          esac
+          echo "VERSION=${version}" >> ${GITHUB_ENV}
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+          path: datafusion-c-${{ env.VERSION }}
+      - name: Archive
+        run: |
+          rm -rf datafusion-c-${VERSION}/.git
+          tar cvzf datafusion-c-${VERSION}.tar.gz datafusion-c-${VERSION}
+          zip -r datafusion-c-${VERSION}.zip datafusion-c-${VERSION}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: tar.gz
+          path: datafusion-c-${{ env.VERSION }}.tar.gz
+      - uses: actions/upload-artifact@v3
+        with:
+          name: zip
+          path: datafusion-c-${{ env.VERSION }}.zip
+      - uses: softprops/action-gh-release@v1
+        if: |
+          startsWith(github.ref, 'refs/tags/')
+        with:
+          body_path: datafusion-c-${{ env.VERSION }}/doc/source/news/${{ env.VERSION }}.md
+          files: |
+            datafusion-c-${{ env.VERSION }}.tar.gz
+            datafusion-c-${{ env.VERSION }}.zip
+
   build:
     name: Build
     runs-on: ubuntu-22.04
@@ -84,22 +125,22 @@ jobs:
           #   target: debian-bookworm-arm64
           #   test-docker-image: arm64v8/debian:bookworm
           - label: Ubuntu Focal amd64
-            id: debian-focal-amd64
+            id: ubuntu-focal-amd64
             task-namespace: apt
             target: ubuntu-focal
             test-docker-image: ubuntu:focal
           # - label: Ubuntu Focal arm64
-          #   id: debian-focal-arm64
+          #   id: ubuntu-focal-arm64
           #   task-namespace: apt
           #   target: ubuntu-focal-arm64
           #   test-docker-image: arm64v8/ubuntu:focal
           - label: Ubuntu Jammy amd64
-            id: debian-jammy-amd64
+            id: ubuntu-jammy-amd64
             task-namespace: apt
             target: ubuntu-jammy
             test-docker-image: ubuntu:jammy
           # - label: Ubuntu Jammy arm64
-          #   id: debian-jammy-arm64
+          #   id: ubuntu-jammy-arm64
           #   task-namespace: apt
           #   target: ubuntu-jammy-arm64
           #   test-docker-image: arm64v8/ubuntu:jammy
@@ -107,8 +148,6 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Checkout Arrow
-        uses: actions/checkout@v3
       - name: Install dependencies
         run: |
           sudo apt update
@@ -118,8 +157,7 @@ jobs:
             ruby
       - name: Update version
         if: |
-          !startsWith(github.ref, 'refs/tags/') &&
-          !startsWith(github.ref, 'refs/heads/maintenance/')
+          !startsWith(github.ref, 'refs/tags/')
         run: |
           cd package
           rake version:update RELEASE_DATE=$(date +%Y-%m-%d)
@@ -145,13 +183,16 @@ jobs:
           startsWith(github.ref, 'refs/tags/')
         run: |
           mkdir -p ${{ matrix.id }}
+          shopt -s globstar
           cp -a package/${{ matrix.task-namespace }}/repositories/**/*.* ${{ matrix.id }}/
           tar czf ${{ matrix.id }}.tar.gz ${{ matrix.id }}
+          echo "VERSION=${GITHUB_REF#refs/tags/}" >> ${GITHUB_ENV}
       - name: Upload to release
         uses: softprops/action-gh-release@v1
         if: |
           startsWith(github.ref, 'refs/tags/')
         with:
+          body_path: doc/source/news/${{ env.VERSION }}.md
           files: |
             ${{ matrix.id }}.tar.gz
       - name: Test
@@ -160,4 +201,5 @@ jobs:
             --rm \
             --volume ${PWD}:/host:ro \
             ${{ matrix.test-docker-image }} \
-            /host/package/${{ matrix.task-namespace }}/test.sh
+            /host/package/${{ matrix.task-namespace }}/test.sh \
+            local

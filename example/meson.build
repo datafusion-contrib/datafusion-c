@@ -38,10 +38,13 @@ if generate_vapi
              kwargs: vala_example_executable_kwargs)
 endif
 
-install_data('sql-glib.py',
-             'sql-glib.rb',
-             'sql-glib.vala',
-             'sql.c',
+install_data('sql.c',
              'sql.py',
              'sql.rb',
+             install_dir: data_dir / 'datafusion' / 'example')
+
+install_data('sql-glib.c',
+             'sql-glib.py',
+             'sql-glib.rb',
+             'sql-glib.vala',
              install_dir: data_dir / 'datafusion-glib' / 'example')

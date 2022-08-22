@@ -16,12 +16,42 @@
 
 set -exu
 
+if [ $# -lt 1 ]; then
+  echo "Usage: $0 rc"
+  echo "       $0 staging-rc"
+  echo "       $0 release"
+  echo "       $0 staging-release"
+  echo "       $0 local"
+  echo " e.g.: $0 rc              # Verify RC"
+  echo " e.g.: $0 staging-rc      # Verify RC on staging"
+  echo " e.g.: $0 release         # Verify release"
+  echo " e.g.: $0 staging-release # Verify release on staging"
+  echo " e.g.: $0 local           # Verify packages on local"
+  exit 1
+fi
+
+TYPE="$1"
+
 echo "::group::Prepare repository"
 
 distribution=$(. /etc/os-release && echo "${ID}")
 distribution_version=$(. /etc/os-release && echo "${VERSION_ID}" | grep -o "^[0-9]*")
 
-dnf install -y https://apache.jfrog.io/artifactory/arrow/${distribution}/${distribution_version}/apache-arrow-release-latest.rpm
+artifactory_base_url="https://apache.jfrog.io/artifactory/arrow/${distribution}"
+case ${TYPE} in
+  rc|staging-rc|staging-release)
+    suffix=-${TYPE%-release}
+    artifactory_base_url+="${suffix}"
+    ;;
+esac
+dnf install -y ${artifactory_base_url}/${distribution_version}/apache-arrow-release-latest.rpm
+case ${TYPE} in
+  rc|staging-rc|staging-release)
+    sed -i'' \
+        -e "s,/${distribution}/,/${distribution}${suffix}/,g" \
+        /etc/yum.repos.d/Apache-Arrow.repo
+    ;;
+esac
 
 case ${distribution_version} in
   8)
@@ -33,12 +63,17 @@ case ${distribution_version} in
 esac
 
 # TODO: This is a workaround to install datafusion-glib-devel.
+# We can remove this when Apache Arrow 10.0.0 is released.
 ${DNF_INSTALL} \
   arrow-glib-devel
 
-repositories_dir=/host/package/yum/repositories/
-${DNF_INSTALL} \
-  ${repositories_dir}/${distribution}/${distribution_version}/$(arch)/Packages/*.rpm
+if [[ ${TYPE} == "local" ]]; then
+  repositories_dir=/host/package/yum/repositories/
+  ${DNF_INSTALL} \
+    ${repositories_dir}/${distribution}/${distribution_version}/$(arch)/Packages/*.rpm
+else
+  ${DNF_INSTALL} datafusion-glib-devel
+fi
 echo "::endgroup::"
 
 echo "::group::Test DataFusion C"

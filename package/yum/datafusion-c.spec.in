@@ -86,6 +86,20 @@ Libraries and header files for DataFusion C.
 %{_libdir}/libdatafusion.so
 %{_libdir}/pkgconfig/datafusion.pc
 
+%package -n datafusion-examples
+Summary:	Examples for DataFusion C
+License:	Apache-2.0
+Requires:	datafusion-devel = %{version}-%{release}
+
+%description -n datafusion-examples
+Examples for DataFusion C.
+
+%files -n datafusion-examples
+%defattr(-,root,root,-)
+%doc README.md
+%license LICENSE
+%{_datadir}/datafusion/example/
+
 %package -n datafusion-glib%{major_version}-libs
 Summary:	Runtime libraries for DataFusion GLib
 License:	Apache-2.0
@@ -123,7 +137,6 @@ Libraries and header files for DataFusion GLib.
 %{_libdir}/libdatafusion-glib.a
 %{_libdir}/libdatafusion-glib.so
 %{_libdir}/pkgconfig/datafusion-glib.pc
-%{_datadir}/datafusion-glib/example/
 %{_datadir}/gir-1.0/DataFusion-*.gir
 %{_datadir}/vala/vapi/datafusion-glib.*
 
@@ -140,4 +153,20 @@ Documentation for DataFusion GLib.
 %license LICENSE
 %{_datadir}/gtk-doc/html/datafusion-glib/
 
+%package -n datafusion-glib-examples
+Summary:	Examples for DataFusion GLib
+License:	Apache-2.0
+Requires:	datafusion-glib-devel = %{version}-%{release}
+
+%description -n datafusion-glib-examples
+Examples for DataFusion GLib.
+
+%files -n datafusion-glib-examples
+%defattr(-,root,root,-)
+%doc README.md
+%license LICENSE
+%{_datadir}/datafusion-glib/example/
+
 %changelog
+* Mon Aug 22 2022 Sutou Kouhei <kou@clear-code.com> - 10.0.0-1
+- New upstream release.

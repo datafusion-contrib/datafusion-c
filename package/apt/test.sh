@@ -16,6 +16,22 @@
 
 set -exu
 
+if [ $# -lt 1 ]; then
+  echo "Usage: $0 rc"
+  echo "       $0 staging-rc"
+  echo "       $0 release"
+  echo "       $0 staging-release"
+  echo "       $0 local"
+  echo " e.g.: $0 rc              # Verify RC"
+  echo " e.g.: $0 staging-rc      # Verify RC on staging"
+  echo " e.g.: $0 release         # Verify release"
+  echo " e.g.: $0 staging-release # Verify release on staging"
+  echo " e.g.: $0 local           # Verify packages on local"
+  exit 1
+fi
+
+TYPE="$1"
+
 echo "::group::Prepare repository"
 
 export DEBIAN_FRONTEND=noninteractive
@@ -29,14 +45,32 @@ code_name=$(lsb_release --codename --short)
 distribution=$(lsb_release --id --short | tr A-Z a-z)
 architecture=$(dpkg --print-architecture)
 
-wget \
-  https://apache.jfrog.io/artifactory/arrow/${distribution}/apache-arrow-apt-source-latest-${code_name}.deb
+artifactory_base_url="https://apache.jfrog.io/artifactory/arrow/${distribution}"
+case ${TYPE} in
+  rc|staging-rc|staging-release)
+    suffix=-${TYPE%-release}
+    artifactory_base_url+="${suffix}"
+    ;;
+esac
+
+wget ${artifactory_base_url}/apache-arrow-apt-source-latest-${code_name}.deb
 ${APT_INSTALL} ./apache-arrow-apt-source-latest-${code_name}.deb
+case ${TYPE} in
+  rc|staging-rc|staging-release)
+    sed -i'' \
+        -e "s,/${distribution}/,/${distribution}${suffix}/,g" \
+        /etc/apt/sources.list.d/apache-arrow.sources
+    ;;
+esac
 apt update
 
-repositories_dir=/host/package/apt/repositories
-${APT_INSTALL} \
-  ${repositories_dir}/${distribution}/pool/${code_name}/*/*/*/*_${architecture}.deb
+if [[ ${TYPE} == "local" ]]; then
+  repositories_dir=/host/package/apt/repositories
+  ${APT_INSTALL} \
+    ${repositories_dir}/${distribution}/pool/${code_name}/*/*/*/*_${architecture}.deb
+else
+  ${APT_INSTALL} libdatafusion-glib-dev
+fi
 echo "::endgroup::"
 
 echo "::group::Test DataFusion C"
