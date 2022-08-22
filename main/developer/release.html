@@ -347,6 +347,10 @@ who registers his/her GPG key to
 APT/Yum repositories at <a class="reference external" href="https://apache.jfrog.io/artifactory/arrow/">https://apache.jfrog.io/artifactory/arrow/</a> are
 for Apache Arrow. We just reuse these APT/Yum repositories. So we must
 follow policy of <a class="reference external" href="https://apache.jfrog.io/artifactory/arrow/">https://apache.jfrog.io/artifactory/arrow/</a> .</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://arrow.apache.org/docs/developers/release.html">Release Management Guide for Apache Arrow</a>.</p>
+</div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>rake -C package apt:rc yum:rc
 <span class="gp">$ </span>dev/package/verify-packages.sh rc
 <span class="gp">$ </span>rake -C package apt:release yum:release
