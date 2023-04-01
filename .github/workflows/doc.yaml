@@ -61,7 +61,7 @@ jobs:
           override: true
           toolchain: stable
       - name: Cache Cargo
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.cargo
           key: cargo-doc-${{ steps.rust-toolchain.outputs.rustc_hash }}-${{ hashFiles('**/Cargo.toml') }}
