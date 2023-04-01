@@ -1,4 +1,4 @@
-# Copyright 2022 Sutou Kouhei <kou@clear-code.com>
+# Copyright 2022-2023 Sutou Kouhei <kou@clear-code.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ RUN \
     libarrow-glib-doc \
     libgirepository1.0-dev \
     libglib2.0-doc \
+    meson \
     ninja-build \
     pkg-config \
     python3-pip \
@@ -69,8 +70,6 @@ RUN \
     ) > /usr/bin/${exe##*/} && \
     chmod +x /usr/bin/${exe##*/}; \
   done && \
-  pip3 install --upgrade meson && \
-  ln -s /usr/local/bin/meson /usr/bin/ && \
   MAKEFLAGS="-j$(nproc)" gem install red-arrow && \
   apt clean && \
   rm -rf /var/lib/apt/lists/*
