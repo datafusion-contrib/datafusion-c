@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Sutou Kouhei <kou@clear-code.com>
+ * Copyright 2022-2023 Sutou Kouhei <kou@clear-code.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,14 +50,20 @@ GDF_AVAILABLE_IN_10_0
 gboolean
 gdf_parquet_read_options_set_table_partition_columns(
   GDFParquetReadOptions *options,
-  const gchar **columns,
-  gsize n_columns,
+  GArrowSchema *schema,
   GError **error);
 GDF_AVAILABLE_IN_10_0
-gchar **
+GArrowSchema *
 gdf_parquet_read_options_get_table_partition_columns(
   GDFParquetReadOptions *options);
 
+GDF_AVAILABLE_IN_21_0
+void
+gdf_parquet_read_options_unset_pruning(GDFParquetReadOptions *options);
+
+GDF_AVAILABLE_IN_21_0
+gboolean
+gdf_parquet_read_options_is_set_pruning(GDFParquetReadOptions *options);
 
 
 G_END_DECLS

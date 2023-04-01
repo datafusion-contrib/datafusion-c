@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Sutou Kouhei <kou@clear-code.com>
+ * Copyright 2022-2023 Sutou Kouhei <kou@clear-code.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ G_BEGIN_DECLS
 typedef struct GDFCSVReadOptionsPrivate_ {
   DFCSVReadOptions *options;
   GArrowSchema *schema;
+  GArrowSchema *table_partition_columns;
   gchar *file_extension;
 } GDFCSVReadOptionsPrivate;
 
@@ -60,6 +61,10 @@ gdf_csv_read_options_dispose(GObject *object)
   if (priv->schema) {
     g_object_unref(priv->schema);
     priv->schema = NULL;
+  }
+  if (priv->table_partition_columns) {
+    g_object_unref(priv->table_partition_columns);
+    priv->table_partition_columns = NULL;
   }
   G_OBJECT_CLASS(gdf_csv_read_options_parent_class)->dispose(object);
 }
@@ -336,9 +341,8 @@ gdf_csv_read_options_get_file_extension(GDFCSVReadOptions *options)
 /**
  * gdf_csv_read_options_set_table_partition_columns:
  * @options: A #GDFCSVReadOptions.
- * @columns: (array length=n_columns): Column names that are used for table
+ * @schema: Column names and their types that are used for table
  *   partition.
- * @n_columns: The number of column names.
  * @error: (nullable): Return location for a #GError or %NULL.
  *
  * Returns: %TRUE on success, %FALSE otherwise.
@@ -347,19 +351,36 @@ gdf_csv_read_options_get_file_extension(GDFCSVReadOptions *options)
  */
 gboolean
 gdf_csv_read_options_set_table_partition_columns(GDFCSVReadOptions *options,
-                                                 const gchar **columns,
-                                                 gsize n_columns,
+                                                 GArrowSchema *schema,
                                                  GError **error)
 {
   GDFCSVReadOptionsPrivate *priv =
     gdf_csv_read_options_get_instance_private(options);
+  if (priv->table_partition_columns == schema) {
+    return TRUE;
+  }
+  gpointer c_abi_schema = NULL;
+  if (schema) {
+    c_abi_schema = garrow_schema_export(schema, error);
+    if (!c_abi_schema) {
+      return FALSE;
+    }
+  }
   DFError *df_error = NULL;
   bool success =
     df_csv_read_options_set_table_partition_columns(priv->options,
-                                                    columns,
-                                                    n_columns,
+                                                    c_abi_schema,
                                                     &df_error);
-  if (!success) {
+  if (success) {
+    if (priv->table_partition_columns) {
+      g_object_unref(priv->table_partition_columns);
+    }
+    if (schema) {
+      priv->table_partition_columns = g_object_ref(schema);
+    } else {
+      priv->table_partition_columns = NULL;
+    }
+  } else {
     g_set_error(error,
                 GDF_ERROR,
                 df_error_get_code(df_error),
@@ -374,33 +395,17 @@ gdf_csv_read_options_set_table_partition_columns(GDFCSVReadOptions *options,
  * gdf_csv_read_options_get_table_partition_columns:
  * @options: A #GDFCSVReadOptions.
  *
- * Returns: (transfer full) (nullable): The column names that are used for
- *   table partition.
- *
- *   It should be freed by g_strfreev() when no longer needed.
+ * Returns: (transfer none) (nullable): The column names and their
+ *   types that are used for table partition.
  *
  * Since: 10.0.0
  */
-gchar **
+GArrowSchema *
 gdf_csv_read_options_get_table_partition_columns(GDFCSVReadOptions *options)
 {
   GDFCSVReadOptionsPrivate *priv =
     gdf_csv_read_options_get_instance_private(options);
-  uintptr_t df_n_columns = 0;
-  char **df_columns =
-    df_csv_read_options_get_table_partition_columns(priv->options, &df_n_columns);
-  if (df_n_columns == 0) {
-    return NULL;
-  }
-  gchar **columns = g_new(gchar *, df_n_columns + 1);
-  uintptr_t i;
-  for (i = 0; i < df_n_columns; i++) {
-    columns[i] = g_strdup(df_columns[i]);
-    free(df_columns[i]);
-  }
-  columns[i] = NULL;
-  free(df_columns);
-  return columns;
+  return priv->table_partition_columns;
 }
 
 DFCSVReadOptions *

@@ -1,4 +1,4 @@
-# Copyright 2022 Sutou Kouhei <kou@clear-code.com>
+# Copyright 2022-2023 Sutou Kouhei <kou@clear-code.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -54,7 +54,10 @@ class CSVReadOptionsTest < Test::Unit::TestCase
 
   def test_table_partition_columns
     assert_nil(@options.table_partition_columns)
-    @options.table_partition_columns = ["a", "b"]
-    assert_equal(["a", "b"], @options.table_partition_columns)
+    table_partition_columns = Arrow::Schema.new(a: :int8,
+                                                b: :boolean)
+    @options.table_partition_columns = table_partition_columns
+    assert_equal(table_partition_columns,
+                 @options.table_partition_columns)
   end
 end
