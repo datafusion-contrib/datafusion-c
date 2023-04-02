@@ -1,6 +1,6 @@
 # -*- ruby -*-
 #
-# Copyright 2022 Sutou Kouhei <kou@clear-code.com>
+# Copyright 2022-2023 Sutou Kouhei <kou@clear-code.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,4 +17,5 @@
 source "https://rubygems.org/"
 
 gem "red-arrow"
+gem "red-parquet"
 gem "test-unit"

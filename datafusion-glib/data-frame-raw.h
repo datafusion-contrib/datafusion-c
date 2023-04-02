@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Sutou Kouhei <kou@clear-code.com>
+ * Copyright 2022-2023 Sutou Kouhei <kou@clear-code.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,5 +25,9 @@ G_BEGIN_DECLS
 GDF_AVAILABLE_IN_10_0
 GDFDataFrame *
 gdf_data_frame_new_raw(DFDataFrame *raw_data_frame);
+
+GDF_AVAILABLE_IN_21_0
+DFParquetWriterProperties *
+gdf_parquet_writer_properties_get_raw(GDFParquetWriterProperties *properties);
 
 G_END_DECLS

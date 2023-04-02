@@ -35,6 +35,7 @@ use datafusion::datasource::MemTable;
 use datafusion::execution::context::SessionContext;
 use datafusion::execution::options::CsvReadOptions;
 use datafusion::execution::options::ParquetReadOptions;
+use parquet::file::properties::WriterProperties;
 
 fn strdup(rs_str: &str) -> *mut libc::c_char {
     unsafe {
@@ -370,6 +371,50 @@ pub struct DFArrowArray {
     private_data: *mut libc::c_void,
 }
 
+/// \struct DFParquertWriterProperties
+/// \brief A struct to customize how to write an Apache Parquet file.
+///
+/// You need to free this by `df_parquet_writer_properties_free()`
+/// when no longer needed.
+pub struct DFParquetWriterProperties {
+    max_row_group_size: Option<usize>,
+}
+
+impl DFParquetWriterProperties {
+    pub fn new() -> Self {
+        Self {
+            max_row_group_size: None,
+        }
+    }
+
+    pub fn build(&self) -> WriterProperties {
+        let mut builder = WriterProperties::builder();
+        if let Some(size) = self.max_row_group_size {
+            builder = builder.set_max_row_group_size(size);
+        }
+        builder.build()
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn df_parquet_writer_properties_new() -> Box<DFParquetWriterProperties> {
+    Box::new(DFParquetWriterProperties::new())
+}
+
+#[no_mangle]
+pub extern "C" fn df_parquet_writer_properties_free(
+    _options: Option<Box<DFParquetWriterProperties>>,
+) {
+}
+
+#[no_mangle]
+pub extern "C" fn df_parquet_writer_properties_set_max_row_group_size(
+    options: &mut DFParquetWriterProperties,
+    size: usize,
+) {
+    options.max_row_group_size = Some(size);
+}
+
 fn block_on<F: Future>(future: F) -> F::Output {
     tokio::runtime::Runtime::new().unwrap().block_on(future)
 }
@@ -413,6 +458,38 @@ pub extern "C" fn df_data_frame_show(
 ) {
     let future = data_frame.data_frame.clone().show();
     block_on(future).into_df_error(error, None);
+}
+
+/// \brief Write the given data frame contents as Apache Parquet format.
+///
+/// \param data_frame A `DFDataFrame` to be written.
+/// \param path An output path.
+/// \param writer_properties Properties how to write Apache Parquet files.
+/// \param error Return location for a `DFError` or `NULL`.
+#[no_mangle]
+pub extern "C" fn df_data_frame_write_parquet(
+    data_frame: &mut DFDataFrame,
+    path: *const libc::c_char,
+    writer_properties: Option<Box<DFParquetWriterProperties>>,
+    error: *mut *mut DFError,
+) -> bool {
+    let maybe_success = || -> Option<bool> {
+        let cstr_path = unsafe { CStr::from_ptr(path) };
+        let maybe_rs_path = cstr_path.to_str().into_df_error(error, None);
+        let rs_path = match maybe_rs_path {
+            Some(rs_path) => rs_path,
+            None => return None,
+        };
+        let maybe_rs_writer_properties =
+            writer_properties.map(|properties| properties.build());
+        let future = data_frame
+            .data_frame
+            .clone()
+            .write_parquet(rs_path, maybe_rs_writer_properties);
+        block_on(future).into_df_error(error, None)?;
+        Some(true)
+    }();
+    maybe_success.unwrap_or(false)
 }
 
 #[no_mangle]

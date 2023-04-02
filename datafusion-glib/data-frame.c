@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Sutou Kouhei <kou@clear-code.com>
+ * Copyright 2022-2023 Sutou Kouhei <kou@clear-code.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,82 @@ G_BEGIN_DECLS
  * SECTION: data-frame
  * @include: datafusion-glib/datafusion-glib.h
  *
+ * #GDFParquertWriterProperties is a class to customize how to write
+ * an Apache Parquet file.
+ *
  * #GDFDataFrame is a data frame class.
  */
+
+typedef struct GDFParquetWriterPropertiesPrivate_ {
+  DFParquetWriterProperties *properties;
+} GDFParquetWriterPropertiesPrivate;
+
+enum {
+  PROP_PARQUET_WRITER_PROPERTIES = 1,
+};
+
+G_DEFINE_TYPE_WITH_PRIVATE(GDFParquetWriterProperties,
+                           gdf_parquet_writer_properties,
+                           G_TYPE_OBJECT)
+
+static void
+gdf_parquet_writer_properties_finalize(GObject *object)
+{
+  GDFParquetWriterPropertiesPrivate *priv =
+    gdf_parquet_writer_properties_get_instance_private(
+      GDF_PARQUET_WRITER_PROPERTIES(object));
+  df_parquet_writer_properties_free(priv->properties);
+  G_OBJECT_CLASS(gdf_parquet_writer_properties_parent_class)->finalize(object);
+}
+
+static void
+gdf_parquet_writer_properties_init(GDFParquetWriterProperties *object)
+{
+  GDFParquetWriterPropertiesPrivate *priv =
+    gdf_parquet_writer_properties_get_instance_private(
+      GDF_PARQUET_WRITER_PROPERTIES(object));
+  priv->properties = df_parquet_writer_properties_new();
+}
+
+static void
+gdf_parquet_writer_properties_class_init(GDFParquetWriterPropertiesClass *klass)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
+  gobject_class->finalize = gdf_parquet_writer_properties_finalize;
+}
+
+/**
+ * gdf_parquet_writer_properties_new:
+ *
+ * Returns: A new Apache Parquet writer properties.
+ *
+ * Since: 21.0.0
+ */
+GDFParquetWriterProperties *
+gdf_parquet_writer_properties_new(void)
+{
+  return g_object_new(GDF_TYPE_PARQUET_WRITER_PROPERTIES, NULL);
+}
+
+/**
+ * gdf_parquet_writer_properties_set_max_row_group_size:
+ * @properties: A #GDFParquetWriterProperties.
+ * @size: The maximum number of rows in a row group.
+ *
+ * Set the maximum number of rows in a row group.
+ *
+ * Since: 21.0.0
+ */
+void
+gdf_parquet_writer_properties_set_max_row_group_size(
+  GDFParquetWriterProperties *properties,
+  guint64 size)
+{
+  GDFParquetWriterPropertiesPrivate *priv =
+    gdf_parquet_writer_properties_get_instance_private(properties);
+  df_parquet_writer_properties_set_max_row_group_size(priv->properties, size);
+}
+
 
 typedef struct GDFDataFramePrivate_ {
   DFDataFrame *data_frame;
@@ -162,10 +236,56 @@ gdf_data_frame_to_table(GDFDataFrame *data_frame, GError **error)
   return table;
 }
 
+/**
+ * gdf_data_frame_write_parquet:
+ * @data_frame: A #GDFDataFrame.
+ * @path: An output path.
+ * @properties: (nullable): Properties how to write Apache Parquet files.
+ * @error: (nullable): Return location for a #GError or %NULL.
+ *
+ * Returns: %TRUE on success, %FALSE otherwise.
+ *
+ * Since: 21.0.0
+ */
+gboolean
+gdf_data_frame_write_parquet(GDFDataFrame *data_frame,
+                             const gchar *path,
+                             GDFParquetWriterProperties *properties,
+                             GError **error)
+{
+  GDFDataFramePrivate *priv = gdf_data_frame_get_instance_private(data_frame);
+  DFParquetWriterProperties *df_properties = NULL;
+  if (properties) {
+    df_properties = gdf_parquet_writer_properties_get_raw(properties);
+  }
+  DFError *df_error = NULL;
+  gboolean success = df_data_frame_write_parquet(priv->data_frame,
+                                                 path,
+                                                 df_properties,
+                                                 &df_error);
+  if (!success) {
+    g_set_error(error,
+                GDF_ERROR,
+                df_error_get_code(df_error),
+                "[data-frame][write-parquet] %s",
+                df_error_get_message(df_error));
+    df_error_free(df_error);
+  }
+  return success;
+}
+
 GDFDataFrame *
 gdf_data_frame_new_raw(DFDataFrame *data_frame)
 {
   return g_object_new(GDF_TYPE_DATA_FRAME,
                       "data-frame", data_frame,
                       NULL);
+}
+
+DFParquetWriterProperties *
+gdf_parquet_writer_properties_get_raw(GDFParquetWriterProperties *properties)
+{
+  GDFParquetWriterPropertiesPrivate *priv =
+    gdf_parquet_writer_properties_get_instance_private(properties);
+  return priv->properties;
 }
