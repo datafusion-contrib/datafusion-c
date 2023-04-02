@@ -1,4 +1,4 @@
-# Copyright 2022 Sutou Kouhei <kou@clear-code.com>
+# Copyright 2022-2023 Sutou Kouhei <kou@clear-code.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ class SessionContextTest < Test::Unit::TestCase
       @context.deregister("data")
     end
     message = "[session-context][sql] Error during planning: " +
-              "'datafusion.public.data' not found"
+              "table 'datafusion.public.data' not found"
     assert_raise(DataFusion::Error::Plan.new(message)) do
       @context.sql("SELECT * FROM data")
     end
@@ -79,9 +79,9 @@ a,b,c
         CSV
         @csv_file.close
         schema = Arrow::Schema.new([
-                                     Arrow::Field.new("a", :int64, false),
-                                     Arrow::Field.new("b", :int64, false),
-                                     Arrow::Field.new("c", :int64, false),
+                                     Arrow::Field.new("a", :int64),
+                                     Arrow::Field.new("b", :int64),
+                                     Arrow::Field.new("c", :int64),
                                    ])
         @table = Arrow::Table.new(schema,
                                   [

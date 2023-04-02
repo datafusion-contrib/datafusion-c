@@ -1,4 +1,4 @@
-# Copyright 2022 Sutou Kouhei <kou@clear-code.com>
+# Copyright 2022-2023 Sutou Kouhei <kou@clear-code.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ project('datafusion-c', 'rust', 'c',
           'c_std=c99',
         ],
         license: 'Apache-2.0',
-        version: '10.0.0')
+        version: '21.0.0')
 
 version = meson.project_version()
 version_numbers = version.split('.')

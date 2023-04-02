@@ -1,4 +1,4 @@
-// Copyright 2022 Sutou Kouhei <kou@clear-code.com>
+// Copyright 2022-2023 Sutou Kouhei <kou@clear-code.com>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,15 +18,17 @@ use std::ffi::CString;
 use std::future::Future;
 use std::sync::Arc;
 
-use datafusion::arrow::array::Array;
-use datafusion::arrow::array::StructArray;
-use datafusion::arrow::datatypes::Schema;
-use datafusion::arrow::error::ArrowError;
-use datafusion::arrow::ffi::ArrowArray;
-use datafusion::arrow::ffi::ArrowArrayRef;
-use datafusion::arrow::ffi::FFI_ArrowArray;
-use datafusion::arrow::ffi::FFI_ArrowSchema;
-use datafusion::arrow::record_batch::RecordBatch;
+use arrow::array::Array;
+use arrow::array::StructArray;
+use arrow::datatypes::DataType;
+use arrow::datatypes::Field;
+use arrow::datatypes::Schema;
+use arrow::error::ArrowError;
+use arrow::ffi::ArrowArray;
+use arrow::ffi::FFI_ArrowArray;
+use arrow::ffi::FFI_ArrowSchema;
+use arrow::record_batch::RecordBatch;
+use arrow_data::ArrayData;
 use datafusion::common::DataFusionError;
 use datafusion::dataframe::DataFrame;
 use datafusion::datasource::MemTable;
@@ -57,36 +59,6 @@ fn c_string_to_str<'a>(
     cstr.to_str()
 }
 
-fn c_strings_to_strings(
-    c_strings: *const *const libc::c_char,
-    n: usize,
-) -> Result<Vec<String>, std::ffi::IntoStringError> {
-    let slice = unsafe { std::slice::from_raw_parts(c_strings, n) };
-    let mut strings = Vec::new();
-    for &c_string in slice {
-        let cstring = CString::from(unsafe { CStr::from_ptr(c_string) });
-        strings.push(cstring.into_string()?);
-    }
-    Ok(strings)
-}
-
-fn strings_to_c_strings(
-    strings: &Vec<String>,
-    n_c_strings: *mut usize,
-) -> *mut *mut libc::c_char {
-    let n = strings.len();
-    unsafe {
-        *n_c_strings = n;
-    };
-    let c_strings = unsafe { libc::malloc(std::mem::size_of::<*mut libc::c_char>() * n) }
-        as *mut *mut libc::c_char;
-    let slice = unsafe { std::slice::from_raw_parts_mut(c_strings, n) };
-    for (i, string) in strings.iter().enumerate() {
-        slice[i] = strdup(string);
-    }
-    c_strings
-}
-
 /// \enum DFErrorCode
 /// \brief Error category
 ///
@@ -112,6 +84,8 @@ pub enum DFErrorCode {
     External,
     #[allow(dead_code)]
     JIT,
+    Context,
+    Substrait,
 }
 
 /// \struct DFError
@@ -262,6 +236,8 @@ impl<V> IntoDFError for Result<V, DataFusionError> {
                     DataFusionError::External(_) => DFErrorCode::External,
                     #[cfg(feature = "jit")]
                     DataFusionError::JITError(_) => DFErrorCode::JIT,
+                    DataFusionError::Context(_, _) => DFErrorCode::Context,
+                    DataFusionError::Substrait(_) => DFErrorCode::Substrait,
                 };
                 df_error_set(error, code, &e.to_string());
                 error_value
@@ -302,6 +278,52 @@ impl<V> IntoDFError for Result<V, std::ffi::IntoStringError> {
             }
         }
     }
+}
+
+fn set_table_partition_columns(
+    rs_table_partition_columns: &mut Vec<(String, DataType)>,
+    rs_table_partition_columns_schema: &mut Option<Schema>,
+    schema: Option<Box<DFArrowSchema>>,
+    error: *mut *mut DFError,
+) -> bool {
+    let option = || -> Option<bool> {
+        match schema {
+            Some(mut s) => {
+                let rs_ffi_schema =
+                    (s.as_mut() as *mut DFArrowSchema) as *mut FFI_ArrowSchema;
+                let rs_schema = Schema::try_from(unsafe { &*rs_ffi_schema })
+                    .into_df_error(error, None)?;
+                *rs_table_partition_columns = rs_schema
+                    .fields
+                    .iter()
+                    .map(|rs_field| {
+                        (rs_field.name().clone(), rs_field.data_type().clone())
+                    })
+                    .collect::<Vec<_>>();
+                *rs_table_partition_columns_schema = Some(rs_schema);
+            }
+            None => {
+                *rs_table_partition_columns = vec![];
+                *rs_table_partition_columns_schema = None;
+            }
+        };
+        Some(true)
+    }();
+    option.unwrap_or(false)
+}
+
+fn get_table_partition_columns(
+    rs_table_partition_columns: &[(String, DataType)],
+    error: *mut *mut DFError,
+) -> Option<Box<DFArrowSchema>> {
+    let rs_fields = rs_table_partition_columns
+        .iter()
+        .map(|(name, data_type)| Field::new(name, data_type.clone(), true))
+        .collect();
+    let rs_schema = Schema::new(rs_fields);
+    let rs_ffi_schema =
+        FFI_ArrowSchema::try_from(rs_schema).into_df_error(error, None)?;
+    Some(Box::<DFArrowSchema>::from(rs_ffi_schema))
 }
 
 /// \struct DFArrowSchema
@@ -360,11 +382,11 @@ fn block_on<F: Future>(future: F) -> F::Output {
 /// You need to free data frame by `df_data_frame_free()` when no
 /// longer needed.
 pub struct DFDataFrame {
-    data_frame: Arc<DataFrame>,
+    data_frame: DataFrame,
 }
 
 impl DFDataFrame {
-    pub fn new(data_frame: Arc<DataFrame>) -> Self {
+    pub fn new(data_frame: DataFrame) -> Self {
         Self { data_frame }
     }
 }
@@ -389,7 +411,7 @@ pub extern "C" fn df_data_frame_show(
     data_frame: &mut DFDataFrame,
     error: *mut *mut DFError,
 ) {
-    let future = data_frame.data_frame.show();
+    let future = data_frame.data_frame.clone().show();
     block_on(future).into_df_error(error, None);
 }
 
@@ -401,7 +423,7 @@ pub extern "C" fn df_data_frame_export(
     error: *mut *mut DFError,
 ) -> i64 {
     let option = || -> Option<i64> {
-        let future = data_frame.data_frame.collect();
+        let future = data_frame.data_frame.clone().collect();
         let mut rs_record_batches = block_on(future).into_df_error(error, None)?;
         let n = rs_record_batches.len();
         let c_abi_record_batches = unsafe {
@@ -414,15 +436,18 @@ pub extern "C" fn df_data_frame_export(
         for i in 0..n {
             let rs_record_batch = rs_record_batches.remove(0);
             let rs_struct_array = StructArray::from(rs_record_batch);
-            let (c_abi_record_batch, c_abi_schema) =
-                rs_struct_array.to_raw().into_df_error(error, None)?;
-            c_abi_record_batch_slice[i] = c_abi_record_batch as *mut DFArrowArray;
+            let rs_ffi_array = FFI_ArrowArray::new(&rs_struct_array.data().clone());
+            c_abi_record_batch_slice[i] =
+                Box::into_raw(Box::new(rs_ffi_array)) as *mut DFArrowArray;
             if i == 0 {
+                let rs_ffi_schema =
+                    FFI_ArrowSchema::try_from(rs_struct_array.data().data_type())
+                        .into_df_error(error, None)?;
+                let c_abi_schema =
+                    Box::into_raw(Box::new(rs_ffi_schema)) as *mut DFArrowSchema;
                 unsafe {
-                    *c_abi_schema_out = c_abi_schema as *mut DFArrowSchema;
+                    *c_abi_schema_out = c_abi_schema;
                 }
-            } else {
-                unsafe { Arc::from_raw(c_abi_schema) };
             }
         }
         unsafe {
@@ -533,34 +558,38 @@ pub extern "C" fn df_session_context_register_record_batches(
     let option = || -> Option<bool> {
         let cstr_name = unsafe { CStr::from_ptr(name) };
         let rs_name = cstr_name.to_str().into_df_error(error, None)?;
-        let mut rs_ffi_schema =
-            (c_abi_schema as *mut DFArrowSchema) as *mut FFI_ArrowSchema;
+        let rs_ffi_schema = unsafe {
+            std::ptr::replace(
+                (c_abi_schema as *mut DFArrowSchema) as *mut FFI_ArrowSchema,
+                FFI_ArrowSchema::empty(),
+            )
+        };
+        let rs_schema = Schema::try_from(&rs_ffi_schema).into_df_error(error, None)?;
         let mut rs_record_batches = Vec::new();
         let c_abi_record_batch_slice =
             unsafe { std::slice::from_raw_parts(c_abi_record_batches, n_record_batches) };
         for c_abi_record_batch in c_abi_record_batch_slice {
-            let rs_ffi_record_batch =
-                (*c_abi_record_batch as *mut DFArrowArray) as *mut FFI_ArrowArray;
+            let rs_ffi_record_batch = unsafe {
+                std::ptr::replace(
+                    (*c_abi_record_batch as *mut DFArrowArray) as *mut FFI_ArrowArray,
+                    FFI_ArrowArray::empty(),
+                )
+            };
             // We want to share rs_ffi_schema by passing
             // Arc<FFI_ArrowSchema> but arrow-rs's ArrowArray API
-            // doesn't accept it...
+            // doesn't accept it. So we export schema.
+            let rs_ffi_schema = FFI_ArrowSchema::try_from(rs_schema.clone())
+                .into_df_error(error, None)?;
             let rs_record_batch_array =
-                unsafe { ArrowArray::try_from_raw(rs_ffi_record_batch, rs_ffi_schema) }
-                    .into_df_error(error, None)?;
+                ArrowArray::new(rs_ffi_record_batch, rs_ffi_schema);
             let rs_record_batch_data =
-                rs_record_batch_array.to_data().into_df_error(error, None)?;
+                ArrayData::try_from(rs_record_batch_array).into_df_error(error, None)?;
             let rs_record_batch =
                 RecordBatch::from(&StructArray::from(rs_record_batch_data));
             rs_record_batches.push(rs_record_batch);
-            // ... So we export schema again here.
-            rs_ffi_schema =
-                ArrowArray::into_raw(rs_record_batch_array).1 as *mut FFI_ArrowSchema;
         }
-        let rs_schema = Arc::new(
-            Schema::try_from(unsafe { &*rs_ffi_schema }).into_df_error(error, None)?,
-        );
         let rs_table = Arc::new(
-            MemTable::try_new(rs_schema, vec![rs_record_batches])
+            MemTable::try_new(Arc::new(rs_schema), vec![rs_record_batches])
                 .into_df_error(error, None)?,
         );
         context
@@ -575,13 +604,19 @@ pub extern "C" fn df_session_context_register_record_batches(
 pub struct DFCSVReadOptions<'a> {
     options: CsvReadOptions<'a>,
     schema: Option<Schema>,
+    table_partition_columns: Option<Schema>,
 }
 
 impl<'a> DFCSVReadOptions<'a> {
     pub fn new() -> Self {
         let options = CsvReadOptions::default();
         let schema = None;
-        Self { options, schema }
+        let table_partition_columns = None;
+        Self {
+            options,
+            schema,
+            table_partition_columns,
+        }
     }
 }
 
@@ -703,24 +738,23 @@ pub extern "C" fn df_csv_read_options_get_file_extension(
 #[no_mangle]
 pub extern "C" fn df_csv_read_options_set_table_partition_columns(
     options: &mut DFCSVReadOptions,
-    columns: *const *const libc::c_char,
-    n_columns: usize,
+    schema: Option<Box<DFArrowSchema>>,
     error: *mut *mut DFError,
 ) -> bool {
-    let option = || -> Option<bool> {
-        options.options.table_partition_cols =
-            c_strings_to_strings(columns, n_columns).into_df_error(error, None)?;
-        Some(true)
-    }();
-    option.unwrap_or(false)
+    set_table_partition_columns(
+        &mut options.options.table_partition_cols,
+        &mut options.table_partition_columns,
+        schema,
+        error,
+    )
 }
 
 #[no_mangle]
 pub extern "C" fn df_csv_read_options_get_table_partition_columns(
     options: &mut DFCSVReadOptions,
-    n_columns: *mut usize,
-) -> *mut *mut libc::c_char {
-    strings_to_c_strings(&options.options.table_partition_cols, n_columns)
+    error: *mut *mut DFError,
+) -> Option<Box<DFArrowSchema>> {
+    get_table_partition_columns(&options.options.table_partition_cols, error)
 }
 
 #[no_mangle]
@@ -748,12 +782,17 @@ pub extern "C" fn df_session_context_register_csv(
 
 pub struct DFParquetReadOptions<'a> {
     options: ParquetReadOptions<'a>,
+    table_partition_columns: Option<Schema>,
 }
 
 impl<'a> DFParquetReadOptions<'a> {
     pub fn new() -> Self {
         let options = ParquetReadOptions::default();
-        Self { options }
+        let table_partition_columns = None;
+        Self {
+            options,
+            table_partition_columns,
+        }
     }
 }
 
@@ -792,24 +831,23 @@ pub extern "C" fn df_parquet_read_options_get_file_extension(
 #[no_mangle]
 pub extern "C" fn df_parquet_read_options_set_table_partition_columns(
     options: &mut DFParquetReadOptions,
-    columns: *const *const libc::c_char,
-    n_columns: usize,
+    schema: Option<Box<DFArrowSchema>>,
     error: *mut *mut DFError,
 ) -> bool {
-    let option = || -> Option<bool> {
-        options.options.table_partition_cols =
-            c_strings_to_strings(columns, n_columns).into_df_error(error, None)?;
-        Some(true)
-    }();
-    option.unwrap_or(false)
+    set_table_partition_columns(
+        &mut options.options.table_partition_cols,
+        &mut options.table_partition_columns,
+        schema,
+        error,
+    )
 }
 
 #[no_mangle]
 pub extern "C" fn df_parquet_read_options_get_table_partition_columns(
     options: &mut DFParquetReadOptions,
-    n_columns: *mut usize,
-) -> *mut *mut libc::c_char {
-    strings_to_c_strings(&options.options.table_partition_cols, n_columns)
+    error: *mut *mut DFError,
+) -> Option<Box<DFArrowSchema>> {
+    get_table_partition_columns(&options.options.table_partition_cols, error)
 }
 
 #[no_mangle]
@@ -817,14 +855,31 @@ pub extern "C" fn df_parquet_read_options_set_pruning(
     options: &mut DFParquetReadOptions,
     pruning: bool,
 ) {
-    options.options.parquet_pruning = pruning;
+    options.options.parquet_pruning = Some(pruning);
+}
+
+#[no_mangle]
+pub extern "C" fn df_parquet_read_options_unset_pruning(
+    options: &mut DFParquetReadOptions,
+) {
+    options.options.parquet_pruning = None;
+}
+
+#[no_mangle]
+pub extern "C" fn df_parquet_read_options_is_set_pruning(
+    options: &mut DFParquetReadOptions,
+) -> bool {
+    match options.options.parquet_pruning {
+        Some(_parquet_pruning) => true,
+        None => false,
+    }
 }
 
 #[no_mangle]
 pub extern "C" fn df_parquet_read_options_get_pruning(
     options: &mut DFParquetReadOptions,
 ) -> bool {
-    options.options.parquet_pruning
+    options.options.parquet_pruning.unwrap_or(false)
 }
 
 #[no_mangle]

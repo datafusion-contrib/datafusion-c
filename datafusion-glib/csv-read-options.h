@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Sutou Kouhei <kou@clear-code.com>
+ * Copyright 2022-2023 Sutou Kouhei <kou@clear-code.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,11 +58,10 @@ gdf_csv_read_options_get_file_extension(GDFCSVReadOptions *options);
 GDF_AVAILABLE_IN_10_0
 gboolean
 gdf_csv_read_options_set_table_partition_columns(GDFCSVReadOptions *options,
-                                                 const gchar **columns,
-                                                 gsize n_columns,
+                                                 GArrowSchema *schema,
                                                  GError **error);
 GDF_AVAILABLE_IN_10_0
-gchar **
+GArrowSchema *
 gdf_csv_read_options_get_table_partition_columns(GDFCSVReadOptions *options);
 
 

@@ -1,4 +1,4 @@
-# Copyright 2022 Sutou Kouhei <kou@clear-code.com>
+# Copyright 2022-2023 Sutou Kouhei <kou@clear-code.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 [package]
 name = "datafusion-c"
 description = "DataFusion C API"
-version = "10.0.0"
+version = "21.0.0"
 homepage = "https://github.com/datafusion-contrib/datafusion-c"
 repository = "https://github.com/datafusion-contrib/datafusion-c"
 readme = "README.md"
@@ -23,7 +23,7 @@ authors = ["Sutou Kouhei <kou@clear-code.com>"]
 license = "Apache-2.0"
 keywords = ["arrow", "c"]
 edition = "2021"
-rust-version = "1.59"
+rust-version = "1.64"
 exclude = [
   "/cpp/",
 ]
@@ -37,7 +37,9 @@ default = ["capi"]
 capi = []
 
 [dependencies]
-datafusion = "10"
+arrow = { version = "34", features = ["ffi", "prettyprint"] }
+arrow-data = "34"
+datafusion = "21"
 libc = "0.2"
 tokio = "1"
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Sutou Kouhei <kou@clear-code.com>
+ * Copyright 2022-2023 Sutou Kouhei <kou@clear-code.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,13 +98,22 @@
 #endif
 
 /**
+ * GDF_VERSION_21_0:
+ *
+ * You can use this macro value for compile time API version check.
+ *
+ * Since: 21.0.0
+ */
+#define GDF_VERSION_21_0 G_ENCODE_VERSION(21, 0)
+
+/**
  * GDF_VERSION_10_0:
  *
  * You can use this macro value for compile time API version check.
  *
  * Since: 10.0.0
  */
-#define GDF_VERSION_10_0 G_ENCODE_VERSION(8, 0)
+#define GDF_VERSION_10_0 G_ENCODE_VERSION(10, 0)
 
 /**
  * GDF_VERSION_MIN_REQUIRED:
@@ -153,6 +162,22 @@
 
 #define GDF_AVAILABLE_IN_ALL
 
+
+#if GDF_VERSION_MIN_REQUIRED >= GDF_VERSION_21_0
+#  define GDF_DEPRECATED_IN_21_0                GDF_DEPRECATED
+#  define GDF_DEPRECATED_IN_21_0_FOR(function)  GDF_DEPRECATED_FOR(function)
+#else
+#  define GDF_DEPRECATED_IN_21_0
+#  define GDF_DEPRECATED_IN_21_0_FOR(function)
+#endif
+
+#if GDF_VERSION_MAX_ALLOWED < GDF_VERSION_21_0
+#  define GDF_AVAILABLE_IN_21_0 GDF_UNAVAILABLE(21, 0)
+#else
+#  define GDF_AVAILABLE_IN_21_0
+#endif
+
+
 #if GDF_VERSION_MIN_REQUIRED >= GDF_VERSION_10_0
 #  define GDF_DEPRECATED_IN_10_0                GDF_DEPRECATED
 #  define GDF_DEPRECATED_IN_10_0_FOR(function)  GDF_DEPRECATED_FOR(function)
@@ -162,7 +187,7 @@
 #endif
 
 #if GDF_VERSION_MAX_ALLOWED < GDF_VERSION_10_0
-#  define GDF_AVAILABLE_IN_10_0 GDF_UNAVAILABLE(8, 0)
+#  define GDF_AVAILABLE_IN_10_0 GDF_UNAVAILABLE(10, 0)
 #else
 #  define GDF_AVAILABLE_IN_10_0
 #endif
