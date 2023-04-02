@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>DataFusion.CSVReadOptions.get_table_partition_columns</title>
+  <title>DataFusion.ParquetReadOptions.is_set_pruning</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <meta charset="utf-8" />
@@ -18,10 +18,10 @@ SPDX-License-Identifier: Apache-2.0
   
 
   
-  <meta priority="og:title" content="DataFusion.CSVReadOptions.get_table_partition_columns"/>
-  <meta priority="og:description" content="Reference for DataFusion.CSVReadOptions.get_table_partition_columns"/>
-  <meta name="twitter:title" content="DataFusion.CSVReadOptions.get_table_partition_columns"/>
-  <meta name="twitter:description" content="Reference for DataFusion.CSVReadOptions.get_table_partition_columns"/>
+  <meta priority="og:title" content="DataFusion.ParquetReadOptions.is_set_pruning"/>
+  <meta priority="og:description" content="Reference for DataFusion.ParquetReadOptions.is_set_pruning"/>
+  <meta name="twitter:title" content="DataFusion.ParquetReadOptions.is_set_pruning"/>
+  <meta name="twitter:description" content="Reference for DataFusion.ParquetReadOptions.is_set_pruning"/>
 
 
   
@@ -67,24 +67,24 @@ SPDX-License-Identifier: Apache-2.0
 <div class="section">
   <h5>Type</h5>
   <div class="links">
-    <a href="class.CSVReadOptions.html">CSVReadOptions</a>
+    <a href="class.ParquetReadOptions.html">ParquetReadOptions</a>
   </div>
 </div>
 <div class="section">
   <h5>Methods</h5>
   <div class="links">
   
-    <a class="method" href="method.CSVReadOptions.get_file_extension.html">get_file_extension</a>
+    <a class="method" href="method.ParquetReadOptions.get_file_extension.html">get_file_extension</a>
   
-    <a class="method" href="method.CSVReadOptions.get_schema.html">get_schema</a>
+    <a class="method" href="method.ParquetReadOptions.get_table_partition_columns.html">get_table_partition_columns</a>
   
-    <a class="method current" href="method.CSVReadOptions.get_table_partition_columns.html">get_table_partition_columns</a>
+    <a class="method current" href="method.ParquetReadOptions.is_set_pruning.html">is_set_pruning</a>
   
-    <a class="method" href="method.CSVReadOptions.set_file_extension.html">set_file_extension</a>
+    <a class="method" href="method.ParquetReadOptions.set_file_extension.html">set_file_extension</a>
   
-    <a class="method" href="method.CSVReadOptions.set_schema.html">set_schema</a>
+    <a class="method" href="method.ParquetReadOptions.set_table_partition_columns.html">set_table_partition_columns</a>
   
-    <a class="method" href="method.CSVReadOptions.set_table_partition_columns.html">set_table_partition_columns</a>
+    <a class="method" href="method.ParquetReadOptions.unset_pruning.html">unset_pruning</a>
   
   </div>
 </div>
@@ -100,12 +100,12 @@ SPDX-License-Identifier: Apache-2.0
 <section id="main" class="content">
   <header>
     <h3>Method</h3>
-    <h1><a href="index.html">DataFusion</a><span class="sep"></span><a href="class.CSVReadOptions.html">CSVReadOptions</a><span class="sep"></span>get_table_partition_columns</h1>
+    <h1><a href="index.html">DataFusion</a><span class="sep"></span><a href="class.ParquetReadOptions.html">ParquetReadOptions</a><span class="sep"></span>is_set_pruning</h1>
   </header>
 
   <section>
     <div class="docblock">
-      <p><span class="emblem available">since: 10.0.0</span></p>
+      <p><span class="emblem available">since: 21.0.0</span></p>
     </div>
 
     <div class="declaration toggle-wrapper">
@@ -113,14 +113,14 @@ SPDX-License-Identifier: Apache-2.0
         Declaration
         <a class="anchor" href="#declaration"></a>
         
-        <a class="srclink" title="go to source location" href="https://github.com/datafusion-contrib/datafusion-c/blob/datafusion-glib/csv-read-options.h#L65">[src]</a>
+        <a class="srclink" title="go to source location" href="https://github.com/datafusion-contrib/datafusion-c/blob/datafusion-glib/parquet-read-options.h#L66">[src]</a>
         
       </h4>
 
       <div class="docblock c-decl">
-        <pre><code><div class="highlight"><pre><span></span><span class="n">GArrowSchema</span><span class="o">*</span>
-<span class="n">gdf_csv_read_options_get_table_partition_columns</span><span class="w"> </span><span class="p">(</span>
-<span class="w">  </span><span class="n">GDFCSVReadOptions</span><span class="o">*</span><span class="w"> </span><span class="n">options</span>
+        <pre><code><div class="highlight"><pre><span></span><span class="n">gboolean</span>
+<span class="n">gdf_parquet_read_options_is_set_pruning</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">GDFParquetReadOptions</span><span class="o">*</span><span class="w"> </span><span class="n">options</span>
 <span class="p">)</span>
 </pre></div>
 </code></pre>
@@ -140,7 +140,7 @@ SPDX-License-Identifier: Apache-2.0
 
       <div class="docblock">
         
-        <p>Available since: 10.0.0</p>
+        <p>Available since: 21.0.0</p>
         
         
         
@@ -162,17 +162,16 @@ SPDX-License-Identifier: Apache-2.0
       <div class="docblock">
         <div class="returns">
           <div class="arg-description">
-            <p><em>Type:</em>&nbsp;<a href="javascript:void(0)" data-link="class.Schema.html" data-namespace="Arrow" class="external"><code>GArrowSchema</code></a></p>
-            <p><p>The column names and their
-  types that are used for table&nbsp;partition.</p></p>
+            <p><em>Type:</em>&nbsp;<code>gboolean</code></p>
+            <p><p><code>TRUE</code> when the options have pruning value, <code>FALSE</code> otherwise.</p></p>
           </div>
           <div>
             <table>
             
             
             
-            <tr><td title="transfer: none">The data is owned by the instance.</td></tr>
-            <tr><td>The return value can be <code>NULL</code>.</td></tr>
+            
+            
             
             </table>
           </div>
