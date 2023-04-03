@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>DataFusion.DataFrame.to_table</title>
+  <title>DataFusion.ParquetWriterProperties.new</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <meta charset="utf-8" />
@@ -18,10 +18,10 @@ SPDX-License-Identifier: Apache-2.0
   
 
   
-  <meta priority="og:title" content="DataFusion.DataFrame.to_table"/>
-  <meta priority="og:description" content="Reference for DataFusion.DataFrame.to_table"/>
-  <meta name="twitter:title" content="DataFusion.DataFrame.to_table"/>
-  <meta name="twitter:description" content="Reference for DataFusion.DataFrame.to_table"/>
+  <meta property="og:title" content="DataFusion.ParquetWriterProperties.new"/>
+  <meta property="og:description" content="Reference for DataFusion.ParquetWriterProperties.new"/>
+  <meta name="twitter:title" content="DataFusion.ParquetWriterProperties.new"/>
+  <meta name="twitter:description" content="Reference for DataFusion.ParquetWriterProperties.new"/>
 
 
   
@@ -67,18 +67,14 @@ SPDX-License-Identifier: Apache-2.0
 <div class="section">
   <h5>Type</h5>
   <div class="links">
-    <a href="class.DataFrame.html">DataFrame</a>
+    <a href="class.ParquetWriterProperties.html">ParquetWriterProperties</a>
   </div>
 </div>
 <div class="section">
-  <h5>Methods</h5>
+  <h5>Constructors</h5>
   <div class="links">
   
-    <a class="method" href="method.DataFrame.show.html">show</a>
-  
-    <a class="method current" href="method.DataFrame.to_table.html">to_table</a>
-  
-    <a class="method" href="method.DataFrame.write_parquet.html">write_parquet</a>
+    <a class="method current" href="ctor.ParquetWriterProperties.new.html">new</a>
   
   </div>
 </div>
@@ -93,29 +89,27 @@ SPDX-License-Identifier: Apache-2.0
     
 <section id="main" class="content">
   <header>
-    <h3>Method</h3>
-    <h1><a href="index.html">DataFusion</a><span class="sep"></span><a href="class.DataFrame.html">DataFrame</a><span class="sep"></span>to_table</h1>
+    <h3>Constructor</h3>
+    <h1><a href="index.html">DataFusion</a><span class="sep"></span><a href="class.ParquetWriterProperties.html">ParquetWriterProperties</a><span class="sep"></span>new</h1>
   </header>
 
   <section>
     <div class="docblock">
-      <p><span class="emblem available">since: 10.0.0</span></p>
+      <p><span class="emblem available">since: 21.0.0</span></p>
     </div>
-
     <div class="declaration toggle-wrapper">
-      <h4 style="display:flex;" id="declaration">
+      <h4 id="declaration" style="display:flex;">
         Declaration
-        <a class="anchor" href="#declaration"></a>
+        <a href="#declaration" class="anchor"></a>
         
-        <a class="srclink" title="go to source location" href="https://github.com/datafusion-contrib/datafusion-c/blob/datafusion-glib/data-frame.h#L62">[src]</a>
+        <a class="srclink" title="go to source location" href="https://github.com/datafusion-contrib/datafusion-c/blob/datafusion-glib/data-frame.h#L39">[src]</a>
         
       </h4>
 
-      <div class="docblock c-decl">
-        <pre><code><div class="highlight"><pre><span></span><span class="n">GArrowTable</span><span class="o">*</span>
-<span class="n">gdf_data_frame_to_table</span><span class="w"> </span><span class="p">(</span>
-<span class="w">  </span><span class="n">GDFDataFrame</span><span class="o">*</span><span class="w"> </span><span class="n">data_frame</span>
-<span class="w">  </span><span class="n">GError</span><span class="o">**</span><span class="w"> </span><span class="n">error</span>
+      <div class="docblock">
+        <pre><code><div class="highlight"><pre><span></span><span class="n">GDFParquetWriterProperties</span><span class="o">*</span>
+<span class="n">gdf_parquet_writer_properties_new</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="kt">void</span>
 <span class="p">)</span>
 </pre></div>
 </code></pre>
@@ -123,9 +117,9 @@ SPDX-License-Identifier: Apache-2.0
     </div>
 
     <div class="description toggle-wrapper">
-      <h4 style="display:flex;" id="description">
+      <h4 id="description" style="display:flex;">
         Description
-        <a class="anchor" href="#description"></a>
+        <a href="#description" class="anchor"></a>
         
       </h4>
 
@@ -135,9 +129,7 @@ SPDX-License-Identifier: Apache-2.0
 
       <div class="docblock">
         
-        <p>Available since: 10.0.0</p>
-        
-        
+        <p>Available since: 21.0.0</p>
         
         
       </div>
@@ -157,15 +149,15 @@ SPDX-License-Identifier: Apache-2.0
       <div class="docblock">
         <div class="returns">
           <div class="arg-description">
-            <p><em>Type:</em>&nbsp;<a href="javascript:void(0)" data-link="class.Table.html" data-namespace="Arrow" class="external"><code>GArrowTable</code></a></p>
-            <p><p>A <code>GArrowTable</code> of this data frame, <code>NULL</code> on&nbsp;error.</p></p>
+            <p><em>Type:</em>&nbsp;<a href="class.ParquetWriterProperties.html"><code>GDFParquetWriterProperties</code></a></p>
+            <p><p>A new Apache Parquet writer&nbsp;properties.</p></p>
           </div>
           <div>
             <table>
             
             
             
-            <tr><td title="transfer: full">The caller of the method takes ownership of the data, and is responsible for freeing it.</td></tr>
+            <tr><td title="transfer: full">The caller of the function takes ownership of the data, and is responsible for freeing it.</td></tr>
             
             
             </table>
@@ -174,7 +166,6 @@ SPDX-License-Identifier: Apache-2.0
       </div>
     </div>
     
-
   </section>
 </section>
 

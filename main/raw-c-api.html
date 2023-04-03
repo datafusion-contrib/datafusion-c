@@ -522,6 +522,15 @@ document.write(`
 </dd></dl>
 
 <dl class="c struct">
+<dt class="sig sig-object c" id="c.DFParquertWriterProperties">
+<span class="target" id="structDFParquertWriterProperties"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DFParquertWriterProperties</span></span></span><a class="headerlink" href="#c.DFParquertWriterProperties" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;<a class="reference internal" href="#datafusion_8h"><span class="std std-ref">datafusion.h</span></a>&gt;</em></div>
+<p>A struct to customize how to write an Apache Parquet file. </p>
+<p>You need to free this by <code class="docutils literal notranslate"><span class="pre">df_parquet_writer_properties_free()</span></code> when no longer needed. </p>
+</dd></dl>
+
+<dl class="c struct">
 <dt class="sig sig-object c" id="c.DFSessionContext">
 <span class="target" id="structDFSessionContext"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DFSessionContext</span></span></span><a class="headerlink" href="#c.DFSessionContext" title="Permalink to this definition">#</a><br /></dt>
 <dd><div class="docutils container">
@@ -584,6 +593,11 @@ document.write(`
 <dl class="c type">
 <dt class="sig sig-object c" id="c.DFParquetReadOptions">
 <span class="target" id="datafusion_8h_1a7a9db29703d969f748b6750d8fb5b016"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFParquetReadOptions" title="DFParquetReadOptions"><span class="n"><span class="pre">DFParquetReadOptions</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DFParquetReadOptions</span></span></span><a class="headerlink" href="#c.DFParquetReadOptions" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c type">
+<dt class="sig sig-object c" id="c.DFParquetWriterProperties">
+<span class="target" id="datafusion_8h_1a5282ce5c8b6d5447663f70cfbdeb0b20"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFParquetWriterProperties" title="DFParquetWriterProperties"><span class="n"><span class="pre">DFParquetWriterProperties</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DFParquetWriterProperties</span></span></span><a class="headerlink" href="#c.DFParquetWriterProperties" title="Permalink to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="c type">
@@ -760,6 +774,21 @@ document.write(`
 </dd></dl>
 
 <dl class="c function">
+<dt class="sig sig-object c" id="c.df_parquet_writer_properties_new">
+<span class="target" id="datafusion_8h_1a20a48b69e19b50603ee5fc9c980fcd4b"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFParquetWriterProperties" title="DFParquetWriterProperties"><span class="n"><span class="pre">DFParquetWriterProperties</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">df_parquet_writer_properties_new</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_parquet_writer_properties_new" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_parquet_writer_properties_free">
+<span class="target" id="datafusion_8h_1a0c7ac9302f354fcb7744506f8546f131"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_parquet_writer_properties_free</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFParquetWriterProperties" title="DFParquetWriterProperties"><span class="n"><span class="pre">DFParquetWriterProperties</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">_properties</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_parquet_writer_properties_free" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_parquet_writer_properties_set_max_row_group_size">
+<span class="target" id="datafusion_8h_1a7c591e561e466c8632a0a0e50020c4d2"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_parquet_writer_properties_set_max_row_group_size</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFParquetWriterProperties" title="DFParquetWriterProperties"><span class="n"><span class="pre">DFParquetWriterProperties</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">properties</span></span>, <span class="n"><span class="pre">uintptr_t</span></span><span class="w"> </span><span class="n"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_parquet_writer_properties_set_max_row_group_size" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="c function">
 <dt class="sig sig-object c" id="c.df_data_frame_free">
 <span class="target" id="datafusion_8h_1a3cbc6250cd92b60f88fb7aa1568c445c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_data_frame_free</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFDataFrame" title="DFDataFrame"><span class="n"><span class="pre">DFDataFrame</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">_data_frame</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_data_frame_free" title="Permalink to this definition">#</a><br /></dt>
 <dd><p>Free the given <code class="docutils literal notranslate"><a class="reference internal" href="#structDFDataFrame"><span class="std std-ref"><span class="pre">DFDataFrame</span></span></a></code>. </p>
@@ -784,6 +813,22 @@ document.write(`
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data_frame</strong> – A <code class="docutils literal notranslate"><a class="reference internal" href="#structDFDataFrame"><span class="std std-ref"><span class="pre">DFDataFrame</span></span></a></code> to be shown. </p></li>
+<li><p><strong>error</strong> – Return location for a <code class="docutils literal notranslate"><a class="reference internal" href="#structDFError"><span class="std std-ref"><span class="pre">DFError</span></span></a></code> or <code class="docutils literal notranslate"><span class="pre">NULL</span></code>. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.df_data_frame_write_parquet">
+<span class="target" id="datafusion_8h_1ab7e6f90c5dc4ff91c1e1dda6d219afdc"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">df_data_frame_write_parquet</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFDataFrame" title="DFDataFrame"><span class="n"><span class="pre">DFDataFrame</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">data_frame</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">path</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFParquetWriterProperties" title="DFParquetWriterProperties"><span class="n"><span class="pre">DFParquetWriterProperties</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">writer_properties</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.DFError" title="DFError"><span class="n"><span class="pre">DFError</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">error</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.df_data_frame_write_parquet" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Write the given data frame contents as Apache Parquet format. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_frame</strong> – A <code class="docutils literal notranslate"><a class="reference internal" href="#structDFDataFrame"><span class="std std-ref"><span class="pre">DFDataFrame</span></span></a></code> to be written. </p></li>
+<li><p><strong>path</strong> – An output path. </p></li>
+<li><p><strong>writer_properties</strong> – Properties how to write Apache Parquet files. </p></li>
 <li><p><strong>error</strong> – Return location for a <code class="docutils literal notranslate"><a class="reference internal" href="#structDFError"><span class="std std-ref"><span class="pre">DFError</span></span></a></code> or <code class="docutils literal notranslate"><span class="pre">NULL</span></code>. </p></li>
 </ul>
 </dd>

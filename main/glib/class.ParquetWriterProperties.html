@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>DataFusion.DataFrame</title>
+  <title>DataFusion.ParquetWriterProperties</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <meta charset="utf-8" />
@@ -18,10 +18,10 @@ SPDX-License-Identifier: Apache-2.0
   
 
   
-  <meta property="og:title" content="DataFusion.DataFrame"/>
-  <meta property="og:description" content="Reference for DataFusion.DataFrame"/>
-  <meta name="twitter:title" content="DataFusion.DataFrame"/>
-  <meta name="twitter:description" content="Reference for DataFusion.DataFrame"/>
+  <meta property="og:title" content="DataFusion.ParquetWriterProperties"/>
+  <meta property="og:description" content="Reference for DataFusion.ParquetWriterProperties"/>
+  <meta name="twitter:title" content="DataFusion.ParquetWriterProperties"/>
+  <meta name="twitter:description" content="Reference for DataFusion.ParquetWriterProperties"/>
 
 
   
@@ -67,10 +67,19 @@ SPDX-License-Identifier: Apache-2.0
 <div class="section">
   <h5>Type</h5>
   <div class="links">
-    <a class="current" href="class.DataFrame.html#description">DataFrame</a>
+    <a class="current" href="class.ParquetWriterProperties.html#description">ParquetWriterProperties</a>
   </div>
 </div>
 
+
+<div class="section">
+  <h5>Constructors</h5>
+  <div class="links">
+  
+    <a class="ctor" href="ctor.ParquetWriterProperties.new.html">new</a>
+  
+  </div>
+</div>
 
 
 
@@ -80,25 +89,12 @@ SPDX-License-Identifier: Apache-2.0
   <h5>Instance methods</h5>
   <div class="links">
   
-    <a class="method" href="method.DataFrame.show.html">show</a>
-  
-    <a class="method" href="method.DataFrame.to_table.html">to_table</a>
-  
-    <a class="method" href="method.DataFrame.write_parquet.html">write_parquet</a>
+    <a class="method" href="method.ParquetWriterProperties.set_max_row_group_size.html">set_max_row_group_size</a>
   
   </div>
 </div>
 
 
-
-<div class="section">
-  <h5>Properties</h5>
-  <div class="links">
-  
-    <a class="property" href="property.DataFrame.data-frame.html">data-frame</a>
-  
-  </div>
-</div>
 
 
 
@@ -119,7 +115,7 @@ SPDX-License-Identifier: Apache-2.0
 <section id="main" class="content">
   <header>
     <h3>Class</h3>
-    <h1 aria-label="Name"><a href="index.html">DataFusion</a><span class="sep" role="presentation"></span>DataFrame</h1>
+    <h1 aria-label="Name"><a href="index.html">DataFusion</a><span class="sep" role="presentation"></span>ParquetWriterProperties</h1>
   </header>
 
   <section>
@@ -135,7 +131,7 @@ SPDX-License-Identifier: Apache-2.0
           
         </h4>
 
-        <pre><code>class DataFusion.DataFrame : GObject.Object {
+        <pre><code>class DataFusion.ParquetWriterProperties : GObject.Object {
   parent_instance: GObject
 }</pre></code>
 
@@ -179,6 +175,27 @@ SPDX-License-Identifier: Apache-2.0
     
 
     
+    <div class="toggle-wrapper constructors">
+      <h4 id="constructors">
+        Constructors
+        <a href="#constructors" class="anchor"></a>
+      </h4>
+
+      <div class="docblock">
+      
+        <div class="">
+          <h6><a href="ctor.ParquetWriterProperties.new.html">gdf_parquet_writer_properties_new</a></h6>
+          <div class="docblock">
+            No description available.
+          </div>
+          <div class="docblock">
+            <p><span class="emblem available">since: 21.0.0</span></p>
+          </div>
+        </div>
+      
+      </div>
+    </div>
+    
 
     
 
@@ -192,29 +209,9 @@ SPDX-License-Identifier: Apache-2.0
       <div class="docblock">
       
         <div class="">
-          <h6><a href="method.DataFrame.show.html">gdf_data_frame_show</a></h6>
+          <h6><a href="method.ParquetWriterProperties.set_max_row_group_size.html">gdf_parquet_writer_properties_set_max_row_group_size</a></h6>
           <div class="docblock">
-            <p>Shows <code>data_frame</code> content to standard&nbsp;output.</p>
-          </div>
-          <div class="docblock">
-            <p><span class="emblem available">since: 10.0.0</span></p>
-          </div>
-        </div>
-      
-        <div class="">
-          <h6><a href="method.DataFrame.to_table.html">gdf_data_frame_to_table</a></h6>
-          <div class="docblock">
-            No description available.
-          </div>
-          <div class="docblock">
-            <p><span class="emblem available">since: 10.0.0</span></p>
-          </div>
-        </div>
-      
-        <div class="">
-          <h6><a href="method.DataFrame.write_parquet.html">gdf_data_frame_write_parquet</a></h6>
-          <div class="docblock">
-            No description available.
+            <p>Set the maximum number of rows in a row&nbsp;group.</p>
           </div>
           <div class="docblock">
             <p><span class="emblem available">since: 21.0.0</span></p>
@@ -241,36 +238,6 @@ SPDX-License-Identifier: Apache-2.0
     </div>
     
 
-    
-    <div class="toggle-wrapper properties">
-      <h4 id="properties">
-        Properties
-        <a href="#properties" class="anchor"></a>
-      </h4>
-
-      
-      <div class="docblock">
-      
-        <div class="">
-          <h6><a href="property.DataFrame.data-frame.html">DataFusion.DataFrame:data-frame</a></h6>
-          <div class="docblock">
-            No description available.
-          </div>
-          <div class="docblock">
-            <p></p>
-          </div>
-        </div>
-      
-      </div>
-      
-
-      
-        
-      
-
-      
-
-    </div>
     
 
     
@@ -313,7 +280,7 @@ its value set through g_object_set_property(), g_object_set(), et&nbsp;al.</p>
       </h4>
 
       <div class="docblock">
-        <pre><code>struct DataFusionDataFrameClass {
+        <pre><code>struct DataFusionParquetWriterPropertiesClass {
   GObjectClass parent_class;
   
 }</code></pre>
@@ -359,6 +326,8 @@ its value set through g_object_set_property(), g_object_set(), et&nbsp;al.</p>
       
       
       
+<li class="toc-list-item"><a href="#constructors"><span class="link-text">Constructors</span></a></li>
+
 
       
 
@@ -367,8 +336,6 @@ its value set through g_object_set_property(), g_object_set(), et&nbsp;al.</p>
 
 
       
-<li class="toc-list-item"><a href="#properties"><span class="link-text">Properties</span></a></li>
-
 
       
 
