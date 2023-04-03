@@ -54,5 +54,8 @@ Publish packages for Debian, Ubuntu and AlmaLinux:
 
 ```bash
 cd package
-rake apt:release yum:release
+rake apt:rc
+rake yum:rc
+rake apt:release
+rake yum:release
 ```
