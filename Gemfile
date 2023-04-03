@@ -16,6 +16,7 @@
 
 source "https://rubygems.org/"
 
+gem "rake"
 gem "red-arrow"
 gem "red-parquet"
 gem "test-unit"
