@@ -1,0 +1,12 @@
+[
+    {
+        "name": "main",
+        "url": "https://datafusion-contrib.github.io/datafusion-c/main/",
+        "version": "main"
+    },
+    {
+        "name": "10.0.0 (latest)",
+        "url": "https://datafusion-contrib.github.io/datafusion-c/latest/",
+        "version": "10.0.0"
+    }
+]
