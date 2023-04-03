@@ -403,17 +403,18 @@ pub extern "C" fn df_parquet_writer_properties_new() -> Box<DFParquetWriterPrope
 
 #[no_mangle]
 pub extern "C" fn df_parquet_writer_properties_free(
-    _options: Option<Box<DFParquetWriterProperties>>,
+    _properties: Option<Box<DFParquetWriterProperties>>,
 ) {
 }
 
 #[no_mangle]
 pub extern "C" fn df_parquet_writer_properties_set_max_row_group_size(
-    options: &mut DFParquetWriterProperties,
+    properties: &mut DFParquetWriterProperties,
     size: usize,
 ) {
-    options.max_row_group_size = Some(size);
+    properties.max_row_group_size = Some(size);
 }
+
 
 fn block_on<F: Future>(future: F) -> F::Output {
     tokio::runtime::Runtime::new().unwrap().block_on(future)
@@ -470,7 +471,7 @@ pub extern "C" fn df_data_frame_show(
 pub extern "C" fn df_data_frame_write_parquet(
     data_frame: &mut DFDataFrame,
     path: *const libc::c_char,
-    writer_properties: Option<Box<DFParquetWriterProperties>>,
+    writer_properties: Option<&DFParquetWriterProperties>,
     error: *mut *mut DFError,
 ) -> bool {
     let maybe_success = || -> Option<bool> {
