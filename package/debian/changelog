@@ -1,3 +1,9 @@
+datafusion-c (21.0.0-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Sutou Kouhei <kou@clear-code.com>  Mon, 03 Apr 2023 05:42:13 -0000
+
 datafusion-c (10.0.0-1) unstable; urgency=low
 
   * New upstream release.

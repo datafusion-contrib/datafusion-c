@@ -83,5 +83,6 @@ popd
 
 pushd "${source_dir}/package"
 rake version:update
-git add .
+git add apt/debian/
+git add yum/*.spec.in
 popd

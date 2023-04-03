@@ -168,5 +168,8 @@ Examples for DataFusion GLib.
 %{_datadir}/datafusion-glib/example/
 
 %changelog
+* Mon Apr 03 2023 Sutou Kouhei <kou@clear-code.com> - 21.0.0-1
+- New upstream release.
+
 * Mon Aug 22 2022 Sutou Kouhei <kou@clear-code.com> - 10.0.0-1
 - New upstream release.
