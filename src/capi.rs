@@ -415,7 +415,6 @@ pub extern "C" fn df_parquet_writer_properties_set_max_row_group_size(
     properties.max_row_group_size = Some(size);
 }
 
-
 fn block_on<F: Future>(future: F) -> F::Output {
     tokio::runtime::Runtime::new().unwrap().block_on(future)
 }
