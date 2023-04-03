@@ -18,7 +18,7 @@ Build-Depends-Indep:
 Standards-Version: 4.1.4.1
 Homepage: https://github.com/datafusion-contrib/datafusion-c
 
-Package: libdatafusion10
+Package: libdatafusion21
 Section: libs
 Architecture: any
 Multi-Arch: same
@@ -36,12 +36,12 @@ Architecture: any
 Multi-Arch: same
 Depends:
   ${misc:Depends},
-  libdatafusion10 (= ${binary:Version})
+  libdatafusion21 (= ${binary:Version})
 Description: DataFusion C is C API for DataFusion
  .
  This package provides C header files.
 
-Package: libdatafusion-glib10
+Package: libdatafusion-glib21
 Section: libs
 Architecture: any
 Multi-Arch: same
@@ -49,12 +49,12 @@ Pre-Depends: ${misc:Pre-Depends}
 Depends:
   ${misc:Depends},
   ${shlibs:Depends},
-  libdatafusion10 (= ${binary:Version})
+  libdatafusion21 (= ${binary:Version})
 Description: DataFusion GLib is GLib API for DataFusion
  .
  This package provides GLib based library files.
 
-Package: gir1.2-datafusion-10.0
+Package: gir1.2-datafusion-21.0
 Section: introspection
 Architecture: any
 Multi-Arch: same
@@ -71,10 +71,10 @@ Architecture: any
 Multi-Arch: same
 Depends:
   ${misc:Depends},
-  gir1.2-datafusion-10.0 (= ${binary:Version}),
+  gir1.2-datafusion-21.0 (= ${binary:Version}),
   libarrow-glib-dev,
   libdatafusion-dev (= ${binary:Version}),
-  libdatafusion-glib10 (= ${binary:Version})
+  libdatafusion-glib21 (= ${binary:Version})
 Suggests: libdatafusion-glib-doc
 Description: DataFusion GLib is GLib API for DataFusion
  .
