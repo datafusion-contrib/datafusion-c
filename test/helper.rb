@@ -1,4 +1,4 @@
-# Copyright 2022 Sutou Kouhei <kou@clear-code.com>
+# Copyright 2022-2023 Sutou Kouhei <kou@clear-code.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,10 +13,12 @@
 # limitations under the License.
 
 require "tempfile"
+require "tmpdir"
 
 require "test-unit"
 
 require "arrow"
+require "parquet"
 require "gi"
 
 DataFusion = GI.load("DataFusion")

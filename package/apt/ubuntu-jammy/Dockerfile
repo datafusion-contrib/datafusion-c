@@ -70,6 +70,6 @@ RUN \
     ) > /usr/bin/${exe##*/} && \
     chmod +x /usr/bin/${exe##*/}; \
   done && \
-  MAKEFLAGS="-j$(nproc)" gem install red-arrow && \
+  MAKEFLAGS="-j$(nproc)" gem install red-parquet && \
   apt clean && \
   rm -rf /var/lib/apt/lists/*

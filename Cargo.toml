@@ -41,6 +41,7 @@ arrow = { version = "34", features = ["ffi", "prettyprint"] }
 arrow-data = "34"
 datafusion = "21"
 libc = "0.2"
+parquet = { version = "34", features = ["arrow", "async"] }
 tokio = "1"
 
 [package.metadata.capi.header]

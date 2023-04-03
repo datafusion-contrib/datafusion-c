@@ -1,4 +1,4 @@
-# Copyright 2022 Sutou Kouhei <kou@clear-code.com>
+# Copyright 2022-2023 Sutou Kouhei <kou@clear-code.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -71,6 +71,6 @@ RUN \
   done && \
   pip3 install --upgrade meson && \
   ln -s /usr/local/bin/meson /usr/bin/ && \
-  MAKEFLAGS="-j$(nproc)" gem install red-arrow && \
+  MAKEFLAGS="-j$(nproc)" gem install red-parquet && \
   apt clean && \
   rm -rf /var/lib/apt/lists/*
