@@ -648,7 +648,7 @@ pub extern "C" fn df_session_context_register_record_batches(
         for c_abi_record_batch in c_abi_record_batch_slice {
             let rs_ffi_record_batch = unsafe {
                 std::ptr::replace(
-                    (*c_abi_record_batch as *mut DFArrowArray) as *mut FFI_ArrowArray,
+                    *c_abi_record_batch as *mut FFI_ArrowArray,
                     FFI_ArrowArray::empty(),
                 )
             };
