@@ -35,7 +35,7 @@ jobs:
         with:
           path: arrow
           repository: apache/arrow
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
       - name: Setup Archery
@@ -90,7 +90,7 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         if: |
           matrix.runs-on != 'windows-latest'
         with:
