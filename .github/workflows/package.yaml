@@ -47,11 +47,11 @@ jobs:
           rm -rf datafusion-c-${VERSION}/.git
           tar cvzf datafusion-c-${VERSION}.tar.gz datafusion-c-${VERSION}
           zip -r datafusion-c-${VERSION}.zip datafusion-c-${VERSION}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: tar.gz
           path: datafusion-c-${{ env.VERSION }}.tar.gz
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: zip
           path: datafusion-c-${{ env.VERSION }}.zip
@@ -174,7 +174,7 @@ jobs:
         env:
           APT_TARGETS: ${{ matrix.target }}
           YUM_TARGETS: ${{ matrix.target }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: package-${{ matrix.id }}
           path: package/${{ matrix.task-namespace }}/repositories/
