@@ -162,7 +162,7 @@ jobs:
           cd package
           rake version:update RELEASE_DATE=$(date +%Y-%m-%d)
       - name: Cache ccache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: package/${{ matrix.task-namespace }}/build/${{ matrix.target }}/ccache
           key: package-${{ matrix.id }}-ccache-${{ hashFiles('datafusion-glib/**/*.{c,h}', 'src/**/*.rs') }}
