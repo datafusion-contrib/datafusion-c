@@ -1,4 +1,4 @@
-# Copyright 2022-2023 Sutou Kouhei <kou@clear-code.com>
+# Copyright 2022-2024 Sutou Kouhei <kou@clear-code.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -121,7 +121,6 @@ jobs:
         if: |
           matrix.runs-on == 'macos-latest'
         run: |
-          brew update --preinstall
           brew bundle --file=Brewfile
           echo "DYLD_LIBRARY_PATH=${PWD}/build:${HOME}/local/lib:${DYLD_LIBRARY_PATH}" >> ${GITHUB_ENV}
           echo "GI_TYPELIB_PATH=${HOME}/local/lib/girepository-1.0" >> ${GITHUB_ENV}
