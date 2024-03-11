@@ -1,6 +1,6 @@
 # -*- ruby -*-
 #
-# Copyright 2022-2023 Sutou Kouhei <kou@clear-code.com>
+# Copyright 2022-2024 Sutou Kouhei <kou@clear-code.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,24 @@
 
 source "https://rubygems.org/"
 
+# Use the version of red-arrow based on the available arrow-glib version
+red_arrow_version = ">= 0"
+IO.pipe do |input, output|
+  begin
+    pid = spawn("pkg-config", "--modversion", "arrow-glib",
+                out: output,
+                err: File::NULL)
+    output.close
+    _, status = Process.waitpid2(pid)
+    if status.success?
+      arrow_glib_version = input.read.strip.sub(/-SNAPSHOT\z/, "").strip
+      red_arrow_version = "<= #{arrow_glib_version}"
+    end
+  rescue SystemCallError
+  end
+end
+
 gem "rake"
-gem "red-arrow"
-gem "red-parquet"
+gem "red-arrow", red_arrow_version
+gem "red-parquet", red_arrow_version
 gem "test-unit"
