@@ -1,4 +1,4 @@
-# Copyright 2022 Sutou Kouhei <kou@clear-code.com>
+# Copyright 2022-2024 Sutou Kouhei <kou@clear-code.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -55,14 +55,18 @@ jobs:
         with:
           name: zip
           path: datafusion-c-${{ env.VERSION }}.zip
-      - uses: softprops/action-gh-release@v1
+      - name: Release
         if: |
           startsWith(github.ref, 'refs/tags/')
-        with:
-          body_path: datafusion-c-${{ env.VERSION }}/doc/source/news/${{ env.VERSION }}.md
-          files: |
-            datafusion-c-${{ env.VERSION }}.tar.gz
-            datafusion-c-${{ env.VERSION }}.zip
+        run: |
+          gh release create ${GITHUB_REF_NAME} \
+            --discussion-category Announcements \
+            --notes-file datafusion-c-${VERSION}/doc/source/news/${VERSION}.md \
+            --title "DataFucion C ${VERSION}" \
+            datafusion-c-${VERSION}.tar.gz
+            datafusion-c-${VERSION}.zip
+        env:
+          GH_TOKEN: ${{ github.token }}
 
   build:
     name: Build
@@ -186,15 +190,14 @@ jobs:
           shopt -s globstar
           cp -a package/${{ matrix.task-namespace }}/repositories/**/*.* ${{ matrix.id }}/
           tar czf ${{ matrix.id }}.tar.gz ${{ matrix.id }}
-          echo "VERSION=${GITHUB_REF#refs/tags/}" >> ${GITHUB_ENV}
       - name: Upload to release
-        uses: softprops/action-gh-release@v1
         if: |
           startsWith(github.ref, 'refs/tags/')
-        with:
-          body_path: doc/source/news/${{ env.VERSION }}.md
-          files: |
+        run:
+          gh release upload ${GITHUB_REF_NAME} \
             ${{ matrix.id }}.tar.gz
+        env:
+          GH_TOKEN: ${{ github.token }}
       - name: Test
         run: |
           docker run \
