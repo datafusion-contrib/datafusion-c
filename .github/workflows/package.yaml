@@ -55,7 +55,7 @@ jobs:
         with:
           name: zip
           path: datafusion-c-${{ env.VERSION }}.zip
-      - uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v2
         if: |
           startsWith(github.ref, 'refs/tags/')
         with:
@@ -188,7 +188,7 @@ jobs:
           tar czf ${{ matrix.id }}.tar.gz ${{ matrix.id }}
           echo "VERSION=${GITHUB_REF#refs/tags/}" >> ${GITHUB_ENV}
       - name: Upload to release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         if: |
           startsWith(github.ref, 'refs/tags/')
         with:
