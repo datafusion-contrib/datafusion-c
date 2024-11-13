@@ -42,10 +42,10 @@ fn strdup(rs_str: &str) -> *mut libc::c_char {
         let c_str =
             libc::malloc(std::mem::size_of::<*mut libc::c_char>() * rs_str.len() + 1)
                 as *mut libc::c_char;
-        std::ptr::copy_nonoverlapping(rs_str.as_ptr() as *const i8, c_str, rs_str.len());
+        std::ptr::copy_nonoverlapping(rs_str.as_ptr() as *const libc::c_char, c_str, rs_str.len());
         let nul = "\0";
         std::ptr::copy_nonoverlapping(
-            nul.as_ptr() as *const i8,
+            nul.as_ptr() as *const libc::c_char,
             c_str.add(rs_str.len()),
             nul.len(),
         );
