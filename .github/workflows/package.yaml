@@ -38,7 +38,7 @@ jobs:
               ;;
           esac
           echo "VERSION=${version}" >> ${GITHUB_ENV}
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
           path: datafusion-c-${{ env.VERSION }}
@@ -149,7 +149,7 @@ jobs:
           #   target: ubuntu-jammy-arm64
           #   test-docker-image: arm64v8/ubuntu:jammy
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
       - name: Install dependencies
